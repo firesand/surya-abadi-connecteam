@@ -4,13 +4,18 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config/firebase';
+import { initEmailJS } from './services/emailService';
 
 // Components
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import LoadingScreen from './components/Common/LoadingScreen';
 import EmployeeDashboard from './components/Employee/Dashboard';
+import EmployeeProfile from './components/Employee/EmployeeProfile';
+import LeaveRequest from './components/Employee/LeaveRequest';
+import LocationUpdate from './components/Employee/LocationUpdate';
 import AdminDashboard from './components/Admin/Dashboard';
+import LeaveManagement from './components/Admin/LeaveManagement';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -20,6 +25,14 @@ function App() {
 
   useEffect(() => {
     console.log('App.jsx - Setting up auth listener...');
+
+    // Initialize EmailJS when app loads
+    try {
+      initEmailJS();
+      console.log('EmailJS initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize EmailJS:', error);
+    }
 
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       console.log('Auth state changed:', authUser?.email);
@@ -155,12 +168,52 @@ function App() {
     }
     />
 
+    {/* Employee Profile Route */}
+    <Route
+    path="/employee/profile"
+    element={
+      <ProtectedRoute>
+      <EmployeeProfile />
+      </ProtectedRoute>
+    }
+    />
+
+    {/* Leave Request Route */}
+    <Route
+    path="/employee/leave-request"
+    element={
+      <ProtectedRoute>
+      <LeaveRequest />
+      </ProtectedRoute>
+    }
+    />
+
+    {/* Location Update Route */}
+    <Route
+    path="/employee/location-update"
+    element={
+      <ProtectedRoute>
+      <LocationUpdate />
+      </ProtectedRoute>
+    }
+    />
+
     {/* Admin Dashboard Route */}
     <Route
     path="/admin"
     element={
       <ProtectedRoute requireAdmin={true}>
       <AdminDashboard />
+      </ProtectedRoute>
+    }
+    />
+
+    {/* Admin Leave Management Route */}
+    <Route
+    path="/admin/leave-management"
+    element={
+      <ProtectedRoute requireAdmin={true}>
+      <LeaveManagement />
       </ProtectedRoute>
     }
     />

@@ -411,12 +411,43 @@ function EmployeeDashboard() {
     <p className="text-sm text-gray-600">Employee Dashboard</p>
     </div>
     </div>
+    
+    {/* Navigation Menu */}
+    <div className="flex items-center space-x-4">
+    <nav className="hidden md:flex space-x-4">
+    <button
+    onClick={() => navigate('/employee')}
+    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
+    >
+    Dashboard
+    </button>
+    <button
+    onClick={() => navigate('/employee/profile')}
+    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
+    >
+    Profile
+    </button>
+    <button
+    onClick={() => navigate('/employee/leave-request')}
+    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
+    >
+    Leave Request
+    </button>
+    <button
+    onClick={() => navigate('/employee/location-update')}
+    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
+    >
+    Location Update
+    </button>
+    </nav>
+    
     <button
     onClick={handleLogout}
     className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
     >
     Logout
     </button>
+    </div>
     </div>
     </div>
     </div>
