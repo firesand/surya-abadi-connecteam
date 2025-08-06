@@ -12,6 +12,7 @@ function Register() {
   const [error, setError] = useState('');
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -78,6 +79,12 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Prevent double submission
+    if (isSubmitting) {
+      console.log('Form is already submitting, ignoring...');
+      return;
+    }
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
@@ -101,6 +108,7 @@ function Register() {
     }
 
     setLoading(true);
+    setIsSubmitting(true);
 
     try {
       // Create user account
@@ -178,11 +186,26 @@ function Register() {
 
       console.log('Registration completed successfully');
       
-      // Sign out the user immediately after registration
-      await auth.signOut();
-      
+      // Show success message first
       alert('Registrasi berhasil! Silakan tunggu persetujuan admin untuk mengaktifkan akun Anda.');
-      navigate('/login');
+      
+      // Sign out the user immediately after registration
+      try {
+        await auth.signOut();
+        console.log('User signed out successfully');
+      } catch (signOutError) {
+        console.error('Sign out error:', signOutError);
+      }
+      
+      // Navigate to login page
+      try {
+        navigate('/login');
+        console.log('Navigated to login page');
+      } catch (navigateError) {
+        console.error('Navigation error:', navigateError);
+        // Fallback: redirect using window.location
+        window.location.href = '/login';
+      }
     } catch (error) {
       console.error('Registration error:', error);
       
@@ -210,6 +233,7 @@ function Register() {
       }
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 

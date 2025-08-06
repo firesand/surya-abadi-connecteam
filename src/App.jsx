@@ -10,6 +10,7 @@ import { initializeNotificationSystem } from './services/notificationService';
 // Components
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import RegisterErrorBoundary from './components/Auth/RegisterErrorBoundary';
 import LoadingScreen from './components/Common/LoadingScreen';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import EmployeeDashboard from './components/Employee/Dashboard';
@@ -171,12 +172,16 @@ function App() {
                 user ? <RoleBasedRedirect /> : <Login />
               }
             />
-            <Route
-              path="/register"
-              element={
-                user ? <RoleBasedRedirect /> : <Register />
-              }
-            />
+                      <Route
+            path="/register"
+            element={
+              user ? <RoleBasedRedirect /> : (
+                <RegisterErrorBoundary>
+                  <Register />
+                </RegisterErrorBoundary>
+              )
+            }
+          />
 
             {/* Root Route - Redirect based on role */}
             <Route
