@@ -25,7 +25,26 @@ const app = initializeApp(firebaseConfig);
 // Initialize services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
+
+// Initialize storage with error handling
+let storage;
+try {
+  storage = getStorage(app);
+  console.log('✅ Firebase Storage initialized successfully');
+} catch (storageError) {
+  console.warn('⚠️ Firebase Storage initialization failed:', storageError);
+  // Create a mock storage object for graceful degradation
+  storage = {
+    app: app,
+    bucket: firebaseConfig.storageBucket,
+    // Mock methods that return rejected promises
+    ref: () => Promise.reject(new Error('Storage not available')),
+    uploadBytes: () => Promise.reject(new Error('Storage not available')),
+    getDownloadURL: () => Promise.reject(new Error('Storage not available'))
+  };
+}
+
+export { storage };
 
 // Office configuration
 export const OFFICE_CONFIG = {

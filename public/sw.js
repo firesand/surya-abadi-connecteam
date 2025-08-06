@@ -105,13 +105,59 @@ self.addEventListener('fetch', (event) => {
           });
           
           return response;
+        }).catch((error) => {
+          // Handle CSP violations and other network errors
+          console.warn('Service Worker fetch failed:', error);
+          
+          // For Firebase Storage requests that fail due to CSP, return a mock response
+          if (request.url.includes('firebasestorage.googleapis.com')) {
+            console.log('Firebase Storage request blocked by CSP, returning mock response');
+            return new Response(JSON.stringify({ error: 'CSP_BLOCKED' }), {
+              status: 403,
+              statusText: 'Forbidden',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+          }
+          
+          // For other requests, return offline fallback
+          if (request.destination === 'document') {
+            return caches.match('/index.html');
+          }
+          
+          // Return a generic error response
+          return new Response('Network error', {
+            status: 503,
+            statusText: 'Service Unavailable'
+          });
         });
       })
-      .catch(() => {
+      .catch((error) => {
+        console.warn('Service Worker cache match failed:', error);
+        
+        // Handle CSP violations for Firebase Storage
+        if (request.url.includes('firebasestorage.googleapis.com')) {
+          console.log('Firebase Storage request blocked by CSP in cache match');
+          return new Response(JSON.stringify({ error: 'CSP_BLOCKED' }), {
+            status: 403,
+            statusText: 'Forbidden',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        }
+        
         // Offline fallback
         if (request.destination === 'document') {
           return caches.match('/index.html');
         }
+        
+        // Return a generic error response
+        return new Response('Network error', {
+          status: 503,
+          statusText: 'Service Unavailable'
+        });
       })
   );
 });

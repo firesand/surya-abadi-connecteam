@@ -8,6 +8,7 @@ import { createWhiteScreenRecovery } from './utils/whiteScreenDebug.js'
 import { createMobileRecovery } from './utils/mobileWhiteScreenFix.js'
 import { createProductionRecovery } from './utils/productionFix.js'
 import { aggressiveProductionFix } from './utils/aggressiveProductionFix.js'
+import { cspErrorHandler } from './utils/cspErrorHandler.js'
 
 // Initialize PWA fixes including white screen detection
 initPWAFixes();
@@ -26,6 +27,9 @@ createProductionRecovery();
 
 // Initialize aggressive production fix
 console.log('🚀 AGGRESSIVE: Initializing aggressive production fix...');
+
+// Initialize CSP error handler
+console.log('🔒 CSP: Initializing CSP error handler...');
 
 // Log device info for debugging
 const deviceInfo = getDeviceInfo();

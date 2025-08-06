@@ -10,6 +10,7 @@ import { checkGeolocationPermission, provideGeolocationGuidance } from '../../ut
 import { tryMobileNavigation } from '../../utils/mobileWhiteScreenFix.js';
 import { handleProductionNavigation } from '../../utils/productionFix.js';
 import { aggressiveProductionFix } from '../../utils/aggressiveProductionFix.js';
+import { cspErrorHandler } from '../../utils/cspErrorHandler.js';
 
 function Register() {
   const navigate = useNavigate();
@@ -119,19 +120,27 @@ function Register() {
       const user = userCredential.user;
       console.log('✅ Firebase user created:', user.uid);
 
-      // Upload photo if provided (with error handling)
+      // Upload photo if provided (with comprehensive CSP error handling)
       let photoURL = '';
       if (photo) {
         console.log('📸 Uploading photo...');
-        try {
-          const photoRef = ref(storage, `profiles/${user.uid}/${photo.name}`);
-          const snapshot = await uploadBytes(photoRef, photo);
-          photoURL = await getDownloadURL(snapshot.ref);
-          console.log('✅ Photo uploaded:', photoURL);
-        } catch (photoError) {
-          console.warn('⚠️ Photo upload failed, continuing without photo:', photoError);
-          // Continue without photo - user can upload later
-          photoURL = '';
+        
+        // Use CSP error handler to wrap storage operation
+        const uploadResult = await cspErrorHandler.wrapStorageOperation(
+          async () => {
+            const photoRef = ref(storage, `profiles/${user.uid}/${photo.name}`);
+            const snapshot = await uploadBytes(photoRef, photo);
+            const url = await getDownloadURL(snapshot.ref);
+            console.log('✅ Photo uploaded:', url);
+            return url;
+          },
+          '' // Fallback: empty string (no photo)
+        );
+        
+        photoURL = uploadResult || '';
+        
+        if (!photoURL) {
+          console.log('⚠️ Photo upload failed or blocked by CSP, continuing without photo');
         }
       }
 
