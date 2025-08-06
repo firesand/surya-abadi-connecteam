@@ -2,6 +2,8 @@
 
 **Sistem Absensi & HR Management Berbasis Web** untuk PT Surya Abadi
 
+> **Developed by Hikmahtiar Studio (2025)**
+
 ## ✨ Fitur Utama
 
 - ✅ **Absensi dengan GPS** - Validasi lokasi dalam radius 50m

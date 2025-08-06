@@ -439,6 +439,12 @@ function EmployeeDashboard() {
     >
     Location Update
     </button>
+    <button
+    onClick={() => navigate('/employee/payroll-request')}
+    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
+    >
+    Payroll Request
+    </button>
     </nav>
     
     <button

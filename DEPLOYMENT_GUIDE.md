@@ -1,288 +1,341 @@
-# 🚀 Deployment Guide - Surya Abadi Connecteam
+# Deployment Guide - PT Surya Abadi Connecteam
 
-## ✅ Status: Application Ready!
+## 🚀 **Production Deployment**
 
-Aplikasi **Surya Abadi Connecteam** sudah siap untuk deployment. Semua fitur telah diimplementasikan dan siap digunakan.
+### **1. Vercel Deployment (Recommended)**
 
-## 📋 Prerequisites Checklist
-
-- [x] Node.js installed (v16+)
-- [x] Git installed
-- [ ] Firebase project created
-- [ ] Vercel account created (free)
-
-## 🚀 Step-by-Step Deployment
-
-### Step 1: Setup Firebase Project
-
-#### 1.1 Create Firebase Project
+#### **Step 1: Prepare Repository**
 ```bash
-1. Go to https://console.firebase.google.com
-2. Click "Create Project"
-3. Name: suryaabadi-connecteam
-4. Disable Analytics → Create Project
+# Ensure all files are committed
+git add .
+git commit -m "Production ready - v1.0.0"
+git push origin main
 ```
 
-#### 1.2 Enable Services
+#### **Step 2: Connect to Vercel**
+1. Go to [vercel.com](https://vercel.com)
+2. Import your GitHub repository
+3. Configure project settings
+
+#### **Step 3: Set Environment Variables**
+In Vercel Dashboard → Settings → Environment Variables:
+
 ```bash
-# Authentication
-1. Authentication → Get Started
-2. Sign-in method → Email/Password → Enable
-
-# Firestore
-1. Firestore Database → Create Database
-2. Start in production mode
-3. Location: asia-southeast2 (Jakarta)
-
-# Storage
-1. Storage → Get Started
-2. Start in production mode
-```
-
-#### 1.3 Get Configuration
-```bash
-1. Project Settings → General
-2. Your apps → Add app → Web
-3. App nickname: surya-abadi-web
-4. Copy the config object
-```
-
-### Step 2: Environment Variables
-
-Create `.env.local` file in project root:
-```env
-VITE_FIREBASE_API_KEY=your_actual_api_key
-VITE_FIREBASE_AUTH_DOMAIN=suryaabadi-connecteam.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=suryaabadi-connecteam
-VITE_FIREBASE_STORAGE_BUCKET=suryaabadi-connecteam.appspot.com
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
+
+# Office Location
+VITE_OFFICE_LAT=-6.3693
+VITE_OFFICE_LNG=106.8289
+VITE_OFFICE_RADIUS=100
+
+# EmailJS (Optional)
+VITE_EMAILJS_PUBLIC_KEY=your_emailjs_key
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
 ```
 
-### Step 3: Deploy to Vercel
+#### **Step 4: Deploy**
+- Vercel will automatically build and deploy
+- Access your app at: `https://your-project.vercel.app`
 
-#### Option 1: Vercel CLI (Recommended)
+### **2. Firebase Hosting (Alternative)**
+
+#### **Step 1: Install Firebase CLI**
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+npm install -g firebase-tools
+```
 
-# Build the project
+#### **Step 2: Initialize Firebase**
+```bash
+firebase login
+firebase init hosting
+```
+
+#### **Step 3: Build and Deploy**
+```bash
 npm run build
-
-# Deploy to Vercel
-vercel
-
-# Follow prompts:
-? Set up and deploy "~/surya-abadi-connecteam"? [Y/n] Y
-? Which scope do you want to deploy to? (your-username)
-? Link to existing project? [y/N] N
-? What's your project's name? surya-abadi-connecteam
-? In which directory is your code located? ./dist
-? Want to override the settings? [y/N] N
+firebase deploy
 ```
 
-#### Option 2: Vercel Dashboard
-```bash
-1. Go to https://vercel.com/dashboard
-2. Click "New Project"
-3. Import your Git repository
-4. Set build command: npm run build
-5. Set output directory: dist
-6. Deploy
+## 🔧 **Firebase Setup**
+
+### **1. Create Firebase Project**
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Create new project: `surya-abadi-connecteam`
+3. Enable Authentication, Firestore, Storage
+
+### **2. Configure Authentication**
+```javascript
+// Enable Email/Password authentication
+// Add your admin email for testing
 ```
 
-### Step 4: Set Environment Variables in Vercel
-
-```bash
-1. Go to your project in Vercel Dashboard
-2. Settings → Environment Variables
-3. Add all variables from .env.local
-4. Click Save
-5. Redeploy: vercel --prod
+### **3. Configure Firestore Database**
+```javascript
+// Create collections:
+// - users
+// - attendances
+// - leaveRequests
+// - locationUpdates
+// - registrationRequests
 ```
 
-### Step 5: Create Admin Account
-
-#### Option 1: Firebase Console (Easiest)
-```bash
-1. Firebase Console → Authentication → Users
-2. Click "Add user"
-3. Email: admin@suryaabadi.com
-4. Password: (create strong password)
-5. After created, copy the User UID
-
-6. Go to Firestore → Start collection
-7. Collection ID: users
-8. Document ID: (paste the User UID)
-9. Add fields:
-   {
-     "email": "admin@suryaabadi.com",
-     "name": "Administrator",
-     "role": "admin",
-     "accountStatus": "active",
-     "isActive": true,
-     "nik": "0000000000000000",
-     "employeeId": "ADMIN001"
-   }
+### **4. Configure Storage**
+```javascript
+// Allow image uploads for profile photos
+// Set security rules for authenticated users
 ```
 
-### Step 6: Configure Security Rules
+### **5. Security Rules**
 
-#### Firestore Rules
+#### **Firestore Rules:**
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Users can read/write their own data
     match /users/{userId} {
-      allow read: if request.auth != null && 
-                     (request.auth.uid == userId || 
-                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
-      allow write: if request.auth != null && 
-                      request.auth.uid == userId && 
-                      resource.data.accountStatus == 'active';
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    match /registrationRequests/{requestId} {
-      allow create: if request.auth != null;
-      allow read, update: if request.auth != null &&
-                            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    // Admins can read/write all user data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    match /attendances/{attendanceId} {
-      allow create: if request.auth != null &&
-                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isActive == true;
-      allow read: if request.auth != null;
+    // Attendances - users can read/write their own
+    match /attendances/{docId} {
+      allow read, write: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Leave requests - users can read/write their own
+    match /leaveRequests/{docId} {
+      allow read, write: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Admins can read/write all leave requests
+    match /leaveRequests/{docId} {
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Location updates - users can read/write their own
+    match /locationUpdates/{docId} {
+      allow read, write: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+    
+    // Registration requests - admins only
+    match /registrationRequests/{docId} {
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
 ```
 
-#### Storage Rules
+#### **Storage Rules:**
 ```javascript
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // Users can upload their own profile photos
     match /profiles/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    match /attendances/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+    // Users can upload attendance photos
+    match /attendances/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
 ```
 
-## 🧪 Testing the Application
+## 📧 **EmailJS Setup (Optional)**
 
-### Test Flow
+### **1. Create EmailJS Account**
+1. Go to [EmailJS](https://www.emailjs.com)
+2. Create account and verify email
+
+### **2. Configure Email Service**
+1. Add your email service (Gmail, Outlook, etc.)
+2. Create email templates for:
+   - Registration approval/rejection
+   - Leave request approval/rejection
+   - Daily reminders
+
+### **3. Get Credentials**
 ```bash
-1. Access your app: https://surya-abadi-connecteam.vercel.app
-2. Register new employee account
-3. Login as admin
-4. Approve the registration
-5. Login as employee
-6. Test check in/out with GPS
-7. Test photo upload
+# Get these from EmailJS dashboard
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
 ```
 
-### Demo Credentials (Development)
-```bash
-Email: admin@suryaabadi.com
-Password: password123
+## 🔐 **Admin Account Setup**
+
+### **1. Create Admin User**
+```javascript
+// In Firebase Console → Authentication
+// Add admin user manually or use this code:
+
+// After first employee registers, update their role to 'admin'
+// In Firestore: users/{userId}
+{
+  "role": "admin",
+  "accountStatus": "active"
+}
 ```
 
-## 📱 PWA Features
+### **2. Admin Credentials**
+- Email: `admin@suryaabadi.com`
+- Password: Set in Firebase Console
+- Role: `admin`
 
-### Install as Mobile App
-- **Android**: Chrome → Add to Home Screen
-- **iOS**: Safari → Share → Add to Home Screen
+## 📱 **PWA Configuration**
 
-### Offline Support
-- Service Worker caches essential files
-- Works without internet connection
-- Syncs when connection restored
+### **1. Manifest File**
+```json
+// public/manifest.json
+{
+  "name": "PT Surya Abadi Connecteam",
+  "short_name": "Surya Abadi",
+  "description": "Sistem Absensi & HR Management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+```
 
-## 💰 Cost Breakdown (100% FREE)
+### **2. Service Worker (Optional)**
+```javascript
+// public/sw.js
+// Add offline functionality
+```
 
-| Service | Usage | Free Tier | Cost |
-|---------|-------|-----------|------|
-| **Vercel Hosting** | Frontend hosting | Unlimited sites | **Rp 0** |
-| **Firebase Auth** | 20 users | Unlimited users | **Rp 0** |
-| **Firestore** | ~100MB data | 1GB free | **Rp 0** |
-| **Storage** | ~500MB photos | 5GB free | **Rp 0** |
-| **Bandwidth** | ~2GB/month | 10GB free | **Rp 0** |
-| **Domain** | suryaabadi.vercel.app | Subdomain free | **Rp 0** |
-| **SSL Certificate** | HTTPS | Auto included | **Rp 0** |
-| **Total Monthly** | - | - | **Rp 0** |
+## 🧪 **Testing Checklist**
 
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**"Permission Denied" errors**
-- Check Firestore security rules
-- Ensure user is authenticated
-- Verify accountStatus is "active"
-
-**GPS/Location not working**
-- Ensure HTTPS is enabled (automatic on Vercel)
-- Check browser permissions
-- Test on mobile device
-
-**Photos not uploading**
-- Check Storage rules
-- Verify file size < 5MB
-- Ensure correct MIME type (image/*)
-
-**Can't login after registration**
-- Check if account is approved by admin
-- Verify accountStatus in Firestore
-- Check Firebase Auth settings
-
-## 📊 Monitoring
-
-### Firebase Console
-- Real-time database usage
-- Authentication metrics
-- Storage usage
-- Performance monitoring
-
-### Vercel Dashboard
-- Deployment status
-- Build logs
-- Function logs
-- Web vitals
-
-## 🎯 Success Checklist
-
-- [ ] Firebase project created
-- [ ] All services enabled
-- [ ] Security rules configured
+### **Pre-Deployment:**
+- [ ] All environment variables set
+- [ ] Firebase project configured
+- [ ] Security rules applied
 - [ ] Admin account created
-- [ ] App deployed to Vercel
-- [ ] Environment variables set
-- [ ] Test employee registered
-- [ ] Check in/out tested
-- [ ] GPS validation working
-- [ ] Photo upload working
+- [ ] Office location coordinates correct
+- [ ] EmailJS configured (if using)
 
-## 🚀 Final URL
+### **Post-Deployment:**
+- [ ] Admin can login
+- [ ] Employee registration works
+- [ ] GPS validation works
+- [ ] Camera capture works
+- [ ] Leave requests work
+- [ ] Email notifications work
+- [ ] Mobile responsive
+- [ ] PWA installable
 
-**Your app will be live at:**
-**https://surya-abadi-connecteam.vercel.app**
+## 📊 **Monitoring & Analytics**
+
+### **1. Firebase Analytics**
+```javascript
+// Automatically enabled with Firebase
+// Track user engagement, errors, performance
+```
+
+### **2. Vercel Analytics**
+```javascript
+// Built-in analytics
+// Monitor performance, errors, usage
+```
+
+### **3. Error Tracking**
+```javascript
+// Add error boundary components
+// Log errors to Firebase
+```
+
+## 🔄 **Update Deployment**
+
+### **1. Development Updates**
+```bash
+# Make changes locally
+npm run dev
+# Test thoroughly
+git add .
+git commit -m "Update description"
+git push
+# Vercel auto-deploys
+```
+
+### **2. Hot Fixes**
+```bash
+# Emergency fixes
+git commit -m "Hot fix: description"
+git push
+# Immediate deployment
+```
+
+## 🛡️ **Security Checklist**
+
+### **Firebase Security:**
+- [ ] Authentication enabled
+- [ ] Firestore rules configured
+- [ ] Storage rules configured
+- [ ] Admin role properly set
+- [ ] Data validation in place
+
+### **Application Security:**
+- [ ] Environment variables secure
+- [ ] API keys not exposed
+- [ ] HTTPS enabled
+- [ ] CORS configured
+- [ ] Input validation
+
+## 📞 **Support & Maintenance**
+
+### **1. Regular Maintenance**
+- Monitor Firebase usage
+- Check Vercel analytics
+- Update dependencies
+- Backup data regularly
+
+### **2. User Support**
+- Create admin guide
+- Train admin users
+- Document common issues
+- Set up support email
+
+### **3. Backup Strategy**
+```javascript
+// Export Firestore data regularly
+// Backup user files
+// Document configuration
+```
 
 ---
 
-## 🎉 Congratulations!
-
-**Surya Abadi Connecteam** siap digunakan dengan:
-- ✅ **Zero Cost** - 100% free tier
-- ✅ **Production Ready** - Siap deploy
-- ✅ **Mobile Friendly** - PWA support
-- ✅ **Secure** - Firebase security rules
-- ✅ **Scalable** - Bisa handle 20+ karyawan
-
-**Total Cost: Rp 0** ✅ 
+**Deployment Status:** ✅ Production Ready  
+**Last Updated:** December 2024  
+**Version:** 1.0.0 

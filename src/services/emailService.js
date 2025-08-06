@@ -128,6 +128,44 @@ export const sendMonthlyReport = async (recipientEmail, reportData) => {
   }
 };
 
+// Send payroll data email
+export const sendPayrollEmail = async (recipientEmail, recipientName, payrollData) => {
+  const templateParams = {
+    to_email: recipientEmail,
+    to_name: recipientName,
+    employee_name: payrollData.employeeInfo.name,
+    employee_nik: payrollData.employeeInfo.nik,
+    employee_department: payrollData.employeeInfo.department,
+    employee_position: payrollData.employeeInfo.position,
+    period_month: payrollData.period.monthName,
+    period_year: payrollData.period.year,
+    base_salary: payrollData.salary.baseSalary.toLocaleString('id-ID'),
+    work_days: payrollData.salary.workDays,
+    total_hours: payrollData.salary.totalHours,
+    regular_hours: payrollData.salary.regularHours,
+    overtime_hours: payrollData.salary.overtimeHours,
+    regular_pay: payrollData.salary.regularPay.toLocaleString('id-ID'),
+    overtime_pay: payrollData.salary.overtimePay.toLocaleString('id-ID'),
+    total_salary: payrollData.salary.totalSalary.toLocaleString('id-ID'),
+    deductions: payrollData.salary.deductions.toLocaleString('id-ID'),
+    net_salary: payrollData.salary.netSalary.toLocaleString('id-ID'),
+    message: `Data payroll ${payrollData.period.monthName} ${payrollData.period.year} untuk ${payrollData.employeeInfo.name} telah disiapkan.`
+  };
+
+  try {
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams
+    );
+    console.log('Payroll email sent:', response);
+    return { success: true, response };
+  } catch (error) {
+    console.error('Payroll email failed:', error);
+    return { success: false, error };
+  }
+};
+
 // ============================================
 // SIMPLE MAILTO FALLBACK
 // ============================================
@@ -267,6 +305,9 @@ export const sendNotification = async (type, userData, options = {}) => {
           break;
         case 'report':
           results.email = await sendMonthlyReport(userData.email, options.reportData);
+          break;
+        case 'payroll':
+          results.email = await sendPayrollEmail(userData.email, userData.name, options.payrollData);
           break;
         default:
           console.log('Unknown notification type:', type);

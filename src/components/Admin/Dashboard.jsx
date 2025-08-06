@@ -613,25 +613,25 @@ Employee Details:
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 pb-20">
     {/* Header */}
     <div className="bg-white shadow-sm border-b border-gray-200">
-    <div className="max-w-7xl mx-auto px-4 py-4">
-    <div className="flex justify-between items-center">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
     <div className="flex items-center space-x-3">
     <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
     <span className="text-white font-bold">SA</span>
     </div>
     <div>
-    <h1 className="text-xl font-bold text-gray-800">Surya Abadi Admin</h1>
-    <p className="text-sm text-gray-600">Management Dashboard</p>
+    <h1 className="text-lg sm:text-xl font-bold text-gray-800">Surya Abadi Admin</h1>
+    <p className="text-xs sm:text-sm text-gray-600">Management Dashboard</p>
     </div>
     </div>
-    <div className="flex items-center space-x-4">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
     {/* Notification Settings */}
     <div className="flex items-center space-x-2">
-    <label className="text-sm text-gray-600">Notifications:</label>
+    <label className="text-xs sm:text-sm text-gray-600">Notifications:</label>
     <select
     value={notificationSettings.method}
     onChange={(e) => setNotificationSettings(prev => ({ ...prev, method: e.target.value }))}
-    className="text-sm px-2 py-1 border rounded-lg focus:ring-2 focus:ring-green-500"
+    className="text-xs sm:text-sm px-2 py-1 border rounded-lg focus:ring-2 focus:ring-green-500"
     >
     <option value="both">Both</option>
     <option value="whatsapp">WhatsApp Only</option>
@@ -640,10 +640,10 @@ Employee Details:
     </select>
     </div>
 
-    <span className="text-sm text-gray-600">Admin: {userData?.name}</span>
+    <span className="text-xs sm:text-sm text-gray-600">Admin: {userData?.name}</span>
     <button
     onClick={handleLogout}
-    className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+    className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
     >
     Logout
     </button>
@@ -652,87 +652,87 @@ Employee Details:
     </div>
     </div>
 
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-6">
     {/* Stats Overview */}
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 mb-6">
+    <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
     <div className="flex items-center justify-between">
     <div>
-    <p className="text-sm text-gray-600">Total Employees</p>
-    <p className="text-3xl font-bold text-gray-800">{stats.totalEmployees}</p>
+    <p className="text-xs sm:text-sm text-gray-600">Total Employees</p>
+    <p className="text-xl sm:text-3xl font-bold text-gray-800">{stats.totalEmployees}</p>
     </div>
-    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+    <svg className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
     </svg>
     </div>
     </div>
     </div>
 
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
     <div className="flex items-center justify-between">
     <div>
-    <p className="text-sm text-gray-600">Active Employees</p>
-    <p className="text-3xl font-bold text-green-600">{stats.activeEmployees}</p>
+    <p className="text-xs sm:text-sm text-gray-600">Active Employees</p>
+    <p className="text-xl sm:text-3xl font-bold text-green-600">{stats.activeEmployees}</p>
     </div>
-    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+    <svg className="w-4 h-4 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     </div>
     </div>
     </div>
 
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
     <div className="flex items-center justify-between">
     <div>
-    <p className="text-sm text-gray-600">Suspended Employees</p>
-    <p className="text-3xl font-bold text-red-600">{stats.suspendedEmployees}</p>
+    <p className="text-xs sm:text-sm text-gray-600">Suspended Employees</p>
+    <p className="text-xl sm:text-3xl font-bold text-red-600">{stats.suspendedEmployees}</p>
     </div>
-    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-red-100 rounded-lg flex items-center justify-center">
+    <svg className="w-4 h-4 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
     </svg>
     </div>
     </div>
     </div>
 
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
     <div className="flex items-center justify-between">
     <div>
-    <p className="text-sm text-gray-600">Present Today</p>
-    <p className="text-3xl font-bold text-purple-600">{stats.presentToday}</p>
+    <p className="text-xs sm:text-sm text-gray-600">Present Today</p>
+    <p className="text-xl sm:text-3xl font-bold text-purple-600">{stats.presentToday}</p>
     </div>
-    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+    <svg className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
     </div>
     </div>
     </div>
 
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
     <div className="flex items-center justify-between">
     <div>
-    <p className="text-sm text-gray-600">Late Today</p>
-    <p className="text-3xl font-bold text-yellow-600">{stats.lateToday}</p>
+    <p className="text-xs sm:text-sm text-gray-600">Late Today</p>
+    <p className="text-xl sm:text-3xl font-bold text-yellow-600">{stats.lateToday}</p>
     </div>
-    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+    <svg className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     </div>
     </div>
     </div>
 
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-white rounded-xl shadow-md p-3 sm:p-6">
     <div className="flex items-center justify-between">
     <div>
-    <p className="text-sm text-gray-600">Pending Approvals</p>
-    <p className="text-3xl font-bold text-orange-600">{stats.pendingApprovals}</p>
+    <p className="text-xs sm:text-sm text-gray-600">Pending Approvals</p>
+    <p className="text-xl sm:text-3xl font-bold text-orange-600">{stats.pendingApprovals}</p>
     </div>
-    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+    <svg className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
     </div>
@@ -743,11 +743,11 @@ Employee Details:
     {/* Quick Actions */}
     {notificationSettings.method !== 'none' && (
       <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-      <div className="flex items-center justify-between">
-      <h3 className="text-lg font-semibold text-gray-800">Quick Actions</h3>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+      <h3 className="text-base sm:text-lg font-semibold text-gray-800">Quick Actions</h3>
       <button
       onClick={sendDailyReminders}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center"
+      className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm flex items-center"
       >
       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -759,15 +759,15 @@ Employee Details:
     )}
 
     {/* Employee Management Tips */}
-    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-      <div className="flex items-start space-x-3">
-        <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-          <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 sm:p-4 mb-6">
+      <div className="flex items-start space-x-2 sm:space-x-3">
+        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div>
-          <h4 className="text-sm font-semibold text-yellow-800 mb-1">Employee Management Tips</h4>
+          <h4 className="text-xs sm:text-sm font-semibold text-yellow-800 mb-1">Employee Management Tips</h4>
           <ul className="text-xs text-yellow-700 space-y-1">
             <li>• <strong>Edit</strong> employee data anytime using the blue Edit button</li>
             <li>• <strong>Suspend</strong> employees first before deleting them permanently</li>
@@ -782,10 +782,10 @@ Employee Details:
     {/* Tabs */}
     <div className="bg-white rounded-xl shadow-md mb-6">
     <div className="border-b border-gray-200">
-    <nav className="flex -mb-px">
+    <nav className="flex -mb-px overflow-x-auto">
     <button
     onClick={() => setActiveTab('overview')}
-    className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
       activeTab === 'overview'
       ? 'border-green-500 text-green-600'
       : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -795,7 +795,7 @@ Employee Details:
     </button>
     <button
     onClick={() => setActiveTab('approvals')}
-    className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors relative ${
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors relative whitespace-nowrap ${
       activeTab === 'approvals'
       ? 'border-green-500 text-green-600'
       : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -808,7 +808,7 @@ Employee Details:
     </button>
     <button
     onClick={() => setActiveTab('employees')}
-    className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
       activeTab === 'employees'
       ? 'border-green-500 text-green-600'
       : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -818,7 +818,7 @@ Employee Details:
     </button>
     <button
     onClick={() => setActiveTab('leave-management')}
-    className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
       activeTab === 'leave-management'
       ? 'border-green-500 text-green-600'
       : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -827,28 +827,38 @@ Employee Details:
     Leave Management
     </button>
     <button
+    onClick={() => setActiveTab('payroll-management')}
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
+      activeTab === 'payroll-management'
+      ? 'border-green-500 text-green-600'
+      : 'border-transparent text-gray-500 hover:text-gray-700'
+    }`}
+    >
+    💰 Payroll
+    </button>
+    <button
     onClick={() => setActiveTab('reports')}
-    className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
       activeTab === 'reports'
       ? 'border-green-500 text-green-600'
       : 'border-transparent text-gray-500 hover:text-gray-700'
     }`}
     >
-    📊 Monthly Reports
+    📊 Reports
     </button>
     </nav>
     </div>
 
-    <div className="p-6">
+    <div className="p-3 sm:p-6">
     {/* Today's Attendance Tab */}
     {activeTab === 'overview' && (
       <div>
-      <div className="flex justify-between items-center mb-4">
-      <h3 className="text-lg font-semibold text-gray-800">Today's Attendance Record</h3>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
+      <h3 className="text-base sm:text-lg font-semibold text-gray-800">Today's Attendance Record</h3>
       {todayAttendances.length > 0 && (
         <button
         onClick={exportAttendance}
-        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+        className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs sm:text-sm flex items-center"
         >
         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -858,33 +868,33 @@ Employee Details:
       )}
       </div>
 
-      <div className="overflow-x-auto">
-      <table className="w-full">
+      <div className="overflow-x-auto -mx-6 px-6">
+      <table className="w-full min-w-[800px]">
       <thead>
       <tr className="border-b bg-gray-50">
-      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Employee</th>
-      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Check In</th>
-      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Check Out</th>
-      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
-      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Work Hours</th>
-      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Photos</th>
+      <th className="text-left py-3 px-2 text-xs font-medium text-gray-700">Employee</th>
+      <th className="text-left py-3 px-2 text-xs font-medium text-gray-700">Check In</th>
+      <th className="text-left py-3 px-2 text-xs font-medium text-gray-700">Check Out</th>
+      <th className="text-left py-3 px-2 text-xs font-medium text-gray-700">Status</th>
+      <th className="text-left py-3 px-2 text-xs font-medium text-gray-700">Hours</th>
+      <th className="text-left py-3 px-2 text-xs font-medium text-gray-700">Photos</th>
       </tr>
       </thead>
       <tbody>
       {todayAttendances.length > 0 ? (
         todayAttendances.map((attendance) => (
           <tr key={attendance.id} className="border-b hover:bg-gray-50">
-          <td className="py-3 px-4">
-          <p className="font-medium text-gray-800">{attendance.userName}</p>
+          <td className="py-3 px-2">
+          <p className="font-medium text-gray-800 text-xs">{attendance.userName}</p>
           </td>
-          <td className="py-3 px-4 text-sm text-gray-600">
+          <td className="py-3 px-2 text-xs text-gray-600">
           {formatTime(attendance.checkIn)}
           </td>
-          <td className="py-3 px-4 text-sm text-gray-600">
+          <td className="py-3 px-2 text-xs text-gray-600">
           {formatTime(attendance.checkOut)}
           </td>
-          <td className="py-3 px-4">
-          <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+          <td className="py-3 px-2">
+          <span className={`inline-block px-1 py-1 text-xs rounded-full ${
             attendance.status === 'ontime'
             ? 'bg-green-100 text-green-800'
             : 'bg-yellow-100 text-yellow-800'
@@ -892,17 +902,17 @@ Employee Details:
           {attendance.status === 'ontime' ? 'On Time' : 'Late'}
           </span>
           </td>
-          <td className="py-3 px-4 text-sm text-gray-600">
+          <td className="py-3 px-2 text-xs text-gray-600">
           {attendance.workHours ? `${attendance.workHours}h` : '-'}
           </td>
-          <td className="py-3 px-4">
+          <td className="py-3 px-2">
           <div className="flex space-x-2">
           {attendance.checkInPhoto && (
             <a
             href={attendance.checkInPhoto}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 text-sm"
+            className="text-blue-600 hover:text-blue-800 text-xs"
             >
             In
             </a>
@@ -912,7 +922,7 @@ Employee Details:
             href={attendance.checkOutPhoto}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 text-sm"
+            className="text-blue-600 hover:text-blue-800 text-xs"
             >
             Out
             </a>
@@ -1152,6 +1162,42 @@ Employee Details:
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <p className="text-gray-500">Click "Open Full View" to manage leave requests</p>
+        </div>
+      </div>
+    )}
+
+    {/* Payroll Management Tab */}
+    {activeTab === 'payroll-management' && (
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold text-gray-800">Payroll Management</h3>
+          <button
+            onClick={() => window.open('/admin/payroll-management', '_blank')}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Open Full View
+          </button>
+        </div>
+        
+        <div className="bg-green-50 rounded-lg p-4 mb-6">
+          <h4 className="text-sm font-semibold text-green-800 mb-2">Payroll Management Features</h4>
+          <ul className="text-sm text-green-700 space-y-1">
+            <li>• View all payroll requests from employees</li>
+            <li>• Generate payroll data based on attendance</li>
+            <li>• Send payroll data via WhatsApp and Email</li>
+            <li>• Calculate salary, overtime, and deductions</li>
+            <li>• Track payroll request history and status</li>
+          </ul>
+        </div>
+
+        <div className="text-center py-8">
+          <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-gray-500">Click "Open Full View" to manage payroll requests</p>
         </div>
       </div>
     )}

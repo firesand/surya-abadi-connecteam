@@ -14,8 +14,11 @@ import EmployeeDashboard from './components/Employee/Dashboard';
 import EmployeeProfile from './components/Employee/EmployeeProfile';
 import LeaveRequest from './components/Employee/LeaveRequest';
 import LocationUpdate from './components/Employee/LocationUpdate';
+import PayrollRequest from './components/Employee/PayrollRequest';
 import AdminDashboard from './components/Admin/Dashboard';
 import LeaveManagement from './components/Admin/LeaveManagement';
+import PayrollManagement from './components/Admin/PayrollManagement';
+import Footer from './components/Common/Footer';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -137,90 +140,113 @@ function App() {
 
   return (
     <Router>
-    <Routes>
-    {/* Auth Routes */}
-    <Route
-    path="/login"
-    element={
-      user ? <RoleBasedRedirect /> : <Login />
-    }
-    />
-    <Route
-    path="/register"
-    element={
-      user ? <RoleBasedRedirect /> : <Register />
-    }
-    />
+      <div className="min-h-screen flex flex-col">
+        <Routes>
+          {/* Auth Routes */}
+          <Route
+            path="/login"
+            element={
+              user ? <RoleBasedRedirect /> : <Login />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              user ? <RoleBasedRedirect /> : <Register />
+            }
+          />
 
-    {/* Root Route - Redirect based on role */}
-    <Route
-    path="/"
-    element={<RoleBasedRedirect />}
-    />
+          {/* Root Route - Redirect based on role */}
+          <Route
+            path="/"
+            element={<RoleBasedRedirect />}
+          />
 
-    {/* Employee Dashboard Route */}
-    <Route
-    path="/employee"
-    element={
-      <ProtectedRoute>
-      <EmployeeDashboard />
-      </ProtectedRoute>
-    }
-    />
+          {/* Employee Dashboard Route */}
+          <Route
+            path="/employee"
+            element={
+              <ProtectedRoute>
+                <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Employee Profile Route */}
-    <Route
-    path="/employee/profile"
-    element={
-      <ProtectedRoute>
-      <EmployeeProfile />
-      </ProtectedRoute>
-    }
-    />
+          {/* Employee Profile Route */}
+          <Route
+            path="/employee/profile"
+            element={
+              <ProtectedRoute>
+                <EmployeeProfile />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Leave Request Route */}
-    <Route
-    path="/employee/leave-request"
-    element={
-      <ProtectedRoute>
-      <LeaveRequest />
-      </ProtectedRoute>
-    }
-    />
+          {/* Leave Request Route */}
+          <Route
+            path="/employee/leave-request"
+            element={
+              <ProtectedRoute>
+                <LeaveRequest />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Location Update Route */}
-    <Route
-    path="/employee/location-update"
-    element={
-      <ProtectedRoute>
-      <LocationUpdate />
-      </ProtectedRoute>
-    }
-    />
+          {/* Location Update Route */}
+          <Route
+            path="/employee/location-update"
+            element={
+              <ProtectedRoute>
+                <LocationUpdate />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Admin Dashboard Route */}
-    <Route
-    path="/admin"
-    element={
-      <ProtectedRoute requireAdmin={true}>
-      <AdminDashboard />
-      </ProtectedRoute>
-    }
-    />
+          {/* Payroll Request Route */}
+          <Route
+            path="/employee/payroll-request"
+            element={
+              <ProtectedRoute>
+                <PayrollRequest />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Admin Leave Management Route */}
-    <Route
-    path="/admin/leave-management"
-    element={
-      <ProtectedRoute requireAdmin={true}>
-      <LeaveManagement />
-      </ProtectedRoute>
-    }
-    />
+          {/* Admin Dashboard Route */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-    {/* Catch all - redirect to home */}
-    <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+          {/* Admin Leave Management Route */}
+          <Route
+            path="/admin/leave-management"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <LeaveManagement />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Payroll Management Route */}
+          <Route
+            path="/admin/payroll-management"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <PayrollManagement />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch all - redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <Footer />
+      </div>
     </Router>
   );
 }
