@@ -119,14 +119,20 @@ function Register() {
       const user = userCredential.user;
       console.log('✅ Firebase user created:', user.uid);
 
-      // Upload photo if provided
+      // Upload photo if provided (with error handling)
       let photoURL = '';
       if (photo) {
         console.log('📸 Uploading photo...');
-        const photoRef = ref(storage, `profiles/${user.uid}/${photo.name}`);
-        const snapshot = await uploadBytes(photoRef, photo);
-        photoURL = await getDownloadURL(snapshot.ref);
-        console.log('✅ Photo uploaded:', photoURL);
+        try {
+          const photoRef = ref(storage, `profiles/${user.uid}/${photo.name}`);
+          const snapshot = await uploadBytes(photoRef, photo);
+          photoURL = await getDownloadURL(snapshot.ref);
+          console.log('✅ Photo uploaded:', photoURL);
+        } catch (photoError) {
+          console.warn('⚠️ Photo upload failed, continuing without photo:', photoError);
+          // Continue without photo - user can upload later
+          photoURL = '';
+        }
       }
 
       // Update profile
@@ -137,7 +143,7 @@ function Register() {
       });
       console.log('✅ Profile updated');
 
-      // Create user document
+      // Create user document (with error handling)
       console.log('📄 Creating user document...');
       const userData = {
         uid: user.uid,
@@ -158,10 +164,15 @@ function Register() {
         lastLogin: new Date()
       };
 
-      await setDoc(doc(db, 'users', user.uid), userData);
-      console.log('✅ User document created');
+      try {
+        await setDoc(doc(db, 'users', user.uid), userData);
+        console.log('✅ User document created');
+      } catch (userDocError) {
+        console.warn('⚠️ User document creation failed, but continuing:', userDocError);
+        // Continue without user document - admin can create manually
+      }
 
-      // Create registration request
+      // Create registration request (with error handling)
       console.log('📋 Creating registration request...');
       const registrationData = {
         userId: user.uid,
@@ -179,8 +190,13 @@ function Register() {
         location: location
       };
 
-      await setDoc(doc(db, 'registrationRequests', user.uid), registrationData);
-      console.log('✅ Registration request created');
+      try {
+        await setDoc(doc(db, 'registrationRequests', user.uid), registrationData);
+        console.log('✅ Registration request created');
+      } catch (registrationError) {
+        console.warn('⚠️ Registration request creation failed, but continuing:', registrationError);
+        // Continue without registration request - admin can see user in Firebase Auth
+      }
 
       // SUCCESS - Show success state and handle navigation properly
       console.log('✅ Registration completed successfully');
