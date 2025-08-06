@@ -9,15 +9,12 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#00A651" />
+    <meta name="theme-color" content="#2563EB" />
     <meta name="description" content="Sistem Absensi & HR Management PT Surya Abadi" />
     <meta name="author" content="PT Surya Abadi" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="SA Connecteam" />
-
-    <!-- Update viewport untuk better mobile experience -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <!-- PWA Icons -->
     <link rel="apple-touch-icon" href="/logo192.png" />

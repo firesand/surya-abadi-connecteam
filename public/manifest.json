@@ -1,21 +1,22 @@
 {
   "name": "Surya Abadi Connecteam",
   "short_name": "SA Connect",
-  "description": "Sistem Absensi & HR Management PT Surya Abadi",
-  "start_url": "/",
-  "display": "standalone",
+  "description": "HR Management & Attendance System PT Surya Abadi",
   "theme_color": "#00A651",
   "background_color": "#ffffff",
+  "display": "standalone",
   "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
   "icons": [
     {
-      "src": "/logo192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -25,8 +26,24 @@
   "screenshots": [
     {
       "src": "/screenshot1.png",
-      "sizes": "540x720",
-      "type": "image/png"
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "Login Screen"
+    },
+    {
+      "src": "/screenshot2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Check In",
+      "short_name": "Check In",
+      "description": "Quick check in",
+      "url": "/employee",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
