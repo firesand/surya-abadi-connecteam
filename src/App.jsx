@@ -14,6 +14,7 @@ import RegisterErrorBoundary from './components/Auth/RegisterErrorBoundary';
 import PendingApproval from './components/Auth/PendingApproval';
 import LoadingScreen from './components/Common/LoadingScreen';
 import ErrorBoundary from './components/Common/ErrorBoundary';
+import WhiteScreenFallback from './components/Common/WhiteScreenFallback';
 import EmployeeDashboard from './components/Employee/Dashboard';
 import EmployeeProfile from './components/Employee/EmployeeProfile';
 import LeaveRequest from './components/Employee/LeaveRequest';
@@ -30,6 +31,7 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userDataLoading, setUserDataLoading] = useState(false);
+  const [whiteScreenDetected, setWhiteScreenDetected] = useState(false);
 
   useEffect(() => {
     console.log('App.jsx - Setting up auth listener...');
@@ -92,6 +94,30 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+  // White screen detection
+  useEffect(() => {
+    const checkWhiteScreen = () => {
+      const root = document.getElementById('root');
+      const hasContent = root && root.children.length > 0;
+      
+      if (!hasContent && !loading) {
+        console.log('🚨 White screen detected in App.jsx');
+        setWhiteScreenDetected(true);
+      }
+    };
+
+    // Check after 5 seconds
+    const timer = setTimeout(checkWhiteScreen, 5000);
+    
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  // Show white screen fallback if detected
+  if (whiteScreenDetected) {
+    console.log('App.jsx - White screen detected, showing fallback');
+    return <WhiteScreenFallback />;
+  }
 
   // Show loading screen while checking auth
   if (loading) {
