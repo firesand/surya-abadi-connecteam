@@ -23,7 +23,12 @@ function Register() {
     department: '',
     position: '',
     phoneNumber: '',
-    address: ''
+    address: '',
+    maritalStatus: 'single',
+    numberOfChildren: 0,
+    joinDate: '',
+    emergencyContact: '',
+    emergencyPhone: ''
   });
 
   const departments = [
@@ -137,16 +142,22 @@ function Register() {
         position: formData.position,
         phoneNumber: formData.phoneNumber,
         address: formData.address,
+        maritalStatus: formData.maritalStatus,
+        numberOfChildren: parseInt(formData.numberOfChildren) || 0,
+        joinDate: formData.joinDate,
+        emergencyContact: formData.emergencyContact,
+        emergencyPhone: formData.emergencyPhone,
         photoUrl: photoUrl,
         role: 'employee',
         accountStatus: 'pending',
         isActive: false,
         registeredAt: Timestamp.now(),
-                   leaveBalance: {
-                     annual: 12,
-                     used: 0,
-                     remaining: 12
-                   }
+        joinDateTimestamp: formData.joinDate ? Timestamp.fromDate(new Date(formData.joinDate)) : null,
+        leaveBalance: {
+          annual: 12,
+          used: 0,
+          remaining: 12
+        }
       });
       console.log('User document created');
 
@@ -374,6 +385,92 @@ function Register() {
     onChange={handleInputChange}
     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
     placeholder="Jl. Margonda Raya No. 100, Depok"
+    />
+    </div>
+
+    {/* Marital Status */}
+    <div>
+    <label htmlFor="maritalStatus" className="block text-sm font-medium text-gray-700">
+    Status Pernikahan *
+    </label>
+    <select
+    id="maritalStatus"
+    name="maritalStatus"
+    required
+    value={formData.maritalStatus}
+    onChange={handleInputChange}
+    className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+    >
+    <option value="single">Belum Menikah</option>
+    <option value="married">Menikah</option>
+    <option value="widowed">Duda/Janda</option>
+    <option value="divorced">Cerai</option>
+    </select>
+    </div>
+
+    {/* Number of Children */}
+    <div>
+    <label htmlFor="numberOfChildren" className="block text-sm font-medium text-gray-700">
+    Jumlah Anak
+    </label>
+    <input
+    id="numberOfChildren"
+    name="numberOfChildren"
+    type="number"
+    min="0"
+    max="10"
+    value={formData.numberOfChildren}
+    onChange={handleInputChange}
+    className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+    placeholder="0"
+    />
+    </div>
+
+    {/* Join Date */}
+    <div>
+    <label htmlFor="joinDate" className="block text-sm font-medium text-gray-700">
+    Tanggal Masuk *
+    </label>
+    <input
+    id="joinDate"
+    name="joinDate"
+    type="date"
+    required
+    value={formData.joinDate}
+    onChange={handleInputChange}
+    className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+    />
+    </div>
+
+    {/* Emergency Contact */}
+    <div>
+    <label htmlFor="emergencyContact" className="block text-sm font-medium text-gray-700">
+    Kontak Darurat (Nama)
+    </label>
+    <input
+    id="emergencyContact"
+    name="emergencyContact"
+    type="text"
+    value={formData.emergencyContact}
+    onChange={handleInputChange}
+    className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+    placeholder="Nama kontak darurat"
+    />
+    </div>
+
+    {/* Emergency Phone */}
+    <div>
+    <label htmlFor="emergencyPhone" className="block text-sm font-medium text-gray-700">
+    Kontak Darurat (Telepon)
+    </label>
+    <input
+    id="emergencyPhone"
+    name="emergencyPhone"
+    type="tel"
+    value={formData.emergencyPhone}
+    onChange={handleInputChange}
+    className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+    placeholder="081234567890"
     />
     </div>
 

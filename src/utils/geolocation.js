@@ -1,7 +1,7 @@
-// Office location (Depok) - Update with actual office coordinates
+// Office location (PT Surya Abadi) - Based on Google Maps coordinates
 let OFFICE_LAT = -6.3693;
 let OFFICE_LNG = 106.8289;
-const MAX_RADIUS = 50; // meters
+const MAX_RADIUS = 100; // meters - increased for better coverage
 
 // Get current location
 export const getCurrentLocation = () => {

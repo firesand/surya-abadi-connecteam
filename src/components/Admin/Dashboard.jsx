@@ -381,6 +381,12 @@ function AdminDashboard() {
         department: employeeData.department,
         position: employeeData.position,
         phoneNumber: employeeData.phoneNumber,
+        maritalStatus: employeeData.maritalStatus,
+        numberOfChildren: parseInt(employeeData.numberOfChildren) || 0,
+        joinDate: employeeData.joinDate,
+        address: employeeData.address,
+        emergencyContact: employeeData.emergencyContact,
+        emergencyPhone: employeeData.emergencyPhone,
         updatedAt: Timestamp.now(),
         updatedBy: auth.currentUser.uid
       });
@@ -413,7 +419,13 @@ function AdminDashboard() {
       employeeId: employee.employeeId || '',
       department: employee.department || '',
       position: employee.position || '',
-      phoneNumber: employee.phoneNumber || ''
+      phoneNumber: employee.phoneNumber || '',
+      maritalStatus: employee.maritalStatus || 'single',
+      numberOfChildren: employee.numberOfChildren || 0,
+      joinDate: employee.joinDate || '',
+      address: employee.address || '',
+      emergencyContact: employee.emergencyContact || '',
+      emergencyPhone: employee.emergencyPhone || ''
     });
     setShowEditModal(true);
   };
@@ -525,6 +537,26 @@ Employee Details:
     if (!timestamp) return '-';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Calculate work duration
+  const calculateWorkDuration = (joinDate) => {
+    if (!joinDate) return 'Not available';
+    
+    const join = new Date(joinDate);
+    const now = new Date();
+    
+    const diffTime = Math.abs(now - join);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const years = Math.floor(diffDays / 365);
+    const months = Math.floor((diffDays % 365) / 30);
+    
+    if (years > 0) {
+      return `${years}y ${months}m`;
+    } else {
+      return `${months}m`;
+    }
   };
 
   // Format date
@@ -962,6 +994,8 @@ Employee Details:
       <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Email</th>
       <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Department</th>
       <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Position</th>
+      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Marital Status</th>
+      <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Work Duration</th>
       <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
       <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Last Updated</th>
       <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Actions</th>
@@ -1000,6 +1034,15 @@ Employee Details:
           </td>
           <td className="py-3 px-4 text-sm text-gray-600">
           {employee.position || '-'}
+          </td>
+          <td className="py-3 px-4 text-sm text-gray-600">
+          {employee.maritalStatus === 'single' ? 'Single' :
+           employee.maritalStatus === 'married' ? 'Married' :
+           employee.maritalStatus === 'widowed' ? 'Widowed' :
+           employee.maritalStatus === 'divorced' ? 'Divorced' : '-'}
+          </td>
+          <td className="py-3 px-4 text-sm text-gray-600">
+          {calculateWorkDuration(employee.joinDate)}
           </td>
           <td className="py-3 px-4">
           <span className={`inline-block px-2 py-1 text-xs rounded-full ${
@@ -1066,7 +1109,7 @@ Employee Details:
         ))
       ) : (
         <tr>
-        <td colSpan="7" className="text-center py-8 text-gray-500">
+        <td colSpan="9" className="text-center py-8 text-gray-500">
         No employees registered yet
         </td>
         </tr>
@@ -1221,6 +1264,88 @@ Employee Details:
                     onChange={(e) => setEditingEmployee(prev => ({ ...prev, phoneNumber: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Marital Status
+                  </label>
+                  <select
+                    value={editingEmployee.maritalStatus}
+                    onChange={(e) => setEditingEmployee(prev => ({ ...prev, maritalStatus: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="single">Belum Menikah</option>
+                    <option value="married">Menikah</option>
+                    <option value="widowed">Duda/Janda</option>
+                    <option value="divorced">Cerai</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Number of Children
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    value={editingEmployee.numberOfChildren}
+                    onChange={(e) => setEditingEmployee(prev => ({ ...prev, numberOfChildren: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter number of children"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Join Date
+                  </label>
+                  <input
+                    type="date"
+                    value={editingEmployee.joinDate}
+                    onChange={(e) => setEditingEmployee(prev => ({ ...prev, joinDate: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Address
+                  </label>
+                  <textarea
+                    value={editingEmployee.address}
+                    onChange={(e) => setEditingEmployee(prev => ({ ...prev, address: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows="3"
+                    placeholder="Enter address"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Emergency Contact (Name)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingEmployee.emergencyContact}
+                    onChange={(e) => setEditingEmployee(prev => ({ ...prev, emergencyContact: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter emergency contact name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Emergency Contact (Phone)
+                  </label>
+                  <input
+                    type="tel"
+                    value={editingEmployee.emergencyPhone}
+                    onChange={(e) => setEditingEmployee(prev => ({ ...prev, emergencyPhone: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter emergency contact phone"
                   />
                 </div>
               </div>

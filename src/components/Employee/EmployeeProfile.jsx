@@ -11,7 +11,11 @@ function EmployeeProfile() {
     bpjsNumber: '',
     bpjsCardNumber: '',
     emergencyContact: '',
-    address: ''
+    address: '',
+    maritalStatus: '',
+    numberOfChildren: 0,
+    joinDate: '',
+    emergencyPhone: ''
   });
 
   useEffect(() => {
@@ -40,6 +44,23 @@ function EmployeeProfile() {
 
     fetchUserData();
   }, []);
+
+  // Calculate work duration
+  const calculateWorkDuration = (joinDate) => {
+    if (!joinDate) return { years: 0, months: 0, days: 0 };
+    
+    const join = new Date(joinDate);
+    const now = new Date();
+    
+    const diffTime = Math.abs(now - join);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const years = Math.floor(diffDays / 365);
+    const months = Math.floor((diffDays % 365) / 30);
+    const days = diffDays % 30;
+    
+    return { years, months, days };
+  };
 
   const handleSave = async () => {
     try {
@@ -124,6 +145,44 @@ function EmployeeProfile() {
                       }`}>
                         {userData?.accountStatus}
                       </span>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Marital Status</label>
+                      <p className="text-gray-900 capitalize">
+                        {userData?.maritalStatus === 'single' ? 'Belum Menikah' :
+                         userData?.maritalStatus === 'married' ? 'Menikah' :
+                         userData?.maritalStatus === 'widowed' ? 'Duda/Janda' :
+                         userData?.maritalStatus === 'divorced' ? 'Cerai' : 'Not provided'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Number of Children</label>
+                      <p className="text-gray-900">{userData?.numberOfChildren || 0} children</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Join Date</label>
+                      <p className="text-gray-900">{userData?.joinDate ? new Date(userData.joinDate).toLocaleDateString('id-ID') : 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Work Duration</label>
+                      {userData?.joinDate && (
+                        <div className="text-gray-900">
+                          {(() => {
+                            const duration = calculateWorkDuration(userData.joinDate);
+                            return `${duration.years} years, ${duration.months} months, ${duration.days} days`;
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Address</label>
+                      <p className="text-gray-900">{userData?.address || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Emergency Contact</label>
+                      <p className="text-gray-900">
+                        {userData?.emergencyContact ? `${userData.emergencyContact} (${userData.emergencyPhone || 'No phone'})` : 'Not provided'}
+                      </p>
                     </div>
                   </div>
                 </div>
