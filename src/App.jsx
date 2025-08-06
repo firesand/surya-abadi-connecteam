@@ -11,6 +11,7 @@ import { initializeNotificationSystem } from './services/notificationService';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import LoadingScreen from './components/Common/LoadingScreen';
+import ErrorBoundary from './components/Common/ErrorBoundary';
 import EmployeeDashboard from './components/Employee/Dashboard';
 import EmployeeProfile from './components/Employee/EmployeeProfile';
 import LeaveRequest from './components/Employee/LeaveRequest';
@@ -153,121 +154,139 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col">
-        {/* App Update Notification Manager */}
-        <AppUpdateNotification 
-          userId={user?.uid} 
-          userRole={userData?.role} 
-        />
-        
-        <Routes>
-          {/* Auth Routes */}
-          <Route
-            path="/login"
-            element={
-              user ? <RoleBasedRedirect /> : <Login />
-            }
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen flex flex-col">
+          {/* App Update Notification Manager */}
+          <AppUpdateNotification 
+            userId={user?.uid} 
+            userRole={userData?.role} 
           />
-          <Route
-            path="/register"
-            element={
-              user ? <RoleBasedRedirect /> : <Register />
-            }
-          />
+          
+          <Routes>
+            {/* Auth Routes */}
+            <Route
+              path="/login"
+              element={
+                user ? <RoleBasedRedirect /> : <Login />
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                user ? <RoleBasedRedirect /> : <Register />
+              }
+            />
 
-          {/* Root Route - Redirect based on role */}
-          <Route
-            path="/"
-            element={<RoleBasedRedirect />}
-          />
+            {/* Root Route - Redirect based on role */}
+            <Route
+              path="/"
+              element={<RoleBasedRedirect />}
+            />
 
-          {/* Employee Dashboard Route */}
-          <Route
-            path="/employee"
-            element={
-              <ProtectedRoute>
-                <EmployeeDashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Employee Dashboard Route */}
+            <Route
+              path="/employee"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <EmployeeDashboard />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Employee Profile Route */}
-          <Route
-            path="/employee/profile"
-            element={
-              <ProtectedRoute>
-                <EmployeeProfile />
-              </ProtectedRoute>
-            }
-          />
+            {/* Employee Profile Route */}
+            <Route
+              path="/employee/profile"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <EmployeeProfile />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Leave Request Route */}
-          <Route
-            path="/employee/leave-request"
-            element={
-              <ProtectedRoute>
-                <LeaveRequest />
-              </ProtectedRoute>
-            }
-          />
+            {/* Leave Request Route */}
+            <Route
+              path="/employee/leave-request"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <LeaveRequest />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Location Update Route */}
-          <Route
-            path="/employee/location-update"
-            element={
-              <ProtectedRoute>
-                <LocationUpdate />
-              </ProtectedRoute>
-            }
-          />
+            {/* Location Update Route */}
+            <Route
+              path="/employee/location-update"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <LocationUpdate />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Payroll Request Route */}
-          <Route
-            path="/employee/payroll-request"
-            element={
-              <ProtectedRoute>
-                <PayrollRequest />
-              </ProtectedRoute>
-            }
-          />
+            {/* Payroll Request Route */}
+            <Route
+              path="/employee/payroll-request"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <PayrollRequest />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Admin Dashboard Route */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Admin Dashboard Route */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <ErrorBoundary>
+                    <AdminDashboard />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Admin Leave Management Route */}
-          <Route
-            path="/admin/leave-management"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <LeaveManagement />
-              </ProtectedRoute>
-            }
-          />
+            {/* Admin Leave Management Route */}
+            <Route
+              path="/admin/leave-management"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <ErrorBoundary>
+                    <LeaveManagement />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Admin Payroll Management Route */}
-          <Route
-            path="/admin/payroll-management"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <PayrollManagement />
-              </ProtectedRoute>
-            }
-          />
+            {/* Admin Payroll Management Route */}
+            <Route
+              path="/admin/payroll-management"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <ErrorBoundary>
+                    <PayrollManagement />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Catch all - redirect to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+            {/* Catch all - redirect to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

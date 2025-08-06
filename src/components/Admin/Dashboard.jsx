@@ -73,87 +73,153 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Starting admin dashboard data fetch...');
+        
         const user = auth.currentUser;
         if (!user) {
+          console.log('No authenticated user found, redirecting to login');
           navigate('/login');
           return;
         }
 
+        console.log('User authenticated:', user.uid);
+
         // Get user data and verify admin role
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          if (data.role !== 'admin') {
-            alert('Access denied. Admin privileges required.');
-            navigate('/');
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            console.log('User data retrieved:', data);
+            if (data.role !== 'admin') {
+              console.log('User is not admin, redirecting');
+              alert('Access denied. Admin privileges required.');
+              navigate('/');
+              return;
+            }
+            setUserData(data);
+          } else {
+            console.log('User document not found');
+            alert('User profile not found. Please contact administrator.');
+            navigate('/login');
             return;
           }
-          setUserData(data);
+        } catch (userError) {
+          console.error('Error fetching user data:', userError);
+          alert('Error loading user data. Please try again.');
+          return;
         }
 
         // Fetch pending registrations
-        const registrationsQuery = query(
-          collection(db, 'registrationRequests'),
-                                         where('status', '==', 'pending'),
-                                         orderBy('requestedAt', 'desc')
-        );
-        const registrationsSnapshot = await getDocs(registrationsQuery);
-        const registrations = registrationsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setPendingRegistrations(registrations);
-
-        // Fetch all employees
-        const employeesQuery = query(
-          collection(db, 'users'),
-                                     where('role', '==', 'employee'),
-                                     orderBy('registeredAt', 'desc')
-        );
-        const employeesSnapshot = await getDocs(employeesQuery);
-        const employeesList = employeesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setEmployees(employeesList);
-
-        // Fetch today's attendances
-        const today = new Date().toISOString().split('T')[0];
-        const attendanceQuery = query(
-          collection(db, 'attendances'),
-                                      where('date', '==', today),
-                                      orderBy('checkIn', 'desc')
-        );
-        const attendanceSnapshot = await getDocs(attendanceQuery);
-        const attendances = attendanceSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setTodayAttendances(attendances);
-
-        // Check for late check-ins
-        const lateAttendances = attendances.filter(att => att.status === 'late');
-
-        // Calculate stats
-        const activeEmployees = employeesList.filter(emp => emp.accountStatus === 'active');
-        const suspendedEmployees = employeesList.filter(emp => emp.accountStatus === 'suspended');
-        setStats({
-          totalEmployees: employeesList.length,
-          activeEmployees: activeEmployees.length,
-          suspendedEmployees: suspendedEmployees.length,
-          presentToday: attendances.length,
-          pendingApprovals: registrations.length,
-          lateToday: lateAttendances.length
-        });
-
-        // Handle late alerts if enabled
-        if (notificationSettings.sendLateAlerts && lateAttendances.length > 0) {
-          handleLateAlerts(lateAttendances);
+        let registrations = [];
+        try {
+          console.log('Fetching pending registrations...');
+          const registrationsQuery = query(
+            collection(db, 'registrationRequests'),
+            where('status', '==', 'pending'),
+            orderBy('requestedAt', 'desc')
+          );
+          const registrationsSnapshot = await getDocs(registrationsQuery);
+          registrations = registrationsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setPendingRegistrations(registrations);
+          console.log('Pending registrations loaded:', registrations.length);
+        } catch (regError) {
+          console.error('Error fetching registrations:', regError);
+          setPendingRegistrations([]);
         }
 
+        // Fetch all employees
+        let employeesList = [];
+        try {
+          console.log('Fetching employees...');
+          const employeesQuery = query(
+            collection(db, 'users'),
+            where('role', '==', 'employee')
+          );
+          const employeesSnapshot = await getDocs(employeesQuery);
+          employeesList = employeesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setEmployees(employeesList);
+          console.log('Employees loaded:', employeesList.length);
+        } catch (empError) {
+          console.error('Error fetching employees:', empError);
+          setEmployees([]);
+        }
+
+        // Fetch today's attendances
+        let attendances = [];
+        try {
+          console.log('Fetching today\'s attendances...');
+          const today = new Date().toISOString().split('T')[0];
+          const attendanceQuery = query(
+            collection(db, 'attendances'),
+            where('date', '==', today)
+          );
+          const attendanceSnapshot = await getDocs(attendanceQuery);
+          attendances = attendanceSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setTodayAttendances(attendances);
+          console.log('Today\'s attendances loaded:', attendances.length);
+        } catch (attError) {
+          console.error('Error fetching attendances:', attError);
+          setTodayAttendances([]);
+        }
+
+        // Calculate stats using fetched data directly
+        try {
+          console.log('Calculating stats with fetched data...');
+          console.log('Employees data:', employeesList);
+          console.log('Employees count:', employeesList.length);
+          console.log('Employee details:', employeesList.map(emp => ({
+            id: emp.id,
+            name: emp.name,
+            email: emp.email,
+            role: emp.role,
+            accountStatus: emp.accountStatus
+          })));
+          console.log('Attendances data:', attendances);
+          console.log('Registrations data:', registrations);
+          
+          // Use data directly from queries, not from state
+          const activeEmployees = employeesList.filter(emp => emp.accountStatus === 'active');
+          const suspendedEmployees = employeesList.filter(emp => emp.accountStatus === 'suspended');
+          const lateAttendances = attendances.filter(att => att.status === 'late');
+          
+          const newStats = {
+            totalEmployees: employeesList.length,
+            activeEmployees: activeEmployees.length,
+            suspendedEmployees: suspendedEmployees.length,
+            presentToday: attendances.length,
+            pendingApprovals: registrations.length,
+            lateToday: lateAttendances.length
+          };
+          
+          console.log('Stats calculated:', newStats);
+          setStats(newStats);
+          
+        } catch (statsError) {
+          console.error('Error calculating stats:', statsError);
+          setStats({
+            totalEmployees: 0,
+            activeEmployees: 0,
+            suspendedEmployees: 0,
+            presentToday: 0,
+            pendingApprovals: 0,
+            lateToday: 0
+          });
+        }
+
+        console.log('Admin dashboard data fetch completed successfully');
+
       } catch (error) {
-        console.error('Error fetching data:', error);
-        alert('Error loading admin dashboard');
+        console.error('Critical error in admin dashboard:', error);
+        alert(`Error loading admin dashboard: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -558,10 +624,29 @@ function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
-      <div className="text-center">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mx-auto"></div>
-      <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we fetch your data...</p>
+        </div>
       </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-6xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Access Error</h2>
+          <p className="text-gray-600 mb-4">Unable to load admin data. Please try logging in again.</p>
+          <button 
+            onClick={() => navigate('/login')}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Go to Login
+          </button>
+        </div>
       </div>
     );
   }

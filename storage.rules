@@ -1,0 +1,51 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Profile photos - users can upload their own photos
+    match /profiles/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+                       request.auth.uid == userId &&
+                       request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                       request.resource.contentType.matches('image/.*');
+    }
+    
+    // Attendance photos - users can upload their own attendance photos
+    match /attendances/{userId}/{allPaths=**} {
+      allow read: if request.auth != null &&
+                     (request.auth.uid == userId || 
+                      request.auth.token.role == 'admin');
+      allow write: if request.auth != null && 
+                       request.auth.uid == userId &&
+                       request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                       request.resource.contentType.matches('image/.*');
+    }
+    
+    // Documents - users can upload their own documents
+    match /documents/{userId}/{allPaths=**} {
+      allow read: if request.auth != null &&
+                     (request.auth.uid == userId || 
+                      request.auth.token.role == 'admin');
+      allow write: if request.auth != null && 
+                       request.auth.uid == userId &&
+                       request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                       request.resource.contentType.matches('application/pdf|image/.*|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    }
+    
+    // Public assets - read only for all authenticated users
+    match /public/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if false; // No write access to public assets
+    }
+    
+    // Admin uploads - only admins can upload to admin folder
+    match /admin/{allPaths=**} {
+      allow read: if request.auth != null &&
+                     request.auth.token.role == 'admin';
+      allow write: if request.auth != null &&
+                       request.auth.token.role == 'admin' &&
+                       request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+  }
+} 
