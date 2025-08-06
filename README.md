@@ -10,6 +10,11 @@
 - ✅ **Foto Selfie** - Capture foto saat absensi
 - ✅ **Admin Approval** - Sistem aktivasi karyawan baru
 - ✅ **Dashboard Admin** - Manajemen karyawan & analytics
+- ✅ **Password Reset** - Admin dan user self-service reset
+- ✅ **App Update Notifications** - Sistem notifikasi update otomatis
+- ✅ **Employee Deletion** - Hapus karyawan dengan konfirmasi aman
+- ✅ **Leave Management** - Sistem cuti dengan approval workflow
+- ✅ **Payroll System** - Request dan manajemen data payroll
 - ✅ **PWA Support** - Install sebagai mobile app
 - ✅ **Offline Support** - Bekerja tanpa internet
 - ✅ **Responsive Design** - Optimal di desktop & mobile
@@ -22,6 +27,9 @@
 - **Backend**: Firebase (Auth, Firestore, Storage)
 - **Hosting**: Vercel (Free)
 - **PWA**: Service Worker + Manifest
+- **Notifications**: React Hot Toast
+- **Email**: EmailJS
+- **WhatsApp**: Direct messaging integration
 
 ## 📋 Prerequisites
 
@@ -246,6 +254,10 @@ service firebase.storage {
 4. Login as employee
 5. Test check in/out with GPS
 6. Test photo upload
+7. Test password reset functionality
+8. Test leave request system
+9. Test payroll request system
+10. Test employee deletion (admin only)
 
 ### Test URLs
 - **Production**: https://surya-abadi-connecteam.vercel.app

@@ -40,12 +40,16 @@ function App() {
     }
 
     // Initialize notification system
-    try {
-      await initializeNotificationSystem();
-      console.log('Notification system initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize notification system:', error);
-    }
+    const initNotificationSystem = async () => {
+      try {
+        await initializeNotificationSystem();
+        console.log('Notification system initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize notification system:', error);
+      }
+    };
+
+    initNotificationSystem();
 
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       console.log('Auth state changed:', authUser?.email);

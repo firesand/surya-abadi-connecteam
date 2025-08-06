@@ -29,6 +29,7 @@ import {
 } from '../../services/emailService';
 import { adminPasswordReset } from '../../services/adminPasswordReset';
 import AdminNotificationPanel from './NotificationPanel';
+import DeleteEmployeeModal from './DeleteEmployeeModal';
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -57,6 +58,8 @@ function AdminDashboard() {
   const [passwordResetEmail, setPasswordResetEmail] = useState('');
   const [passwordResetLoading, setPasswordResetLoading] = useState(false);
   const [passwordResetResult, setPasswordResetResult] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [stats, setStats] = useState({
     totalEmployees: 0,
     activeEmployees: 0,
@@ -435,106 +438,31 @@ function AdminDashboard() {
     setShowEditModal(true);
   };
 
-  // Delete employee permanently
-  const deleteEmployee = async (employee) => {
-    // First, get attendance count for this employee
-    let attendanceCount = 0;
-    try {
-      const attendanceQuery = query(
-        collection(db, 'attendances'),
-        where('userId', '==', employee.id)
-      );
-      const attendanceSnapshot = await getDocs(attendanceQuery);
-      attendanceCount = attendanceSnapshot.size;
-    } catch (error) {
-      console.log('Could not get attendance count');
-    }
+  // Open delete employee modal
+  const openDeleteModal = (employee) => {
+    setEmployeeToDelete(employee);
+    setShowDeleteModal(true);
+  };
 
-    // Show employee details first
-    const employeeDetails = `
-Employee Details:
-- Name: ${employee.name}
-- Email: ${employee.email}
-- Employee ID: ${employee.employeeId}
-- Department: ${employee.department || 'Not specified'}
-- Position: ${employee.position || 'Not specified'}
-- Status: ${employee.accountStatus}
-- Registered: ${formatDate(employee.registeredAt)}
-
-⚠️ WARNING: This action will permanently delete:
-- Employee account
-- ${attendanceCount} attendance records
-- Registration request (if exists)
-- This action CANNOT be undone!
-    `;
-
-    if (!window.confirm(employeeDetails + '\n\nDo you want to proceed with deletion?')) {
-      return;
-    }
-
-    const reason = window.prompt(`Please provide a reason for deleting ${employee.name}'s account:`);
-    if (!reason) {
-      alert('Please provide a reason for deletion.');
-      return;
-    }
-
-    if (!window.confirm(`⚠️ FINAL CONFIRMATION!\n\nAre you absolutely sure you want to permanently delete ${employee.name}'s account?\n\nReason: ${reason}\n\nThis action cannot be undone!`)) {
-      return;
-    }
-
-    try {
-      setProcessingId(employee.id);
-
-      // 1. Delete user document from Firestore
-      await deleteDoc(doc(db, 'users', employee.id));
-
-      // 2. Delete registration request if exists
-      try {
-        await deleteDoc(doc(db, 'registrationRequests', employee.id));
-      } catch (error) {
-        console.log('Registration request not found or already deleted');
-      }
-
-      // 3. Delete all attendance records for this employee
-      const attendanceQuery = query(
-        collection(db, 'attendances'),
-        where('userId', '==', employee.id)
-      );
-      const attendanceSnapshot = await getDocs(attendanceQuery);
-      
-      const deletePromises = attendanceSnapshot.docs.map(doc => deleteDoc(doc.ref));
-      await Promise.all(deletePromises);
-
-      // 4. Update local state
-      setEmployees(prev => prev.filter(emp => emp.id !== employee.id));
-      
-      // 5. Update stats
+  // Handle successful deletion
+  const handleDeleteSuccess = (employeeId) => {
+    // Update local state
+    setEmployees(prev => prev.filter(emp => emp.id !== employeeId));
+    
+    // Update stats
+    const deletedEmployee = employees.find(emp => emp.id === employeeId);
+    if (deletedEmployee) {
       setStats(prev => ({
         ...prev,
         totalEmployees: prev.totalEmployees - 1,
-        activeEmployees: prev.activeEmployees - (employee.accountStatus === 'active' ? 1 : 0),
-        suspendedEmployees: prev.suspendedEmployees - (employee.accountStatus === 'suspended' ? 1 : 0)
+        activeEmployees: prev.activeEmployees - (deletedEmployee.accountStatus === 'active' ? 1 : 0),
+        suspendedEmployees: prev.suspendedEmployees - (deletedEmployee.accountStatus === 'suspended' ? 1 : 0)
       }));
-
-      // 6. Send notification to admin (optional)
-      try {
-        await sendNotification(
-          ADMIN_CONFIG.email,
-          'Employee Deleted',
-          `Employee ${employee.name} has been permanently deleted from the system.\n\nReason: ${reason}\n\nDeleted by: ${userData?.name || 'Admin'}`
-        );
-      } catch (error) {
-        console.log('Failed to send notification email');
-      }
-
-      alert(`✅ ${employee.name} has been permanently deleted from the system.\n\nReason: ${reason}\n\nAll data has been removed.`);
-      
-    } catch (error) {
-      console.error('Error deleting employee:', error);
-      alert('❌ Failed to delete employee. Please try again.\n\nError: ' + error.message);
-    } finally {
-      setProcessingId(null);
     }
+
+    // Close modal
+    setShowDeleteModal(false);
+    setEmployeeToDelete(null);
   };
 
   // Format time
@@ -1145,14 +1073,14 @@ Employee Details:
           {/* Only show delete button for suspended employees */}
           {employee.accountStatus === 'suspended' && (
             <button
-            onClick={() => deleteEmployee(employee)}
+            onClick={() => openDeleteModal(employee)}
             disabled={processingId === employee.id}
             className={`px-3 py-1 text-xs rounded-lg transition-colors bg-red-600 text-white hover:bg-red-700 ${
               processingId === employee.id ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             title="Permanently delete employee (only available for suspended employees)"
             >
-            {processingId === employee.id ? 'Deleting...' : 'Delete'}
+            Delete
             </button>
           )}
           
@@ -1569,6 +1497,17 @@ Employee Details:
         </div>
       </div>
     )}
+
+    {/* Delete Employee Modal */}
+    <DeleteEmployeeModal
+      employee={employeeToDelete}
+      isOpen={showDeleteModal}
+      onClose={() => {
+        setShowDeleteModal(false);
+        setEmployeeToDelete(null);
+      }}
+      onDeleteSuccess={handleDeleteSuccess}
+    />
     </div>
     </div>
     </div>
