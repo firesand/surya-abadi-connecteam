@@ -275,11 +275,11 @@ const showRecoveryUI = () => {
         <button onclick="window.whiteScreenRecovery.clear()" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer;">
           Bersihkan & Muat Ulang
         </button>
-        <button onclick="window.location.href='/login'" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer;">
-          Kembali ke Login
+        <button onclick="window.location.href='/'" style="background: #10b981; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer;">
+          Kembali ke Halaman Utama
         </button>
-        <button onclick="window.location.href='/'" style="background: #6b7280; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer;">
-          Kembali ke Beranda
+        <button onclick="window.location.href='/login'" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer;">
+          Login Sekarang
         </button>
       </div>
       <button onclick="document.getElementById('white-screen-recovery').remove()" style="background: #ef4444; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">

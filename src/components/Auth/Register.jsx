@@ -189,7 +189,7 @@ function Register() {
 
       // Show success message
       try {
-        alert('Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin.');
+        alert('Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin. Anda akan dialihkan ke halaman utama.');
       } catch (alertError) {
         console.error('❌ Alert failed:', alertError);
       }
@@ -253,13 +253,13 @@ function Register() {
       // Step 2: Wait a moment
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Step 3: Try navigation with multiple fallbacks
-      console.log('Step 3: Navigating to login...');
+      // Step 3: Navigate to home page (not login)
+      console.log('Step 3: Navigating to home page...');
       
       // Try React Router first
       try {
-        navigate('/login');
-        console.log('✅ React Router navigation successful');
+        navigate('/');
+        console.log('✅ React Router navigation to home successful');
         return;
       } catch (navError) {
         console.warn('❌ React Router failed:', navError);
@@ -267,8 +267,8 @@ function Register() {
       
       // Try window.location
       try {
-        window.location.href = '/login';
-        console.log('✅ Window location navigation successful');
+        window.location.href = '/';
+        console.log('✅ Window location navigation to home successful');
         return;
       } catch (windowError) {
         console.warn('❌ Window location failed:', windowError);
@@ -276,8 +276,8 @@ function Register() {
       
       // Try window.location.replace
       try {
-        window.location.replace('/login');
-        console.log('✅ Window location.replace successful');
+        window.location.replace('/');
+        console.log('✅ Window location.replace to home successful');
         return;
       } catch (replaceError) {
         console.warn('❌ Window location.replace failed:', replaceError);
@@ -290,9 +290,9 @@ function Register() {
     } catch (error) {
       console.error('❌ Registration completion failed:', error);
       
-      // Emergency fallback
+      // Emergency fallback - go to home page
       try {
-        window.location.href = '/login';
+        window.location.href = '/';
       } catch (finalError) {
         console.error('❌ Final fallback failed:', finalError);
         window.location.reload();
@@ -390,17 +390,17 @@ function Register() {
                 </button>
                 
                 <button
-                  onClick={handleGoToLogin}
+                  onClick={() => window.location.href = '/'}
                   className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
-                  Kembali ke Login
+                  Kembali ke Halaman Utama
                 </button>
                 
                 <button
-                  onClick={handleGoHome}
-                  className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  onClick={handleGoToLogin}
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Kembali ke Beranda
+                  Login Sekarang
                 </button>
               </div>
 
@@ -469,13 +469,20 @@ function Register() {
           </div>
           <h2 className="mt-4 text-xl font-semibold text-gray-800">Registrasi Berhasil!</h2>
           <p className="mt-2 text-gray-600">Akun Anda sedang menunggu persetujuan admin</p>
+          <p className="mt-1 text-sm text-gray-500">Anda akan dialihkan ke halaman utama...</p>
           
-          <div className="mt-6">
+          <div className="mt-6 space-y-3">
             <button
-              onClick={handleGoToLogin}
+              onClick={() => window.location.href = '/'}
               className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
-              Lanjut ke Login
+              Lanjut ke Halaman Utama
+            </button>
+            <button
+              onClick={handleGoToLogin}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Login Sekarang
             </button>
           </div>
         </div>
