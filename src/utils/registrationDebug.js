@@ -1,234 +1,242 @@
 // src/utils/registrationDebug.js
-// Debugging utility untuk masalah registrasi
+// Comprehensive debugging utility untuk registration issues
 
-import { auth, db, storage } from '../config/firebase';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+export const debugRegistrationProcess = async () => {
+  console.log('🔍 Starting registration debug process...');
+  
+  const debugInfo = {
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    online: navigator.onLine,
+    cookieEnabled: navigator.cookieEnabled,
+    javaEnabled: navigator.javaEnabled(),
+    screenResolution: `${screen.width}x${screen.height}`,
+    viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+    localStorage: typeof localStorage !== 'undefined',
+    sessionStorage: typeof sessionStorage !== 'undefined',
+    caches: typeof caches !== 'undefined',
+    serviceWorker: typeof navigator.serviceWorker !== 'undefined'
+  };
 
-export const debugRegistrationProcess = async (formData, photoFile) => {
-  console.log('🔍 Debugging Registration Process...');
-  
-  const debugSteps = [];
-  
+  console.log('📊 Debug Info:', debugInfo);
+
+  // Test Firebase connection
   try {
-    // Step 1: Validate form data
-    console.log('📋 Step 1: Validating form data...');
-    const validationErrors = [];
+    const { auth, db, storage } = await import('../config/firebase');
+    console.log('✅ Firebase imports successful');
     
-    if (!formData.email) validationErrors.push('Email is required');
-    if (!formData.password) validationErrors.push('Password is required');
-    if (!formData.name) validationErrors.push('Name is required');
-    if (!formData.nik) validationErrors.push('NIK is required');
-    if (!formData.employeeId) validationErrors.push('Employee ID is required');
-    if (!formData.department) validationErrors.push('Department is required');
-    if (!formData.position) validationErrors.push('Position is required');
-    if (!photoFile) validationErrors.push('Photo is required');
+    // Test auth
+    const currentUser = auth.currentUser;
+    console.log('👤 Current user:', currentUser ? currentUser.email : 'None');
     
-    if (validationErrors.length > 0) {
-      console.error('❌ Validation errors:', validationErrors);
-      return { success: false, errors: validationErrors };
-    }
+    // Test Firestore
+    const testDoc = await db.collection('test').doc('debug').get();
+    console.log('📄 Firestore connection:', testDoc.exists ? 'OK' : 'No test doc');
     
-    debugSteps.push('✅ Form validation passed');
-    console.log('✅ Form validation passed');
-    
-    // Step 2: Test Firebase connection
-    console.log('🔥 Step 2: Testing Firebase connection...');
-    try {
-      const testQuery = query(collection(db, 'users'), where('email', '==', 'test@test.com'));
-      await getDocs(testQuery);
-      debugSteps.push('✅ Firebase connection working');
-      console.log('✅ Firebase connection working');
-    } catch (firebaseError) {
-      console.error('❌ Firebase connection failed:', firebaseError);
-      debugSteps.push('❌ Firebase connection failed');
-      return { success: false, errors: ['Firebase connection failed'] };
-    }
-    
-    // Step 3: Test photo upload (simulation)
-    console.log('📸 Step 3: Testing photo upload...');
-    if (photoFile) {
-      console.log('Photo file details:', {
-        name: photoFile.name,
-        size: photoFile.size,
-        type: photoFile.type
-      });
-      
-      if (photoFile.size > 5 * 1024 * 1024) {
-        console.error('❌ Photo file too large');
-        debugSteps.push('❌ Photo file too large');
-        return { success: false, errors: ['Photo file too large'] };
-      }
-      
-      if (!photoFile.type.startsWith('image/')) {
-        console.error('❌ Invalid photo file type');
-        debugSteps.push('❌ Invalid photo file type');
-        return { success: false, errors: ['Invalid photo file type'] };
-      }
-      
-      debugSteps.push('✅ Photo validation passed');
-      console.log('✅ Photo validation passed');
-    }
-    
-    // Step 4: Check existing user
-    console.log('👤 Step 4: Checking existing user...');
-    try {
-      const existingUserQuery = query(collection(db, 'users'), where('email', '==', formData.email));
-      const existingUserSnapshot = await getDocs(existingUserQuery);
-      
-      if (!existingUserSnapshot.empty) {
-        console.error('❌ User already exists');
-        debugSteps.push('❌ User already exists');
-        return { success: false, errors: ['User already exists'] };
-      }
-      
-      debugSteps.push('✅ No existing user found');
-      console.log('✅ No existing user found');
-    } catch (userCheckError) {
-      console.error('❌ Error checking existing user:', userCheckError);
-      debugSteps.push('❌ Error checking existing user');
-      return { success: false, errors: ['Error checking existing user'] };
-    }
-    
-    // Step 5: Test storage access
-    console.log('📁 Step 5: Testing storage access...');
-    try {
-      const testStorageRef = ref(storage, 'test/test.txt');
-      // Just test if we can create a reference
-      debugSteps.push('✅ Storage access working');
-      console.log('✅ Storage access working');
-    } catch (storageError) {
-      console.error('❌ Storage access failed:', storageError);
-      debugSteps.push('❌ Storage access failed');
-      return { success: false, errors: ['Storage access failed'] };
-    }
-    
-    console.log('🎉 All debug checks passed!');
-    return {
-      success: true,
-      debugSteps,
-      message: 'All checks passed, registration should work'
-    };
+    // Test Storage
+    const testRef = storage.ref('test/debug.txt');
+    console.log('📦 Storage connection: OK');
     
   } catch (error) {
-    console.error('❌ Debug process failed:', error);
-    return {
-      success: false,
-      errors: [error.message],
-      debugSteps
-    };
+    console.error('❌ Firebase connection failed:', error);
   }
+
+  // Test geolocation
+  try {
+    const { getCurrentLocation } = await import('./geolocation');
+    const location = await getCurrentLocation();
+    console.log('📍 Geolocation test:', location);
+  } catch (error) {
+    console.error('❌ Geolocation failed:', error);
+  }
+
+  // Test cache status
+  try {
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      console.log('🗑️ Cache names:', cacheNames);
+    }
+  } catch (error) {
+    console.error('❌ Cache check failed:', error);
+  }
+
+  // Test service worker
+  try {
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.getRegistration();
+      console.log('🔧 Service worker:', registration ? 'Active' : 'None');
+    }
+  } catch (error) {
+    console.error('❌ Service worker check failed:', error);
+  }
+
+  return debugInfo;
 };
 
-export const simulateRegistration = async (formData, photoFile) => {
+export const simulateRegistration = async (testData) => {
   console.log('🧪 Simulating registration process...');
   
-  const simulationSteps = [];
-  
-  try {
-    // Step 1: Create user account (simulation)
-    console.log('👤 Step 1: Creating user account...');
-    simulationSteps.push('Creating user account...');
+  const steps = [
+    'Creating Firebase user',
+    'Uploading photo',
+    'Creating user document',
+    'Creating registration request',
+    'Signing out',
+    'Navigating to login'
+  ];
+
+  for (let i = 0; i < steps.length; i++) {
+    console.log(`Step ${i + 1}/${steps.length}: ${steps[i]}`);
     
     // Simulate delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    simulationSteps.push('✅ User account created');
     
-    // Step 2: Upload photo (simulation)
-    console.log('📸 Step 2: Uploading photo...');
-    simulationSteps.push('Uploading photo...');
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    simulationSteps.push('✅ Photo uploaded');
-    
-    // Step 3: Create user document (simulation)
-    console.log('📄 Step 3: Creating user document...');
-    simulationSteps.push('Creating user document...');
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    simulationSteps.push('✅ User document created');
-    
-    // Step 4: Create registration request (simulation)
-    console.log('📋 Step 4: Creating registration request...');
-    simulationSteps.push('Creating registration request...');
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    simulationSteps.push('✅ Registration request created');
-    
-    console.log('🎉 Registration simulation completed!');
-    return {
-      success: true,
-      simulationSteps,
-      message: 'Registration simulation completed successfully'
-    };
-    
-  } catch (error) {
-    console.error('❌ Registration simulation failed:', error);
-    return {
-      success: false,
-      errors: [error.message],
-      simulationSteps
-    };
+    // Simulate potential error
+    if (Math.random() < 0.1) { // 10% chance of error
+      throw new Error(`Simulated error at step: ${steps[i]}`);
+    }
   }
+  
+  console.log('✅ Registration simulation completed successfully');
 };
 
-export const checkRegistrationStatus = async () => {
-  console.log('🔍 Checking registration status...');
+export const checkRegistrationStatus = async (userId) => {
+  console.log('🔍 Checking registration status for:', userId);
   
   try {
-    // Check registration requests
-    const registrationsQuery = query(
-      collection(db, 'registrationRequests'),
-      where('status', '==', 'pending'),
-      orderBy('requestedAt', 'desc')
-    );
+    const { db } = await import('../config/firebase');
     
-    const registrationsSnapshot = await getDocs(registrationsQuery);
-    const registrations = registrationsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    // Check user document
+    const userDoc = await db.collection('users').doc(userId).get();
+    console.log('👤 User document:', userDoc.exists ? userDoc.data() : 'Not found');
     
-    console.log('📋 Registration requests found:', registrations.length);
-    registrations.forEach((reg, index) => {
-      console.log(`  ${index + 1}. ${reg.name} (${reg.email}) - ${reg.status}`);
-    });
-    
-    // Check users
-    const usersQuery = query(
-      collection(db, 'users'),
-      where('role', '==', 'employee')
-    );
-    
-    const usersSnapshot = await getDocs(usersQuery);
-    const users = usersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-    console.log('👥 Users found:', users.length);
-    users.forEach((user, index) => {
-      console.log(`  ${index + 1}. ${user.name} (${user.email}) - Status: ${user.accountStatus}`);
-    });
+    // Check registration request
+    const regDoc = await db.collection('registrationRequests').doc(userId).get();
+    console.log('📋 Registration request:', regDoc.exists ? regDoc.data() : 'Not found');
     
     return {
-      success: true,
-      registrations: registrations.length,
-      users: users.length,
-      pendingUsers: users.filter(u => u.accountStatus === 'pending').length
+      userExists: userDoc.exists,
+      registrationExists: regDoc.exists,
+      userData: userDoc.exists ? userDoc.data() : null,
+      registrationData: regDoc.exists ? regDoc.data() : null
     };
-    
   } catch (error) {
-    console.error('❌ Error checking registration status:', error);
-    return {
-      success: false,
-      error: error.message
-    };
+    console.error('❌ Status check failed:', error);
+    return { error: error.message };
   }
 };
 
-// Usage in browser console:
-// import { debugRegistrationProcess, simulateRegistration, checkRegistrationStatus } from './src/utils/registrationDebug.js';
-// debugRegistrationProcess(formData, photoFile).then(result => console.log('Debug result:', result));
-// simulateRegistration(formData, photoFile).then(result => console.log('Simulation result:', result));
-// checkRegistrationStatus().then(result => console.log('Status result:', result)); 
+export const clearRegistrationData = async (userId) => {
+  console.log('🗑️ Clearing registration data for:', userId);
+  
+  try {
+    const { auth, db, storage } = await import('../config/firebase');
+    
+    // Delete user document
+    await db.collection('users').doc(userId).delete();
+    console.log('✅ User document deleted');
+    
+    // Delete registration request
+    await db.collection('registrationRequests').doc(userId).delete();
+    console.log('✅ Registration request deleted');
+    
+    // Delete user photos
+    const photoRefs = await storage.ref(`profiles/${userId}`).listAll();
+    await Promise.all(photoRefs.items.map(ref => ref.delete()));
+    console.log('✅ User photos deleted');
+    
+    // Delete Firebase user
+    const user = auth.currentUser;
+    if (user && user.uid === userId) {
+      await user.delete();
+      console.log('✅ Firebase user deleted');
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Clear data failed:', error);
+    return { error: error.message };
+  }
+};
+
+export const testNetworkConnectivity = async () => {
+  console.log('🌐 Testing network connectivity...');
+  
+  const tests = [
+    {
+      name: 'Firebase Auth',
+      url: 'https://identitytoolkit.googleapis.com',
+      timeout: 5000
+    },
+    {
+      name: 'Firestore',
+      url: 'https://firestore.googleapis.com',
+      timeout: 5000
+    },
+    {
+      name: 'Storage',
+      url: 'https://storage.googleapis.com',
+      timeout: 5000
+    }
+  ];
+
+  const results = [];
+
+  for (const test of tests) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), test.timeout);
+      
+      const response = await fetch(test.url, {
+        method: 'HEAD',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      results.push({ name: test.name, status: 'OK', response: response.status });
+    } catch (error) {
+      results.push({ name: test.name, status: 'FAILED', error: error.message });
+    }
+  }
+
+  console.log('📊 Network test results:', results);
+  return results;
+};
+
+export const getEnvironmentInfo = () => {
+  return {
+    nodeEnv: process.env.NODE_ENV,
+    firebaseConfig: {
+      apiKey: process.env.VITE_FIREBASE_API_KEY ? 'SET' : 'NOT SET',
+      authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN ? 'SET' : 'NOT SET',
+      projectId: process.env.VITE_FIREBASE_PROJECT_ID ? 'SET' : 'NOT SET',
+      storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET ? 'SET' : 'NOT SET',
+      messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID ? 'SET' : 'NOT SET',
+      appId: process.env.VITE_FIREBASE_APP_ID ? 'SET' : 'NOT SET'
+    },
+    buildTime: process.env.VITE_BUILD_TIME || 'Unknown',
+    version: process.env.VITE_APP_VERSION || 'Unknown'
+  };
+};
+
+// Auto-run debug on page load in development
+if (process.env.NODE_ENV === 'development') {
+  window.debugRegistration = {
+    debugProcess: debugRegistrationProcess,
+    simulateRegistration,
+    checkStatus: checkRegistrationStatus,
+    clearData: clearRegistrationData,
+    testNetwork: testNetworkConnectivity,
+    getEnvInfo: getEnvironmentInfo
+  };
+  
+  console.log('🔧 Registration debug tools available. Use:');
+  console.log('- window.debugRegistration.debugProcess()');
+  console.log('- window.debugRegistration.simulateRegistration()');
+  console.log('- window.debugRegistration.checkStatus(userId)');
+  console.log('- window.debugRegistration.clearData(userId)');
+  console.log('- window.debugRegistration.testNetwork()');
+  console.log('- window.debugRegistration.getEnvInfo()');
+} 

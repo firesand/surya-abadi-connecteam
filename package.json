@@ -9,7 +9,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rm -rf dist/ node_modules/.vite",
+    "clean:all": "rm -rf dist/ node_modules/.vite node_modules/ package-lock.json && npm install",
+    "clean:cache": "npm cache clean --force && rm -rf node_modules/.vite"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

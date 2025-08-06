@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '../../config/firebase';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentLocation } from '../../utils/geolocation';
+import { checkGeolocationPermission, provideGeolocationGuidance } from '../../utils/geolocationPermissions';
 
 function Register() {
   const navigate = useNavigate();
@@ -74,9 +75,36 @@ function Register() {
     try {
       console.log('🚀 Starting registration process...');
       
-      // Get current location
-      const location = await getCurrentLocation();
-      console.log('📍 Location obtained:', location);
+      // Get current location with better error handling
+      let location;
+      try {
+        // Check permission first
+        const permission = await checkGeolocationPermission();
+        console.log('📍 Permission status:', permission);
+        
+        location = await getCurrentLocation();
+        console.log('📍 Location obtained:', location);
+        
+        // If using fallback, show info to user
+        if (location.source === 'fallback') {
+          console.log('ℹ️ Using fallback location (office)');
+        }
+      } catch (locationError) {
+        console.warn('❌ Location error:', locationError);
+        
+        // Provide guidance for location issues
+        const guidance = provideGeolocationGuidance(locationError.message);
+        console.log('📍 Location guidance:', guidance);
+        
+        // Use fallback location
+        location = {
+          lat: -6.3693, // Office latitude
+          lng: 106.8289, // Office longitude
+          accuracy: 1000,
+          source: 'fallback',
+          error: locationError.message
+        };
+      }
 
       // Create Firebase user
       console.log('👤 Creating Firebase user...');
@@ -153,27 +181,65 @@ function Register() {
 
       // Show success message
       setRegistrationStep('success');
-      alert('Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin. Anda akan dialihkan ke halaman login.');
-
-      // Auto logout and redirect
-      console.log('🚪 Logging out and redirecting...');
+      console.log('✅ Registration completed successfully');
+      
+      // Show success alert
       try {
+        alert('Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin. Anda akan dialihkan ke halaman login.');
+      } catch (alertError) {
+        console.error('❌ Alert failed:', alertError);
+      }
+
+      // Auto logout and redirect with better error handling
+      console.log('🚪 Logging out and redirecting...');
+      
+      // Clear loading states first
+      setLoading(false);
+      setIsSubmitting(false);
+      
+      try {
+        // Sign out
         await auth.signOut();
         console.log('✅ Logout successful');
         
-        // Use navigate with fallback
-        try {
-          navigate('/login');
-          console.log('✅ Navigation successful');
-        } catch (navError) {
-          console.error('❌ Navigation failed:', navError);
-          // Fallback to window.location
-          window.location.href = '/login';
-        }
+        // Wait a bit before navigation
+        setTimeout(() => {
+          try {
+            // Try React Router navigation first
+            navigate('/login');
+            console.log('✅ React Router navigation successful');
+          } catch (navError) {
+            console.error('❌ React Router navigation failed:', navError);
+            
+            // Fallback to window.location
+            try {
+              window.location.href = '/login';
+              console.log('✅ Window location navigation successful');
+            } catch (windowError) {
+              console.error('❌ Window location navigation failed:', windowError);
+              
+              // Last resort - force reload
+              try {
+                window.location.reload();
+                console.log('✅ Force reload successful');
+              } catch (reloadError) {
+                console.error('❌ Force reload failed:', reloadError);
+              }
+            }
+          }
+        }, 1000); // Wait 1 second before navigation
+        
       } catch (logoutError) {
         console.error('❌ Logout failed:', logoutError);
-        // Force redirect anyway
-        window.location.href = '/login';
+        
+        // Even if logout fails, try to navigate
+        setTimeout(() => {
+          try {
+            navigate('/login');
+          } catch (navError) {
+            window.location.href = '/login';
+          }
+        }, 1000);
       }
 
     } catch (error) {
@@ -190,25 +256,32 @@ function Register() {
         console.error('❌ Cleanup failed:', cleanupError);
       }
 
+      // Set specific error messages
       if (error.code === 'auth/email-already-in-use') {
         setError('Email sudah terdaftar');
       } else if (error.code === 'auth/network-request-failed') {
         setError('Koneksi internet bermasalah. Silakan coba lagi.');
       } else if (error.code === 'auth/weak-password') {
         setError('Password terlalu lemah');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Format email tidak valid');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        setError('Registrasi email/password tidak diizinkan');
       } else {
         setError('Terjadi kesalahan: ' + error.message);
       }
-    } finally {
+      
+      // Clear loading states immediately
       setLoading(false);
       setIsSubmitting(false);
       
-      // Show recovery button after 10 seconds if still on error
+      // Show recovery button after 5 seconds (faster)
       setTimeout(() => {
         if (registrationStep === 'error') {
           setShowRecovery(true);
+          console.log('🔄 Recovery options shown');
         }
-      }, 10000);
+      }, 5000);
     }
   };
 
