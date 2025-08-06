@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { initPWAFixes, getDeviceInfo } from './utils/pwaNavigationFix.js'
 import { initIOSFixes } from './utils/mobileSafariFix.js'
 import { createWhiteScreenRecovery } from './utils/whiteScreenDebug.js'
+import { createMobileRecovery } from './utils/mobileWhiteScreenFix.js'
 
 // Initialize PWA fixes including white screen detection
 initPWAFixes();
@@ -14,6 +15,9 @@ initIOSFixes();
 
 // Initialize white screen recovery
 createWhiteScreenRecovery();
+
+// Initialize mobile recovery
+createMobileRecovery();
 
 // Log device info for debugging
 const deviceInfo = getDeviceInfo();

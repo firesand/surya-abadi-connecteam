@@ -7,6 +7,7 @@ import { auth, db, storage } from '../../config/firebase';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentLocation } from '../../utils/geolocation';
 import { checkGeolocationPermission, provideGeolocationGuidance } from '../../utils/geolocationPermissions';
+import { tryMobileNavigation } from '../../utils/mobileWhiteScreenFix.js';
 
 function Register() {
   const navigate = useNavigate();
@@ -240,9 +241,13 @@ function Register() {
     }
   };
 
-  // Separate function to handle successful registration
+  // Separate function to handle successful registration with mobile support
   const handleSuccessfulRegistration = async () => {
     console.log('🚪 Handling successful registration...');
+    
+    // Detect mobile browser
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    console.log('📱 Mobile detected:', isMobile);
     
     try {
       // Step 1: Sign out
@@ -250,49 +255,125 @@ function Register() {
       await auth.signOut();
       console.log('✅ Sign out successful');
       
-      // Step 2: Wait a moment
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Step 2: Wait a moment (longer for mobile)
+      const waitTime = isMobile ? 1000 : 500;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
       
-      // Step 3: Navigate to home page (not login)
+      // Step 3: Navigate to home page with mobile-specific handling
       console.log('Step 3: Navigating to home page...');
       
-      // Try React Router first
-      try {
-        navigate('/');
-        console.log('✅ React Router navigation to home successful');
-        return;
-      } catch (navError) {
-        console.warn('❌ React Router failed:', navError);
+      // For mobile, use mobile-specific navigation
+      if (isMobile) {
+        console.log('📱 Using mobile-specific navigation...');
+        
+        // Try mobile navigation utility
+        const mobileNavSuccess = await tryMobileNavigation('/');
+        if (mobileNavSuccess) {
+          console.log('✅ Mobile navigation successful');
+          return;
+        }
+        
+        // Fallback to manual methods if utility fails
+        console.log('📱 Mobile navigation utility failed, trying manual methods...');
+        
+        // Try multiple mobile-friendly methods
+        const navigationMethods = [
+          () => {
+            console.log('📱 Trying window.location.href...');
+            window.location.href = '/';
+          },
+          () => {
+            console.log('📱 Trying window.location.replace...');
+            window.location.replace('/');
+          },
+          () => {
+            console.log('📱 Trying window.location.assign...');
+            window.location.assign('/');
+          },
+          () => {
+            console.log('📱 Trying history.pushState...');
+            window.history.pushState({}, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          },
+          () => {
+            console.log('📱 Trying history.replaceState...');
+            window.history.replaceState({}, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          },
+          () => {
+            console.log('📱 Trying React Router...');
+            navigate('/');
+          },
+          () => {
+            console.log('📱 Trying reload...');
+            window.location.reload();
+          }
+        ];
+        
+        // Try each method with delay
+        for (let i = 0; i < navigationMethods.length; i++) {
+          try {
+            await new Promise(resolve => setTimeout(resolve, 200)); // Wait between attempts
+            navigationMethods[i]();
+            console.log(`✅ Mobile navigation method ${i + 1} successful`);
+            return;
+          } catch (error) {
+            console.warn(`❌ Mobile navigation method ${i + 1} failed:`, error);
+          }
+        }
+        
+        // If all methods fail, force reload
+        console.log('📱 All navigation methods failed, forcing reload...');
+        window.location.reload(true);
+        
+      } else {
+        // Desktop navigation (original logic)
+        console.log('🖥️ Using desktop navigation...');
+        
+        // Try React Router first
+        try {
+          navigate('/');
+          console.log('✅ React Router navigation to home successful');
+          return;
+        } catch (navError) {
+          console.warn('❌ React Router failed:', navError);
+        }
+        
+        // Try window.location
+        try {
+          window.location.href = '/';
+          console.log('✅ Window location navigation to home successful');
+          return;
+        } catch (windowError) {
+          console.warn('❌ Window location failed:', windowError);
+        }
+        
+        // Try window.location.replace
+        try {
+          window.location.replace('/');
+          console.log('✅ Window location.replace to home successful');
+          return;
+        } catch (replaceError) {
+          console.warn('❌ Window location.replace failed:', replaceError);
+        }
+        
+        // Last resort: reload page
+        console.log('🔄 Using fallback: reload page');
+        window.location.reload();
       }
-      
-      // Try window.location
-      try {
-        window.location.href = '/';
-        console.log('✅ Window location navigation to home successful');
-        return;
-      } catch (windowError) {
-        console.warn('❌ Window location failed:', windowError);
-      }
-      
-      // Try window.location.replace
-      try {
-        window.location.replace('/');
-        console.log('✅ Window location.replace to home successful');
-        return;
-      } catch (replaceError) {
-        console.warn('❌ Window location.replace failed:', replaceError);
-      }
-      
-      // Last resort: reload page
-      console.log('🔄 Using fallback: reload page');
-      window.location.reload();
       
     } catch (error) {
       console.error('❌ Registration completion failed:', error);
       
       // Emergency fallback - go to home page
       try {
-        window.location.href = '/';
+        if (isMobile) {
+          console.log('📱 Emergency mobile fallback...');
+          window.location.replace('/');
+        } else {
+          console.log('🖥️ Emergency desktop fallback...');
+          window.location.href = '/';
+        }
       } catch (finalError) {
         console.error('❌ Final fallback failed:', finalError);
         window.location.reload();
