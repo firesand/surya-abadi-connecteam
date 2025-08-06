@@ -98,37 +98,78 @@
                 console.error('Storage clear error:', e);
               }
               
-              // Production and mobile-specific navigation
-              if (isProduction) {
-                console.log('🌐 Using production-specific navigation...');
-                
-                // Production navigation methods
-                const productionMethods = [
-                  () => window.location.replace('/'),
-                  () => window.location.href = '/',
-                  () => window.location.assign('/'),
-                  () => window.history.replaceState({}, '', '/'),
-                  () => window.history.pushState({}, '', '/'),
-                  () => window.location.reload(),
-                  () => window.location.reload(true)
-                ];
-                
-                // Try each production method
-                for (let i = 0; i < productionMethods.length; i++) {
-                  try {
-                    console.log(`🌐 Trying production method ${i + 1}...`);
-                    productionMethods[i]();
-                    console.log(`✅ Production method ${i + 1} successful`);
-                    return;
-                  } catch (error) {
-                    console.warn(`❌ Production method ${i + 1} failed:`, error);
-                  }
+                        // AGGRESSIVE Production and mobile-specific navigation
+          if (isProduction) {
+            console.log('🚀 AGGRESSIVE: Using aggressive production navigation...');
+            
+            // Nuclear production navigation methods
+            const nuclearMethods = [
+              () => {
+                console.log('🚀 AGGRESSIVE: Method 1 - Direct replace');
+                window.location.replace('/');
+              },
+              () => {
+                console.log('🚀 AGGRESSIVE: Method 2 - Direct href');
+                window.location.href = '/';
+              },
+              () => {
+                console.log('🚀 AGGRESSIVE: Method 3 - Direct assign');
+                window.location.assign('/');
+              },
+              () => {
+                console.log('🚀 AGGRESSIVE: Method 4 - Clear all and replace');
+                if ('caches' in window) {
+                  caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                  });
                 }
-                
-                // Last resort for production
-                console.log('🌐 All production methods failed, forcing reload...');
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace('/');
+              },
+              () => {
+                console.log('🚀 AGGRESSIVE: Method 5 - Nuclear reset');
+                if ('caches' in window) {
+                  caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                  });
+                }
+                localStorage.clear();
+                sessionStorage.clear();
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                      registration.unregister();
+                    }
+                  });
+                }
                 window.location.reload(true);
-              } else if (isMobile) {
+              }
+            ];
+            
+            // Try each nuclear method
+            for (let i = 0; i < nuclearMethods.length; i++) {
+              try {
+                console.log(`🚀 AGGRESSIVE: Trying nuclear method ${i + 1}...`);
+                nuclearMethods[i]();
+                console.log(`✅ Nuclear method ${i + 1} successful`);
+                return;
+              } catch (error) {
+                console.warn(`❌ Nuclear method ${i + 1} failed:`, error);
+              }
+            }
+            
+            // Last resort - force everything
+            console.log('🚀 AGGRESSIVE: All nuclear methods failed, forcing everything...');
+            if ('caches' in window) {
+              caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+              });
+            }
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.reload(true);
+          } else if (isMobile) {
                 console.log('📱 Using mobile-specific navigation...');
                 
                 // Try multiple mobile navigation methods
@@ -194,41 +235,75 @@
           window.location.href = window.location.pathname;
         }
         
-        // Auto-fix for registration page
+        // AGGRESSIVE Auto-fix for registration page
         if (window.location.pathname === '/register') {
-          console.log('📝 Registration page detected, setting up auto-fix...');
+          console.log('🚀 AGGRESSIVE: Registration page detected, setting up aggressive auto-fix...');
           
           // Monitor for white screen after registration
           let registrationAttempts = 0;
-          const maxAttempts = 5;
+          const maxAttempts = 3;
           
-          function checkRegistrationWhiteScreen() {
+          function aggressiveRegistrationFix() {
             const root = document.getElementById('root');
             const hasContent = root && root.children.length > 0;
             
             if (!hasContent && registrationAttempts < maxAttempts) {
               registrationAttempts++;
-              console.log(`📝 Registration white screen check #${registrationAttempts}`);
+              console.log(`🚀 AGGRESSIVE: Registration white screen detected, attempt ${registrationAttempts}/${maxAttempts}`);
               
               if (registrationAttempts >= maxAttempts) {
-                console.log('🚨 Registration white screen confirmed, applying fix...');
+                console.log('🚀 AGGRESSIVE: Max attempts reached, applying nuclear fix...');
                 
-                // Mobile-specific fix for registration
-                if (isMobile) {
-                  console.log('📱 Applying mobile registration fix...');
+                // Nuclear fix for registration
+                if (isProduction) {
+                  console.log('🚀 AGGRESSIVE: Applying nuclear production fix...');
+                  // Clear everything and force navigation
+                  if ('caches' in window) {
+                    caches.keys().then(names => {
+                      names.forEach(name => caches.delete(name));
+                    });
+                  }
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                      for(let registration of registrations) {
+                        registration.unregister();
+                      }
+                    });
+                  }
+                  window.location.replace('/');
+                } else if (isMobile) {
+                  console.log('🚀 AGGRESSIVE: Applying mobile nuclear fix...');
                   window.location.replace('/');
                 } else {
-                  console.log('🖥️ Applying desktop registration fix...');
+                  console.log('🚀 AGGRESSIVE: Applying desktop nuclear fix...');
                   window.location.href = '/';
                 }
               } else {
-                setTimeout(checkRegistrationWhiteScreen, 2000);
+                setTimeout(aggressiveRegistrationFix, 2000);
               }
             }
           }
           
-          // Start monitoring after 5 seconds
-          setTimeout(checkRegistrationWhiteScreen, 5000);
+          // Start monitoring after 3 seconds (faster than before)
+          setTimeout(aggressiveRegistrationFix, 3000);
+          
+          // Also check after form submission
+          window.addEventListener('beforeunload', () => {
+            console.log('🚀 AGGRESSIVE: Registration page unloading, checking for white screen...');
+            const root = document.getElementById('root');
+            const hasContent = root && root.children.length > 0;
+            
+            if (!hasContent) {
+              console.log('🚀 AGGRESSIVE: White screen detected during registration unload, applying nuclear fix...');
+              if (isProduction) {
+                window.location.replace('/');
+              } else {
+                window.location.href = '/';
+              }
+            }
+          });
         }
       })();
     </script>

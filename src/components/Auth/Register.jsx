@@ -9,6 +9,7 @@ import { getCurrentLocation } from '../../utils/geolocation';
 import { checkGeolocationPermission, provideGeolocationGuidance } from '../../utils/geolocationPermissions';
 import { tryMobileNavigation } from '../../utils/mobileWhiteScreenFix.js';
 import { handleProductionNavigation } from '../../utils/productionFix.js';
+import { aggressiveProductionFix } from '../../utils/aggressiveProductionFix.js';
 
 function Register() {
   const navigate = useNavigate();
@@ -272,11 +273,19 @@ function Register() {
       const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
       console.log('🌐 Production detected:', isProduction);
       
-      // For production, use production-specific navigation
+      // For production, use AGGRESSIVE production navigation
       if (isProduction) {
-        console.log('🌐 Using production-specific navigation...');
+        console.log('🚀 AGGRESSIVE: Using aggressive production navigation...');
         
-        // Try production navigation first
+        // Try aggressive production navigation first
+        const aggressiveNavSuccess = aggressiveProductionFix.forceNavigate('/');
+        if (aggressiveNavSuccess) {
+          console.log('✅ Aggressive production navigation successful');
+          return;
+        }
+        
+        // Fallback to normal production navigation
+        console.log('🌐 Aggressive navigation failed, trying normal production navigation...');
         const productionNavSuccess = await handleProductionNavigation('/');
         if (productionNavSuccess) {
           console.log('✅ Production navigation successful');
@@ -293,9 +302,9 @@ function Register() {
           }
         }
         
-        // Last resort for production
-        console.log('🌐 All production navigation methods failed, forcing reload...');
-        window.location.reload(true);
+        // Nuclear option for production
+        console.log('🚀 AGGRESSIVE: All navigation methods failed, applying nuclear reset...');
+        aggressiveProductionFix.nuclearReset();
         return;
       }
       

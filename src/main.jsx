@@ -7,6 +7,7 @@ import { initIOSFixes } from './utils/mobileSafariFix.js'
 import { createWhiteScreenRecovery } from './utils/whiteScreenDebug.js'
 import { createMobileRecovery } from './utils/mobileWhiteScreenFix.js'
 import { createProductionRecovery } from './utils/productionFix.js'
+import { aggressiveProductionFix } from './utils/aggressiveProductionFix.js'
 
 // Initialize PWA fixes including white screen detection
 initPWAFixes();
@@ -22,6 +23,9 @@ createMobileRecovery();
 
 // Initialize production recovery
 createProductionRecovery();
+
+// Initialize aggressive production fix
+console.log('🚀 AGGRESSIVE: Initializing aggressive production fix...');
 
 // Log device info for debugging
 const deviceInfo = getDeviceInfo();
