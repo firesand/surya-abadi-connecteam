@@ -179,68 +179,23 @@ function Register() {
       await setDoc(doc(db, 'registrationRequests', user.uid), registrationData);
       console.log('✅ Registration request created');
 
-      // Show success message
-      setRegistrationStep('success');
+      // SUCCESS - Show success state and handle navigation properly
       console.log('✅ Registration completed successfully');
+      setRegistrationStep('success');
       
-      // Show success alert
+      // Clear loading states immediately
+      setLoading(false);
+      setIsSubmitting(false);
+
+      // Show success message
       try {
-        alert('Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin. Anda akan dialihkan ke halaman login.');
+        alert('Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin.');
       } catch (alertError) {
         console.error('❌ Alert failed:', alertError);
       }
 
-      // Auto logout and redirect with better error handling
-      console.log('🚪 Logging out and redirecting...');
-      
-      // Clear loading states first
-      setLoading(false);
-      setIsSubmitting(false);
-      
-      try {
-        // Sign out
-        await auth.signOut();
-        console.log('✅ Logout successful');
-        
-        // Wait a bit before navigation
-        setTimeout(() => {
-          try {
-            // Try React Router navigation first
-            navigate('/login');
-            console.log('✅ React Router navigation successful');
-          } catch (navError) {
-            console.error('❌ React Router navigation failed:', navError);
-            
-            // Fallback to window.location
-            try {
-              window.location.href = '/login';
-              console.log('✅ Window location navigation successful');
-            } catch (windowError) {
-              console.error('❌ Window location navigation failed:', windowError);
-              
-              // Last resort - force reload
-              try {
-                window.location.reload();
-                console.log('✅ Force reload successful');
-              } catch (reloadError) {
-                console.error('❌ Force reload failed:', reloadError);
-              }
-            }
-          }
-        }, 1000); // Wait 1 second before navigation
-        
-      } catch (logoutError) {
-        console.error('❌ Logout failed:', logoutError);
-        
-        // Even if logout fails, try to navigate
-        setTimeout(() => {
-          try {
-            navigate('/login');
-          } catch (navError) {
-            window.location.href = '/login';
-          }
-        }, 1000);
-      }
+      // Handle logout and navigation with multiple fallbacks
+      await handleSuccessfulRegistration();
 
     } catch (error) {
       console.error('❌ Registration error:', error);
@@ -282,6 +237,66 @@ function Register() {
           console.log('🔄 Recovery options shown');
         }
       }, 5000);
+    }
+  };
+
+  // Separate function to handle successful registration
+  const handleSuccessfulRegistration = async () => {
+    console.log('🚪 Handling successful registration...');
+    
+    try {
+      // Step 1: Sign out
+      console.log('Step 1: Signing out...');
+      await auth.signOut();
+      console.log('✅ Sign out successful');
+      
+      // Step 2: Wait a moment
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Step 3: Try navigation with multiple fallbacks
+      console.log('Step 3: Navigating to login...');
+      
+      // Try React Router first
+      try {
+        navigate('/login');
+        console.log('✅ React Router navigation successful');
+        return;
+      } catch (navError) {
+        console.warn('❌ React Router failed:', navError);
+      }
+      
+      // Try window.location
+      try {
+        window.location.href = '/login';
+        console.log('✅ Window location navigation successful');
+        return;
+      } catch (windowError) {
+        console.warn('❌ Window location failed:', windowError);
+      }
+      
+      // Try window.location.replace
+      try {
+        window.location.replace('/login');
+        console.log('✅ Window location.replace successful');
+        return;
+      } catch (replaceError) {
+        console.warn('❌ Window location.replace failed:', replaceError);
+      }
+      
+      // Last resort: reload page
+      console.log('🔄 Using fallback: reload page');
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('❌ Registration completion failed:', error);
+      
+      // Emergency fallback
+      try {
+        window.location.href = '/login';
+      } catch (finalError) {
+        console.error('❌ Final fallback failed:', finalError);
+        window.location.reload();
+      }
     }
   };
 
@@ -344,21 +359,25 @@ function Register() {
 
           <div className="bg-white shadow-lg rounded-lg p-6">
             <div className="space-y-4">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">
-                      Error: {error}
-                    </h3>
+              {/* Error Display */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-red-800">
+                        {error}
+                      </h3>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
+              {/* Recovery Options */}
               <div className="space-y-3">
                 <button
                   onClick={handleRecovery}
@@ -385,6 +404,7 @@ function Register() {
                 </button>
               </div>
 
+              {/* Instructions */}
               <div className="text-xs text-gray-500 text-center">
                 <p>Jika masalah berlanjut, silakan:</p>
                 <p>1. Clear cache browser</p>
