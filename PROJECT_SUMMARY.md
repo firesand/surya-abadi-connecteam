@@ -39,16 +39,22 @@ surya-abadi-connecteam/
 │   │   │   └── Register.jsx
 │   │   ├── Admin/
 │   │   │   ├── Dashboard.jsx
-│   │   │   └── LeaveManagement.jsx
+│   │   │   ├── LeaveManagement.jsx
+│   │   │   ├── PayrollManagement.jsx
+│   │   │   └── MonthlyReports.jsx
 │   │   ├── Employee/
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── EmployeeProfile.jsx
 │   │   │   ├── LeaveRequest.jsx
-│   │   │   └── LocationUpdate.jsx
+│   │   │   ├── LocationUpdate.jsx
+│   │   │   └── PayrollRequest.jsx
 │   │   ├── Common/
+│   │   │   ├── Header.jsx
+│   │   │   ├── Footer.jsx
 │   │   │   └── LoadingScreen.jsx
 │   │   └── Attendance/
-│   │       └── CheckIn.jsx
+│   │       ├── CheckIn.jsx
+│   │       └── AttendanceRecap.jsx
 │   ├── config/
 │   │   └── firebase.js
 │   ├── services/
@@ -56,7 +62,11 @@ surya-abadi-connecteam/
 │   │   ├── database.js
 │   │   ├── storage.js
 │   │   ├── emailService.js
-│   │   └── whatsappService.js
+│   │   ├── whatsappService.js
+│   │   ├── payrollService.js
+│   │   └── adminPasswordReset.js
+│   ├── contexts/
+│   │   └── AuthContext.jsx
 │   ├── utils/
 │   │   └── geolocation.js
 │   ├── App.jsx
@@ -129,6 +139,13 @@ surya-abadi-connecteam/
 - Request history and status tracking
 - Automatic notifications when data is sent
 
+### **6. Password Reset**
+- **Self-Service Reset:** "Lupa Password?" link on login page
+- **Email Reset:** Receive reset link via email
+- **Modal Interface:** Professional password reset form
+- **Error Handling:** Clear Indonesian error messages
+- **Loading States:** Proper UX feedback during process
+
 ## 👨‍💼 **Admin Features**
 
 ### **1. Dashboard Overview**
@@ -164,6 +181,14 @@ surya-abadi-connecteam/
 - Send payroll data via WhatsApp and Email
 - Track payroll request history and status
 - Approve/Reject payroll requests with comments
+
+### **6. Password Reset Management**
+- **User Self-Service:** Employees can reset their own password via email
+- **Admin Manual Reset:** Admins can reset any employee's password
+- **Automatic Password Generation:** System generates secure random passwords
+- **Multi-Channel Delivery:** Send new passwords via WhatsApp/Email
+- **Audit Trail:** Track all password reset activities
+- **Security Features:** Temporary password storage and validation
 
 ## 📊 **Database Collections**
 
@@ -221,7 +246,11 @@ surya-abadi-connecteam/
     annual: number,
     used: number,
     remaining: number
-  }
+  },
+  // Password Reset Fields (Added)
+  tempPassword: string, // Temporary password for admin reset
+  passwordResetAt: Timestamp, // When password was last reset
+  passwordResetBy: string // Who reset the password ('admin' or 'user')
 }
 ```
 
@@ -353,6 +382,29 @@ firebase deploy
 - **Install Prompt:** Automatic
 - **App Icons:** Included
 
+## 📱 **Mobile Layout Optimizations (Recent Updates)**
+
+### **Responsive Design Improvements:**
+- **Table Responsiveness:** Added horizontal scroll for mobile tables
+- **Navigation Tabs:** Optimized for mobile with shorter labels
+- **Header Layout:** Stacked layout on mobile devices
+- **Stats Grid:** 2-column grid on mobile, 5-column on desktop
+- **Form Elements:** Responsive padding and font sizes
+- **Global CSS:** Added overflow prevention for mobile
+
+### **Mobile-Specific Changes:**
+- **Container Padding:** `px-2 sm:px-4` for better mobile spacing
+- **Text Sizes:** Responsive typography (`text-xs sm:text-sm`)
+- **Button Sizes:** Optimized touch targets for mobile
+- **Table Headers:** Reduced padding and font sizes
+- **Navigation:** Horizontal scroll for tab navigation
+
+### **Developer Attribution:**
+- **Footer Component:** Added global footer with developer credit
+- **Meta Tags:** Updated author information
+- **Documentation:** Added developer attribution to README and package.json
+- **Login Page:** Replaced demo credentials with developer attribution
+
 ## 🔔 **Notification System**
 
 ### **Email Notifications:**
@@ -361,12 +413,57 @@ firebase deploy
 - Payroll data delivery
 - Daily reminders
 - Late check-in alerts
+- Password reset links
 
 ### **WhatsApp Integration:**
 - Framework ready
 - Template messages
 - Direct notifications
 - Payroll data delivery
+- Password reset notifications
+
+## 🔐 **Password Reset System**
+
+### **User Self-Service Reset:**
+- **"Lupa Password?" link** on login page
+- **Modal interface** with email input
+- **Firebase integration** using `sendPasswordResetEmail()`
+- **Success/error handling** with Indonesian messages
+- **Loading states** and proper UX feedback
+- **Email validation** before sending reset links
+
+### **Admin Manual Reset:**
+- **New tab** "🔐 Password Reset" in admin dashboard
+- **Email input** for employee identification
+- **Automatic password generation** (8-character random)
+- **Results display** with new password
+- **Multi-channel delivery** via WhatsApp/Email
+- **Audit trail** in Firestore database
+
+### **Security Features:**
+- **Temporary password storage** in user document
+- **Password reset tracking** with timestamps
+- **Admin-only access** to manual reset
+- **Email validation** and error handling
+- **Professional UI/UX** with clear instructions
+
+### **Database Schema Updates:**
+```javascript
+// Added to users collection
+{
+  tempPassword: string, // Generated password for admin reset
+  passwordResetAt: Timestamp, // When password was last reset
+  passwordResetBy: string // 'admin' or 'user'
+}
+```
+
+### **Files Added/Modified:**
+- ✅ `src/components/Auth/Login.jsx` - Added password reset modal
+- ✅ `src/services/adminPasswordReset.js` - New admin reset service
+- ✅ `src/components/Admin/Dashboard.jsx` - Added password reset tab
+- ✅ `src/components/Common/Footer.jsx` - Developer attribution
+- ✅ `src/App.jsx` - Added footer component
+- ✅ `src/index.css` - Mobile layout improvements
 
 ## 🛡️ **Security Features**
 
@@ -412,6 +509,9 @@ firebase deploy
 9. **PWA Support** - Mobile-friendly design
 10. **Real-time Updates** - Live data synchronization
 11. **Payroll Integration** - Request/Generate/Send payroll data via WhatsApp & Email
+12. **Password Reset System** - User self-service + Admin manual reset
+13. **Mobile Layout Optimization** - Responsive design improvements
+14. **Developer Attribution** - Hikmahtiar Studio (2025) branding
 
 ### 🔄 **Real-time Features:**
 - Work duration calculation
@@ -434,11 +534,14 @@ firebase deploy
 
 1. **Advanced Analytics** - Detailed reports and charts
 2. **Document Management** - File upload and storage
-4. **Team Management** - Department and team structures
-5. **API Integration** - Third-party service connections
-6. **Advanced Notifications** - Push notifications
-7. **Multi-language Support** - Internationalization
-8. **Advanced Security** - Two-factor authentication
+3. **Team Management** - Department and team structures
+4. **API Integration** - Third-party service connections
+5. **Advanced Notifications** - Push notifications
+6. **Multi-language Support** - Internationalization
+7. **Advanced Security** - Two-factor authentication
+8. **Password Policy** - Enforce password complexity rules
+9. **Login History** - Track user login attempts and locations
+10. **Account Lockout** - Temporary account suspension after failed attempts
 
 ## 📞 **Support Information**
 
@@ -447,6 +550,94 @@ firebase deploy
 **Budget:** Free tier (Firebase + Vercel)  
 **Timeline:** Completed  
 **Status:** Ready for production use  
+
+## 🚀 **Quick Start Guide for New Developers**
+
+### **1. Project Setup:**
+```bash
+# Clone repository
+git clone [repository-url]
+cd surya-abadi-connecteam
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp env.example .env.local
+# Edit .env.local with your Firebase credentials
+
+# Start development server
+npm run dev
+```
+
+### **2. Key Files to Understand:**
+- **`src/App.jsx`** - Main routing and layout
+- **`src/components/Auth/Login.jsx`** - Login with password reset
+- **`src/components/Admin/Dashboard.jsx`** - Admin dashboard with all features
+- **`src/services/`** - All business logic and API calls
+- **`src/config/firebase.js`** - Firebase configuration
+
+### **3. Recent Features Added:**
+- **Password Reset System** - User self-service + Admin manual reset
+- **Payroll Integration** - Complete payroll request/management system
+- **Mobile Optimization** - Responsive design improvements
+- **Developer Attribution** - Hikmahtiar Studio (2025) branding
+
+### **4. Database Collections:**
+- **`users`** - Employee data and authentication
+- **`attendances`** - Daily check-in/out records
+- **`leaveRequests`** - Leave application system
+- **`payrollRequests`** - Payroll data requests
+- **`locationUpdates`** - GPS location tracking
+- **`registrationRequests`** - New employee approvals
+
+### **5. Authentication Flow:**
+1. Employee registers → Admin approves → Employee can login
+2. Password reset via email (user) or admin dashboard (admin)
+3. Role-based access control (admin/employee)
+
+### **6. Key Services:**
+- **`auth.js`** - Firebase authentication
+- **`database.js`** - Firestore operations
+- **`emailService.js`** - Email notifications
+- **`whatsappService.js`** - WhatsApp integration
+- **`payrollService.js`** - Payroll calculations
+- **`adminPasswordReset.js`** - Admin password reset
+
+### **7. Environment Variables Required:**
+```bash
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+
+# Office Location
+VITE_OFFICE_LAT=-6.3693
+VITE_OFFICE_LNG=106.8289
+VITE_OFFICE_RADIUS=100
+
+# EmailJS Configuration
+VITE_EMAILJS_PUBLIC_KEY=
+VITE_EMAILJS_SERVICE_ID=
+VITE_EMAILJS_TEMPLATE_ID=
+```
+
+### **8. Deployment:**
+- **Vercel:** Connect GitHub repository and set environment variables
+- **Firebase Hosting:** `npm run build && firebase deploy`
+
+### **9. Testing Credentials:**
+- **Admin:** admin@suryaabadi.com / password123
+- **Employee:** [Register new employee for testing]
+
+### **10. Common Issues & Solutions:**
+- **Firebase Rules:** Ensure proper read/write permissions
+- **CORS Issues:** Check Firebase configuration
+- **Mobile Layout:** Use responsive Tailwind classes
+- **Password Reset:** Verify email service configuration
 
 ---
 

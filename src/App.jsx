@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config/firebase';
 import { initEmailJS } from './services/emailService';
+import { initializeNotificationSystem } from './services/notificationService';
 
 // Components
 import Login from './components/Auth/Login';
@@ -19,6 +20,7 @@ import AdminDashboard from './components/Admin/Dashboard';
 import LeaveManagement from './components/Admin/LeaveManagement';
 import PayrollManagement from './components/Admin/PayrollManagement';
 import Footer from './components/Common/Footer';
+import AppUpdateNotification from './components/Common/AppUpdateNotification';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,6 +37,14 @@ function App() {
       console.log('EmailJS initialized successfully');
     } catch (error) {
       console.error('Failed to initialize EmailJS:', error);
+    }
+
+    // Initialize notification system
+    try {
+      await initializeNotificationSystem();
+      console.log('Notification system initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize notification system:', error);
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
@@ -141,6 +151,12 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
+        {/* App Update Notification Manager */}
+        <AppUpdateNotification 
+          userId={user?.uid} 
+          userRole={userData?.role} 
+        />
+        
         <Routes>
           {/* Auth Routes */}
           <Route

@@ -28,6 +28,7 @@ import {
   sendNotification
 } from '../../services/emailService';
 import { adminPasswordReset } from '../../services/adminPasswordReset';
+import AdminNotificationPanel from './NotificationPanel';
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -875,6 +876,16 @@ Employee Details:
     🔐 Password Reset
     </button>
     <button
+    onClick={() => setActiveTab('notifications')}
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
+      activeTab === 'notifications'
+      ? 'border-green-500 text-green-600'
+      : 'border-transparent text-gray-500 hover:text-gray-700'
+    }`}
+    >
+    🔔 App Updates
+    </button>
+    <button
     onClick={() => setActiveTab('reports')}
     className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
       activeTab === 'reports'
@@ -1331,6 +1342,11 @@ Employee Details:
           </div>
         </div>
       </div>
+    )}
+
+    {/* App Updates Tab */}
+    {activeTab === 'notifications' && (
+      <AdminNotificationPanel />
     )}
 
     {/* Monthly Reports Tab */}
