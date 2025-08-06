@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCurrentLocation } from '../../utils/geolocation';
 import { checkGeolocationPermission, provideGeolocationGuidance } from '../../utils/geolocationPermissions';
 import { tryMobileNavigation } from '../../utils/mobileWhiteScreenFix.js';
+import { handleProductionNavigation } from '../../utils/productionFix.js';
 
 function Register() {
   const navigate = useNavigate();
@@ -264,10 +265,41 @@ function Register() {
       const waitTime = isMobile ? 1000 : 500;
       await new Promise(resolve => setTimeout(resolve, waitTime));
       
-      // Step 3: Navigate to home page with mobile-specific handling
+      // Step 3: Navigate to home page with production and mobile-specific handling
       console.log('Step 3: Navigating to home page...');
       
-      // For mobile, use more aggressive navigation
+      // Check if we're in production
+      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      console.log('🌐 Production detected:', isProduction);
+      
+      // For production, use production-specific navigation
+      if (isProduction) {
+        console.log('🌐 Using production-specific navigation...');
+        
+        // Try production navigation first
+        const productionNavSuccess = await handleProductionNavigation('/');
+        if (productionNavSuccess) {
+          console.log('✅ Production navigation successful');
+          return;
+        }
+        
+        // Fallback to mobile navigation if production navigation fails
+        if (isMobile) {
+          console.log('📱 Production navigation failed, trying mobile navigation...');
+          const mobileNavSuccess = await tryMobileNavigation('/');
+          if (mobileNavSuccess) {
+            console.log('✅ Mobile navigation successful');
+            return;
+          }
+        }
+        
+        // Last resort for production
+        console.log('🌐 All production navigation methods failed, forcing reload...');
+        window.location.reload(true);
+        return;
+      }
+      
+      // For mobile (non-production), use mobile-specific navigation
       if (isMobile) {
         console.log('📱 Using mobile-specific navigation...');
         

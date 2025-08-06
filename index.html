@@ -46,14 +46,18 @@
         let checkCount = 0;
         const maxChecks = 3;
         
-        // Detect mobile
+        // Detect mobile and production
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isAndroid = /Android/.test(navigator.userAgent);
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const isVercel = window.location.hostname.includes('vercel.app');
         
         console.log('📱 Mobile detected:', isMobile);
         console.log('📱 iOS detected:', isIOS);
         console.log('📱 Android detected:', isAndroid);
+        console.log('🌐 Production detected:', isProduction);
+        console.log('🌐 Vercel detected:', isVercel);
         
         function checkWhiteScreen() {
           const root = document.getElementById('root');
@@ -94,8 +98,37 @@
                 console.error('Storage clear error:', e);
               }
               
-              // Mobile-specific navigation
-              if (isMobile) {
+              // Production and mobile-specific navigation
+              if (isProduction) {
+                console.log('🌐 Using production-specific navigation...');
+                
+                // Production navigation methods
+                const productionMethods = [
+                  () => window.location.replace('/'),
+                  () => window.location.href = '/',
+                  () => window.location.assign('/'),
+                  () => window.history.replaceState({}, '', '/'),
+                  () => window.history.pushState({}, '', '/'),
+                  () => window.location.reload(),
+                  () => window.location.reload(true)
+                ];
+                
+                // Try each production method
+                for (let i = 0; i < productionMethods.length; i++) {
+                  try {
+                    console.log(`🌐 Trying production method ${i + 1}...`);
+                    productionMethods[i]();
+                    console.log(`✅ Production method ${i + 1} successful`);
+                    return;
+                  } catch (error) {
+                    console.warn(`❌ Production method ${i + 1} failed:`, error);
+                  }
+                }
+                
+                // Last resort for production
+                console.log('🌐 All production methods failed, forcing reload...');
+                window.location.reload(true);
+              } else if (isMobile) {
                 console.log('📱 Using mobile-specific navigation...');
                 
                 // Try multiple mobile navigation methods
