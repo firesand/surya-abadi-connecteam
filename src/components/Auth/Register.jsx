@@ -247,7 +247,12 @@ function Register() {
     
     // Detect mobile browser
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
     console.log('📱 Mobile detected:', isMobile);
+    console.log('📱 iOS detected:', isIOS);
+    console.log('📱 Android detected:', isAndroid);
     
     try {
       // Step 1: Sign out
@@ -262,59 +267,67 @@ function Register() {
       // Step 3: Navigate to home page with mobile-specific handling
       console.log('Step 3: Navigating to home page...');
       
-      // For mobile, use mobile-specific navigation
+      // For mobile, use more aggressive navigation
       if (isMobile) {
         console.log('📱 Using mobile-specific navigation...');
         
-        // Try mobile navigation utility
-        const mobileNavSuccess = await tryMobileNavigation('/');
-        if (mobileNavSuccess) {
-          console.log('✅ Mobile navigation successful');
-          return;
-        }
-        
-        // Fallback to manual methods if utility fails
-        console.log('📱 Mobile navigation utility failed, trying manual methods...');
-        
-        // Try multiple mobile-friendly methods
-        const navigationMethods = [
+        // MOBILE AGGRESSIVE NAVIGATION - Bypass React Router entirely
+        const mobileNavMethods = [
+          // Method 1: Direct replace (most reliable for mobile)
           () => {
-            console.log('📱 Trying window.location.href...');
-            window.location.href = '/';
-          },
-          () => {
-            console.log('📱 Trying window.location.replace...');
+            console.log('📱 Method 1: window.location.replace');
             window.location.replace('/');
           },
+          // Method 2: Direct href
           () => {
-            console.log('📱 Trying window.location.assign...');
+            console.log('📱 Method 2: window.location.href');
+            window.location.href = '/';
+          },
+          // Method 3: Direct assign
+          () => {
+            console.log('📱 Method 3: window.location.assign');
             window.location.assign('/');
           },
+          // Method 4: iOS-specific reload
           () => {
-            console.log('📱 Trying history.pushState...');
-            window.history.pushState({}, '', '/');
-            window.dispatchEvent(new PopStateEvent('popstate'));
+            if (isIOS) {
+              console.log('📱 Method 4: iOS-specific reload');
+              window.location.href = window.location.href;
+            } else {
+              console.log('📱 Method 4: Android reload');
+              window.location.reload();
+            }
           },
+          // Method 5: Hard reload
           () => {
-            console.log('📱 Trying history.replaceState...');
+            console.log('📱 Method 5: Hard reload');
+            window.location.reload(true);
+          },
+          // Method 6: History replace
+          () => {
+            console.log('📱 Method 6: History replace');
             window.history.replaceState({}, '', '/');
             window.dispatchEvent(new PopStateEvent('popstate'));
           },
+          // Method 7: History push
           () => {
-            console.log('📱 Trying React Router...');
-            navigate('/');
+            console.log('📱 Method 7: History push');
+            window.history.pushState({}, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           },
+          // Method 8: React Router (last resort for mobile)
           () => {
-            console.log('📱 Trying reload...');
-            window.location.reload();
+            console.log('📱 Method 8: React Router');
+            navigate('/');
           }
         ];
         
         // Try each method with delay
-        for (let i = 0; i < navigationMethods.length; i++) {
+        for (let i = 0; i < mobileNavMethods.length; i++) {
           try {
-            await new Promise(resolve => setTimeout(resolve, 200)); // Wait between attempts
-            navigationMethods[i]();
+            console.log(`📱 Trying mobile navigation method ${i + 1}...`);
+            await new Promise(resolve => setTimeout(resolve, 300)); // Wait between attempts
+            mobileNavMethods[i]();
             console.log(`✅ Mobile navigation method ${i + 1} successful`);
             return;
           } catch (error) {
@@ -323,7 +336,7 @@ function Register() {
         }
         
         // If all methods fail, force reload
-        console.log('📱 All navigation methods failed, forcing reload...');
+        console.log('📱 All mobile navigation methods failed, forcing reload...');
         window.location.reload(true);
         
       } else {

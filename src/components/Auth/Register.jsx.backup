@@ -1,0 +1,395 @@
+// src/components/Auth/Register.jsx - FIXED VERSION
+import React, { useState } from 'react';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { auth, db } from '../../config/firebase';
+import { useNavigate, Link } from 'react-router-dom';
+
+function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    nik: '',
+    department: '',
+    position: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess(false);
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.phoneNumber.match(/^[0-9]{10,13}$/)) {
+      setError('Please enter a valid phone number');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      console.log('Starting registration process...');
+
+      // Create auth account
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+
+      console.log('Auth account created:', userCredential.user.uid);
+
+      // Create user document with PENDING status
+      await setDoc(doc(db, 'users', userCredential.user.uid), {
+        // Basic Info
+        uid: userCredential.user.uid,
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        nik: formData.nik,
+        department: formData.department || 'Not Specified',
+        position: formData.position || 'Not Specified',
+
+        // Account Status - IMPORTANT!
+        role: 'employee',
+        accountStatus: 'pending', // This is critical!
+        isActive: false,
+
+        // Timestamps
+        registeredAt: Timestamp.now(),
+        lastUpdated: Timestamp.now(),
+
+        // Additional fields
+        employeeId: `EMP${Date.now().toString().slice(-6)}`,
+        photoUrl: null,
+        address: null
+      });
+
+      console.log('User document created with pending status');
+
+      // Create registration request for admin review
+      await setDoc(doc(db, 'registrationRequests', userCredential.user.uid), {
+        userId: userCredential.user.uid,
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        nik: formData.nik,
+        department: formData.department || 'Not Specified',
+        position: formData.position || 'Not Specified',
+        status: 'pending',
+        requestedAt: Timestamp.now(),
+        reviewedBy: null,
+        reviewedAt: null
+      });
+
+      console.log('Registration request created');
+
+      // Sign out immediately after registration
+      await signOut(auth);
+      console.log('User signed out after registration');
+
+      setSuccess(true);
+
+      // Show success message
+      alert(`
+✅ Registration Successful!
+
+Your account has been created and is pending admin approval.
+
+What happens next:
+1. Admin will review your registration
+2. You'll receive notification once approved
+3. Then you can login and start using the app
+
+Please wait for approval before trying to login.
+      `);
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
+
+    } catch (error) {
+      console.error('Registration error:', error);
+
+      // Handle specific errors
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please use a different email or login.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Invalid email address format.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Password is too weak. Please use at least 6 characters.');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+
+      // If auth account was created but Firestore failed, delete the auth account
+      if (auth.currentUser) {
+        try {
+          await auth.currentUser.delete();
+        } catch (deleteError) {
+          console.error('Failed to cleanup auth account:', deleteError);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Registration Successful!</h2>
+          <p className="text-gray-600 mb-6">
+            Your account has been created and is pending admin approval.
+            You will be redirected to login page...
+          </p>
+          <div className="animate-pulse">
+            <div className="h-2 bg-green-200 rounded-full overflow-hidden">
+              <div className="h-full bg-green-600 rounded-full animate-progress"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center py-12 px-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="text-white text-2xl font-bold">SA</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800">Employee Registration</h2>
+          <p className="text-sm text-gray-600 mt-1">Create your account</p>
+        </div>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded mb-4">
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Registration Form */}
+        <form onSubmit={handleRegister} className="space-y-4">
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          {/* Phone Number */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              placeholder="081234567890"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          {/* NIK */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              NIK (Employee ID) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="nik"
+              value={formData.nik}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          {/* Department */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Department
+            </label>
+            <select
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              disabled={loading}
+            >
+              <option value="">Select Department</option>
+              <option value="IT">IT</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+            </select>
+          </div>
+
+          {/* Position */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Position
+            </label>
+            <input
+              type="text"
+              name="position"
+              value={formData.position}
+              onChange={handleChange}
+              placeholder="e.g., Staff, Supervisor, Manager"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              disabled={loading}
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+              disabled={loading}
+              minLength="6"
+            />
+            <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+              disabled={loading}
+            />
+          </div>
+
+          {/* Terms & Conditions */}
+          <div className="flex items-start">
+            <input
+              type="checkbox"
+              required
+              disabled={loading}
+              className="mt-1 mr-2"
+            />
+            <label className="text-xs text-gray-600">
+              I agree to the terms and conditions and understand that my account
+              needs admin approval before I can access the system.
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700
+              disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Creating Account...
+              </span>
+            ) : (
+              'Register'
+            )}
+          </button>
+        </form>
+
+        {/* Login Link */}
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
+            Login here
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default Register;
