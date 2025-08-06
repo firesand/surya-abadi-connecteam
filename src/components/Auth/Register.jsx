@@ -176,16 +176,35 @@ function Register() {
       });
       console.log('Registration request created');
 
+      console.log('Registration completed successfully');
+      
+      // Sign out the user immediately after registration
+      await auth.signOut();
+      
       alert('Registrasi berhasil! Silakan tunggu persetujuan admin untuk mengaktifkan akun Anda.');
       navigate('/login');
     } catch (error) {
       console.error('Registration error:', error);
+      
+      // Clean up any partially created data
+      try {
+        if (user && user.uid) {
+          // Try to delete the user if registration failed
+          await user.delete();
+          console.log('Cleaned up failed registration');
+        }
+      } catch (cleanupError) {
+        console.error('Cleanup error:', cleanupError);
+      }
+      
       if (error.code === 'auth/email-already-in-use') {
         setError('Email sudah terdaftar');
       } else if (error.code === 'auth/weak-password') {
         setError('Password terlalu lemah');
       } else if (error.code === 'auth/invalid-email') {
         setError('Email tidak valid');
+      } else if (error.code === 'auth/network-request-failed') {
+        setError('Koneksi internet bermasalah. Silakan coba lagi.');
       } else {
         setError('Registrasi gagal: ' + error.message);
       }

@@ -125,6 +125,14 @@ function AdminDashboard() {
           }));
           setPendingRegistrations(registrations);
           console.log('Pending registrations loaded:', registrations.length);
+          console.log('Registration details:', registrations.map(reg => ({
+            id: reg.id,
+            userId: reg.userId,
+            email: reg.email,
+            name: reg.name,
+            status: reg.status,
+            requestedAt: reg.requestedAt
+          })));
         } catch (regError) {
           console.error('Error fetching registrations:', regError);
           setPendingRegistrations([]);
