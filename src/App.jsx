@@ -11,6 +11,7 @@ import { initializeNotificationSystem } from './services/notificationService';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import RegisterErrorBoundary from './components/Auth/RegisterErrorBoundary';
+import PendingApproval from './components/Auth/PendingApproval';
 import LoadingScreen from './components/Common/LoadingScreen';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import EmployeeDashboard from './components/Employee/Dashboard';
@@ -130,7 +131,7 @@ function App() {
 
   // Simple redirect based on role
   const RoleBasedRedirect = () => {
-    console.log('RoleBasedRedirect - User:', user?.email, 'Role:', userData?.role);
+    console.log('RoleBasedRedirect - User:', user?.email, 'Role:', userData?.role, 'Status:', userData?.accountStatus);
 
     if (!user) {
       return <Navigate to="/login" replace />;
@@ -144,7 +145,33 @@ function App() {
       return <Navigate to="/login" replace />;
     }
 
-    // Redirect based on role
+    // Handle pending users
+    if (userData.accountStatus === 'pending') {
+      console.log('User is pending approval');
+      return <PendingApproval />;
+    }
+
+    // Handle suspended users
+    if (userData.accountStatus === 'suspended' || userData.accountStatus === 'resigned') {
+      console.log('User is suspended/resigned');
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-red-600 text-6xl mb-4">⚠️</div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Akun Tidak Aktif</h2>
+            <p className="text-gray-600 mb-4">Akun Anda telah dinonaktifkan. Silakan hubungi HR untuk informasi lebih lanjut.</p>
+            <button 
+              onClick={() => auth.signOut().then(() => navigate('/login'))}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Kembali ke Login
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Redirect based on role for active users
     if (userData.role === 'admin') {
       console.log('Redirecting to admin dashboard');
       return <Navigate to="/admin" replace />;

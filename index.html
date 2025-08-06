@@ -40,12 +40,64 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     
+    <!-- Emergency White Screen Fix -->
+    <script>
+      // Emergency white screen fix
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const body = document.body;
+          const root = document.getElementById('root');
+          
+          // Check for white screen
+          if (body.children.length === 1 && 
+              (!root || !root.children.length || !root.textContent.trim())) {
+            console.log('🚨 Detected white screen, clearing cache...');
+            
+            // Clear all caches
+            if ('caches' in window) {
+              caches.keys().then(names => {
+                names.forEach(name => {
+                  console.log('🗑️ Deleting cache:', name);
+                  caches.delete(name);
+                });
+              });
+            }
+            
+            // Clear storage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Reload page
+            console.log('🔄 Reloading page...');
+            location.reload();
+          }
+        }, 3000); // Wait 3 seconds
+      });
+    </script>
+    
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('Service Worker registered successfully'))
+            .then(reg => {
+              console.log('Service Worker registered successfully');
+              
+              // Check for updates
+              reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New service worker available
+                    console.log('New service worker available');
+                    if (confirm('Update tersedia. Muat ulang aplikasi?')) {
+                      newWorker.postMessage({ type: 'SKIP_WAITING' });
+                      location.reload();
+                    }
+                  }
+                });
+              });
+            })
             .catch(err => console.error('Service Worker registration failed:', err));
         });
       }

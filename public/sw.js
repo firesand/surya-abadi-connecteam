@@ -45,6 +45,24 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Emergency white screen fix
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    // Clear all caches if white screen detected
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          console.log('Clearing cache:', cacheName);
+          return caches.delete(cacheName);
+        })
+      );
+    }).then(() => {
+      console.log('All caches cleared for white screen fix');
+      return self.clients.claim();
+    })
+  );
+});
+
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
   event.respondWith(
