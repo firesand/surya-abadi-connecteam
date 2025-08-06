@@ -1,0 +1,32 @@
+{
+  "name": "Surya Abadi Connecteam",
+  "short_name": "SA Connect",
+  "description": "Sistem Absensi & HR Management PT Surya Abadi",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#00A651",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ]
+}

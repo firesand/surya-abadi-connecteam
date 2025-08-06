@@ -1,0 +1,126 @@
+// src/App.jsx
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from './config/firebase';
+
+// Components
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+import LoadingScreen from './components/Common/LoadingScreen';
+import EmployeeDashboard from './components/Employee/Dashboard';
+import AdminDashboard from './components/Admin/Dashboard';
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        setUser(authUser);
+
+        // Fetch user data from Firestore
+        try {
+          const userDoc = await getDoc(doc(db, 'users', authUser.uid));
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      } else {
+        setUser(null);
+        setUserData(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  // Protected Route Component
+  const ProtectedRoute = ({ children, requireAdmin = false }) => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+
+    if (requireAdmin && userData?.role !== 'admin') {
+      return <Navigate to="/" replace />;
+    }
+
+    return children;
+  };
+
+  // Redirect based on user role
+  const HomeRedirect = () => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+
+    if (userData?.role === 'admin') {
+      return <Navigate to="/admin" replace />;
+    }
+
+    return <Navigate to="/employee" replace />;
+  };
+
+  return (
+    <Router>
+    <Routes>
+    {/* Auth Routes */}
+    <Route
+    path="/login"
+    element={
+      user ? <HomeRedirect /> : <Login />
+    }
+    />
+    <Route
+    path="/register"
+    element={
+      user ? <HomeRedirect /> : <Register />
+    }
+    />
+
+    {/* Protected Routes */}
+    <Route
+    path="/"
+    element={
+      <ProtectedRoute>
+      <HomeRedirect />
+      </ProtectedRoute>
+    }
+    />
+
+    <Route
+    path="/employee"
+    element={
+      <ProtectedRoute>
+      <EmployeeDashboard />
+      </ProtectedRoute>
+    }
+    />
+
+    <Route
+    path="/admin"
+    element={
+      <ProtectedRoute requireAdmin={true}>
+      <AdminDashboard />
+      </ProtectedRoute>
+    }
+    />
+
+    {/* Catch all - redirect to home */}
+    <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+    </Router>
+  );
+}
+
+export default App;
