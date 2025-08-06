@@ -1,13 +1,17 @@
-// Service Worker for App Update Detection
-// Version: 1.0.0
+// Service Worker for Surya Abadi Connecteam
+// Version: 1.0.2 - Mobile/PWA Fix Update
 
-const CACHE_NAME = 'surya-abadi-v1.0.0';
+const CACHE_NAME = 'surya-abadi-v1.0.2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/js/bundle.js',
-  '/static/css/main.css'
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
+
+// Add version control
+const APP_VERSION = '1.0.2';
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
@@ -31,53 +35,108 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('Service Worker activated');
-      return self.clients.claim();
-    })
-  );
-});
-
-// Emergency white screen fix
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    // Clear all caches if white screen detected
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          console.log('Clearing cache:', cacheName);
+        cacheNames.filter((cacheName) => {
+          // Delete old caches that don't match current version
+          return cacheName.startsWith('surya-abadi-') && cacheName !== CACHE_NAME;
+        }).map((cacheName) => {
+          console.log('Deleting old cache:', cacheName);
           return caches.delete(cacheName);
         })
       );
     }).then(() => {
-      console.log('All caches cleared for white screen fix');
-      return self.clients.claim();
+      console.log('Service Worker activated');
+      // Notify all clients about the update
+      return self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SW_ACTIVATED',
+            version: APP_VERSION
+          });
+        });
+        return self.clients.claim();
+      });
     })
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network first for API calls, cache first for assets
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // Skip caching for API calls and authentication
+  if (url.pathname.includes('/api/') ||
+      url.pathname.includes('firestore.googleapis.com') ||
+      url.pathname.includes('identitytoolkit.googleapis.com') ||
+      url.pathname.includes('securetoken.googleapis.com')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+  
+  // For navigation requests, always fetch from network
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(() => {
+        return caches.match('/index.html');
+      })
+    );
+    return;
+  }
+  
+  // For other requests, try cache first, then network
   event.respondWith(
-    caches.match(event.request)
+    caches.match(request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+        if (response) {
+          return response;
+        }
+        
+        return fetch(request).then((response) => {
+          // Don't cache non-successful responses
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          
+          // Clone the response
+          const responseToCache = response.clone();
+          
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+          
+          return response;
+        });
+      })
+      .catch(() => {
+        // Offline fallback
+        if (request.destination === 'document') {
+          return caches.match('/index.html');
+        }
       })
   );
 });
 
-// Message event - handle update notifications
+// Message event - handle various commands
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    // Clear all caches on demand
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            console.log('Clearing cache on demand:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+      }).then(() => {
+        // Notify client that cache is cleared
+        event.ports[0].postMessage({ success: true });
+      })
+    );
   }
   
   if (event.data && event.data.type === 'CHECK_UPDATE') {
@@ -91,7 +150,8 @@ self.addEventListener('message', (event) => {
             clients.forEach(client => {
               client.postMessage({
                 type: 'UPDATE_AVAILABLE',
-                data: data
+                data: data,
+                currentVersion: APP_VERSION
               });
             });
           });
@@ -168,4 +228,31 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-console.log('Service Worker loaded successfully'); 
+// Handle white screen recovery
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'WHITE_SCREEN_DETECTED') {
+    console.log('White screen detected by client, clearing cache...');
+    
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            return caches.delete(cacheName);
+          })
+        );
+      }).then(() => {
+        // Force refresh all clients
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'CACHE_CLEARED',
+              action: 'reload'
+            });
+          });
+        });
+      })
+    );
+  }
+});
+
+console.log('Service Worker v' + APP_VERSION + ' loaded successfully');

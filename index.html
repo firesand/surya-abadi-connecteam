@@ -40,39 +40,81 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     
-    <!-- Emergency White Screen Fix -->
+    <!-- Enhanced White Screen Detection & Fix -->
     <script>
-      // Emergency white screen fix
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const body = document.body;
+      (function() {
+        let checkCount = 0;
+        const maxChecks = 3;
+        
+        function checkWhiteScreen() {
           const root = document.getElementById('root');
+          const hasContent = root && root.children.length > 0;
           
-          // Check for white screen
-          if (body.children.length === 1 && 
-              (!root || !root.children.length || !root.textContent.trim())) {
-            console.log('🚨 Detected white screen, clearing cache...');
+          if (!hasContent && checkCount < maxChecks) {
+            checkCount++;
+            console.log('White screen check #' + checkCount);
             
-            // Clear all caches
-            if ('caches' in window) {
-              caches.keys().then(names => {
-                names.forEach(name => {
-                  console.log('🗑️ Deleting cache:', name);
-                  caches.delete(name);
+            if (checkCount === maxChecks) {
+              console.log('🚨 White screen confirmed, applying fix...');
+              
+              // Clear all caches
+              if ('caches' in window) {
+                caches.keys().then(names => {
+                  Promise.all(names.map(name => {
+                    console.log('🗑️ Deleting cache:', name);
+                    return caches.delete(name);
+                  }));
                 });
-              });
+              }
+              
+              // Clear storage but preserve critical data
+              try {
+                const criticalData = {
+                  appVersion: localStorage.getItem('appVersion'),
+                  deviceId: localStorage.getItem('deviceId')
+                };
+                localStorage.clear();
+                sessionStorage.clear();
+                // Restore critical data
+                Object.keys(criticalData).forEach(key => {
+                  if (criticalData[key]) {
+                    localStorage.setItem(key, criticalData[key]);
+                  }
+                });
+              } catch (e) {
+                console.error('Storage clear error:', e);
+              }
+              
+              // Force reload
+              setTimeout(() => {
+                window.location.reload(true);
+              }, 1000);
+            } else {
+              // Check again
+              setTimeout(checkWhiteScreen, 2000);
             }
-            
-            // Clear storage
-            localStorage.clear();
-            sessionStorage.clear();
-            
-            // Reload page
-            console.log('🔄 Reloading page...');
-            location.reload();
           }
-        }, 3000); // Wait 3 seconds
-      });
+        }
+        
+        // Start checking after 3 seconds
+        window.addEventListener('load', () => {
+          setTimeout(checkWhiteScreen, 3000);
+        });
+        
+        // Also check if URL has clear parameter
+        if (window.location.search.includes('clear=true')) {
+          console.log('Clear cache requested via URL');
+          if ('caches' in window) {
+            caches.keys().then(names => {
+              Promise.all(names.map(caches.delete));
+            });
+          }
+          localStorage.clear();
+          sessionStorage.clear();
+          // Remove the clear parameter and reload
+          window.location.href = window.location.pathname;
+        }
+      })();
     </script>
     
     <!-- Service Worker Registration -->

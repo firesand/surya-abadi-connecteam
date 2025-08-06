@@ -1,10 +1,12 @@
 // src/components/Auth/Register.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, setDoc, addDoc, collection, Timestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '../../config/firebase';
+import { isPWA, isMobileDevice, pwaNavigate, clearPWACache } from '../../utils/pwaNavigationFix';
+import { isIOSSafari, isIOSPWA, iOSNavigate, clearIOSCache } from '../../utils/mobileSafariFix';
 
 function Register() {
   const navigate = useNavigate();
@@ -13,6 +15,8 @@ function Register() {
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -31,6 +35,27 @@ function Register() {
     emergencyContact: '',
     emergencyPhone: ''
   });
+
+  useEffect(() => {
+    // Check if device is mobile or PWA
+    const checkDevice = () => {
+      const mobile = isMobileDevice() || isPWA() || isIOSSafari() || isIOSPWA();
+      setIsMobile(mobile);
+      console.log('Device detection:', {
+        isMobileDevice: isMobileDevice(),
+        isPWA: isPWA(),
+        isIOSSafari: isIOSSafari(),
+        isIOSPWA: isIOSPWA(),
+        userAgent: navigator.userAgent
+      });
+    };
+    
+    checkDevice();
+    
+    // Add event listener for PWA install
+    window.addEventListener('appinstalled', checkDevice);
+    return () => window.removeEventListener('appinstalled', checkDevice);
+  }, []);
 
   const departments = [
     'Management',
@@ -184,28 +209,47 @@ function Register() {
       });
       console.log('Registration request created');
 
-      console.log('Registration completed successfully');
-      
-      // Show success message first
-      alert('Registrasi berhasil! Silakan tunggu persetujuan admin untuk mengaktifkan akun Anda.');
-      
+      // Clear cache for mobile/PWA before navigation
+      if (isMobile) {
+        console.log('Clearing mobile/PWA cache...');
+        try {
+          // Clear iOS cache if on iOS
+          if (isIOSSafari() || isIOSPWA()) {
+            await clearIOSCache();
+          } else {
+            await clearPWACache();
+          }
+        } catch (cacheError) {
+          console.error('Cache clear error:', cacheError);
+        }
+      }
+
       // Sign out the user immediately after registration
       try {
-        await auth.signOut();
+        await signOut(auth);
         console.log('User signed out successfully');
       } catch (signOutError) {
         console.error('Sign out error:', signOutError);
       }
+
+      console.log('Registration completed successfully');
       
-      // Navigate to login page
-      try {
-        navigate('/login');
-        console.log('Navigated to login page');
-      } catch (navigateError) {
-        console.error('Navigation error:', navigateError);
-        // Fallback: redirect using window.location
-        window.location.href = '/login';
-      }
+      // Set success state to show success screen
+      setRegistrationSuccess(true);
+      
+      // Navigate to login page after delay
+      setTimeout(() => {
+        if (isIOSSafari() || isIOSPWA()) {
+          console.log('iOS Safari/PWA redirect to login...');
+          iOSNavigate('/login');
+        } else if (isMobile) {
+          console.log('Mobile/PWA redirect to login...');
+          pwaNavigate('/login');
+        } else {
+          console.log('Desktop navigation to login...');
+          navigate('/login');
+        }
+      }, 3000);
     } catch (error) {
       console.error('Registration error:', error);
       
@@ -236,6 +280,62 @@ function Register() {
       setIsSubmitting(false);
     }
   };
+
+  // Success Screen Component
+  if (registrationSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Registrasi Berhasil!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Akun Anda telah dibuat dan sedang menunggu persetujuan admin.
+          </p>
+          <p className="text-sm text-gray-500 mb-4">
+            Mengalihkan ke halaman login...
+          </p>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-green-600 h-2 rounded-full transition-all duration-3000 ease-linear"
+              style={{
+                width: '100%',
+                animation: 'progress 3s linear forwards'
+              }}
+            ></div>
+          </div>
+          
+          {/* Manual redirect button for mobile */}
+          {isMobile && (
+            <button
+              onClick={() => {
+                if (isIOSSafari() || isIOSPWA()) {
+                  iOSNavigate('/login');
+                } else {
+                  pwaNavigate('/login');
+                }
+              }}
+              className="mt-4 text-green-600 underline text-sm hover:text-green-700"
+            >
+              Klik di sini jika tidak dialihkan
+            </button>
+          )}
+        </div>
+        
+        <style jsx>{`
+          @keyframes progress {
+            from { width: 0%; }
+            to { width: 100%; }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
