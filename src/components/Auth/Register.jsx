@@ -242,7 +242,7 @@ function Register() {
         email: formData.email,
         phone: formData.phone,
         nik: formData.nik,
-        employeeId: formData.employeeId,
+       // employeeId: formData.employeeId,
         department: formData.department,
         position: formData.position,
         address: formData.address,
@@ -524,7 +524,7 @@ function Register() {
       confirmPassword: '',
       phone: '',
       nik: '',
-      employeeId: '',
+      //employeeId: '',
       department: '',
       position: '',
       address: ''
