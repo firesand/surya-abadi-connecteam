@@ -1,7 +1,7 @@
 // src/components/Auth/Register.jsx
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '../../config/firebase';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,8 @@ function Register() {
   const [error, setError] = useState('');
   const [showRecovery, setShowRecovery] = useState(false);
   const [registrationStep, setRegistrationStep] = useState('form'); // 'form', 'processing', 'success', 'error'
+  const [employeeIdError, setEmployeeIdError] = useState('');
+  const [isCheckingEmployeeId, setIsCheckingEmployeeId] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,6 +41,50 @@ function Register() {
       ...prev,
       [name]: value
     }));
+
+    // Validate Employee ID format
+    if (name === 'employeeId') {
+      validateEmployeeId(value);
+    }
+  };
+
+  // Validate Employee ID format and check for duplicates
+  const validateEmployeeId = async (employeeId) => {
+    setEmployeeIdError('');
+    
+    // Check format: EMP-SA-x-x-x where x are numbers
+    const formatRegex = /^EMP-SA-\d{1,3}-\d{1,3}-\d{1,3}$/;
+    
+    if (!employeeId) {
+      setEmployeeIdError('ID Karyawan harus diisi');
+      return false;
+    }
+    
+    if (!formatRegex.test(employeeId)) {
+      setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)');
+      return false;
+    }
+    
+    // Check for duplicates in Firestore
+    setIsCheckingEmployeeId(true);
+    try {
+      const employeesRef = collection(db, 'users');
+      const q = query(employeesRef, where('employeeId', '==', employeeId));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        setEmployeeIdError('ID Karyawan sudah terpakai');
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error checking employee ID:', error);
+      setEmployeeIdError('Error saat memeriksa ID Karyawan');
+      return false;
+    } finally {
+      setIsCheckingEmployeeId(false);
+    }
   };
 
   const handlePhotoChange = (e) => {
@@ -68,6 +114,13 @@ function Register() {
 
     if (formData.password.length < 6) {
       setError('Password minimal 6 karakter');
+      return;
+    }
+
+    // Validate Employee ID
+    const isEmployeeIdValid = await validateEmployeeId(formData.employeeId);
+    if (!isEmployeeIdValid) {
+      setError('ID Karyawan tidak valid atau sudah terpakai');
       return;
     }
 
@@ -756,15 +809,31 @@ function Register() {
                 <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
                   ID Karyawan *
                 </label>
-                <input
-                  id="employeeId"
-                  name="employeeId"
-                  type="text"
-                  required
-                  value={formData.employeeId}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                />
+                <div className="relative">
+                  <input
+                    id="employeeId"
+                    name="employeeId"
+                    type="text"
+                    required
+                    placeholder="EMP-SA-001-001-001"
+                    value={formData.employeeId}
+                    onChange={handleInputChange}
+                    className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
+                      employeeIdError ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                  />
+                  {isCheckingEmployeeId && (
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
+                    </div>
+                  )}
+                </div>
+                {employeeIdError && (
+                  <p className="mt-1 text-sm text-red-600">{employeeIdError}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  Format: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)
+                </p>
               </div>
 
               <div>
@@ -781,15 +850,10 @@ function Register() {
                 >
                   <option value="">Pilih Departemen</option>
                   <option value="IT">IT</option>
-                  <option value="HR">HR</option>
-                  <option value="Finance">Finance</option>
+                  <option value="Keuangan">Keuangan</option>
+                  <option value="Pajak">Pajak</option>
                   <option value="Marketing">Marketing</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Operations">Operations</option>
-                  <option value="Production">Production</option>
-                  <option value="Quality Control">Quality Control</option>
-                  <option value="Maintenance">Maintenance</option>
-                  <option value="Logistics">Logistics</option>
+                  <option value="Umum">Umum</option>
                 </select>
               </div>
 
