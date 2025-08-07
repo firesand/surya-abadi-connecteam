@@ -801,9 +801,9 @@ function Register() {
               </div>
             </div>
 
-            {/* Employee Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Data Karyawan</h3>
+          //  {/* Employee Information */}
+          //  <div className="space-y-4">
+          //    <h3 className="text-lg font-medium text-gray-900">Data Karyawan</h3>
               
            // // <div>
            //    // <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
