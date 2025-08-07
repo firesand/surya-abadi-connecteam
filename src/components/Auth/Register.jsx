@@ -52,8 +52,8 @@ function Register() {
   const validateEmployeeId = async (employeeId) => {
     setEmployeeIdError('');
     
-    // Check format: EMP-SA-x-x-x where x are numbers
-    const formatRegex = /^EMP-SA-\d{1,3}-\d{1,3}-\d{1,3}$/;
+    // Check format: EMP-SA-x-x-x where x are single digits
+    const formatRegex = /^EMP-SA-\d-\d-\d$/;
     
     if (!employeeId) {
       setEmployeeIdError('ID Karyawan harus diisi');
@@ -61,7 +61,7 @@ function Register() {
     }
     
     if (!formatRegex.test(employeeId)) {
-      setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)');
+      setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)');
       return false;
     }
     
@@ -815,7 +815,7 @@ function Register() {
                     name="employeeId"
                     type="text"
                     required
-                    placeholder="EMP-SA-001-001-001"
+                    placeholder="EMP-SA-0-0-1"
                     value={formData.employeeId}
                     onChange={handleInputChange}
                     className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
@@ -832,7 +832,7 @@ function Register() {
                   <p className="mt-1 text-sm text-red-600">{employeeIdError}</p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
-                  Format: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)
+                  Format: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)
                 </p>
               </div>
 
@@ -853,6 +853,8 @@ function Register() {
                   <option value="Keuangan">Keuangan</option>
                   <option value="Pajak">Pajak</option>
                   <option value="Marketing">Marketing</option>
+                  <option value="Manajemen">Manajemen</option>
+                  <option value="Operation">Operation</option>
                   <option value="Umum">Umum</option>
                 </select>
               </div>

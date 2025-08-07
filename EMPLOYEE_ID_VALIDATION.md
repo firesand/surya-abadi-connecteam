@@ -4,11 +4,11 @@
 
 ### **1. Update Daftar Departemen:**
 - **✅ Dihapus:** Sales, Proyek
-- **✅ Departemen Final:** IT, Keuangan, Pajak, Marketing, Umum
+- **✅ Departemen Final:** IT, Keuangan, Pajak, Marketing, Manajemen, Operation, Umum
 
 ### **2. Validasi Format ID Karyawan:**
 - **✅ Format Standar:** EMP-SA-x-x-x
-- **✅ Validasi Format:** Regex `/^EMP-SA-\d{1,3}-\d{1,3}-\d{1,3}$/`
+- **✅ Validasi Format:** Regex `/^EMP-SA-\d-\d-\d$/`
 - **✅ Cek Duplikat:** Validasi real-time di Firestore
 - **✅ Error Handling:** Pesan error yang informatif
 
@@ -18,11 +18,11 @@
 
 ### **1. Format Validation:**
 ```javascript
-// Check format: EMP-SA-x-x-x where x are numbers
-const formatRegex = /^EMP-SA-\d{1,3}-\d{1,3}-\d{1,3}$/;
+// Check format: EMP-SA-x-x-x where x are single digits
+const formatRegex = /^EMP-SA-\d-\d-\d$/;
 
 if (!formatRegex.test(employeeId)) {
-  setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)');
+  setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)');
   return false;
 }
 ```
@@ -64,7 +64,7 @@ const handleInputChange = (e) => {
     name="employeeId"
     type="text"
     required
-    placeholder="EMP-SA-001-001-001"
+    placeholder="EMP-SA-0-0-1"
     value={formData.employeeId}
     onChange={handleInputChange}
     className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
@@ -81,7 +81,7 @@ const handleInputChange = (e) => {
   <p className="mt-1 text-sm text-red-600">{employeeIdError}</p>
 )}
 <p className="mt-1 text-xs text-gray-500">
-  Format: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)
+  Format: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)
 </p>
 ```
 
@@ -105,7 +105,15 @@ const handleInputChange = (e) => {
 - **Deskripsi:** Departemen yang menangani pemasaran dan promosi
 - **Tanggung Jawab:** Strategi marketing, branding, promosi, market research
 
-### **5. Umum**
+### **5. Manajemen**
+- **Deskripsi:** Departemen yang menangani strategi dan kepemimpinan perusahaan
+- **Tanggung Jawab:** Strategic planning, leadership, corporate governance
+
+### **6. Operation**
+- **Deskripsi:** Departemen yang menangani operasional dan produksi
+- **Tanggung Jawab:** Production management, operational efficiency, process optimization
+
+### **7. Umum**
 - **Deskripsi:** Departemen yang menangani urusan umum dan administrasi
 - **Tanggung Jawab:** Administrasi, general affairs, facility management
 
@@ -119,16 +127,16 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 ```
 
 ### **Contoh Valid:**
-- `EMP-SA-001-001-001` ✅
-- `EMP-SA-002-001-001` ✅
-- `EMP-SA-001-002-001` ✅
-- `EMP-SA-001-001-002` ✅
+- `EMP-SA-0-0-1` ✅
+- `EMP-SA-0-0-3` ✅
+- `EMP-SA-1-0-1` ✅
+- `EMP-SA-2-1-0` ✅
 
 ### **Contoh Invalid:**
-- `EMP-SA-0001-001-001` ❌ (4 digit)
-- `EMP-SA-001-001` ❌ (kurang 1 bagian)
-- `EMP-SA-001-001-001-001` ❌ (lebih 1 bagian)
-- `EMP-SA-A01-001-001` ❌ (huruf di bagian angka)
+- `EMP-SA-00-0-1` ❌ (2 digit di bagian pertama)
+- `EMP-SA-0-0` ❌ (kurang 1 bagian)
+- `EMP-SA-0-0-1-1` ❌ (lebih 1 bagian)
+- `EMP-SA-A-0-1` ❌ (huruf di bagian angka)
 
 ---
 
@@ -136,9 +144,9 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 
 ### **1. Format Validation:**
 - **Prefix:** Harus dimulai dengan "EMP-SA-"
-- **Bagian 1:** 1-3 digit angka (departemen)
-- **Bagian 2:** 1-3 digit angka (urutan)
-- **Bagian 3:** 1-3 digit angka (sub-urutan)
+- **Bagian 1:** 1 digit angka (departemen)
+- **Bagian 2:** 1 digit angka (urutan)
+- **Bagian 3:** 1 digit angka (sub-urutan)
 - **Separator:** Menggunakan "-" sebagai pemisah
 
 ### **2. Duplicate Check:**
@@ -148,7 +156,7 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 - **Error Message:** "ID Karyawan sudah terpakai"
 
 ### **3. Error Handling:**
-- **Format Error:** "Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-001-001-001)"
+- **Format Error:** "Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)"
 - **Duplicate Error:** "ID Karyawan sudah terpakai"
 - **Network Error:** "Error saat memeriksa ID Karyawan"
 - **Empty Error:** "ID Karyawan harus diisi"
@@ -158,12 +166,12 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 ## 📊 **TESTING CHECKLIST:**
 
 ### **Department Update:**
-- [ ] **Dropdown Options** - Menampilkan 5 departemen (IT, Keuangan, Pajak, Marketing, Umum)
+- [ ] **Dropdown Options** - Menampilkan 7 departemen (IT, Keuangan, Pajak, Marketing, Manajemen, Operation, Umum)
 - [ ] **No Sales/Proyek** - Departemen Sales dan Proyek tidak ada
 - [ ] **Form Validation** - Form tidak bisa disubmit tanpa memilih departemen
 
 ### **Employee ID Validation:**
-- [ ] **Format Validation** - Menerima format EMP-SA-x-x-x
+- [ ] **Format Validation** - Menerima format EMP-SA-x-x-x (single digit)
 - [ ] **Real-time Check** - Validasi saat mengetik
 - [ ] **Duplicate Check** - Mencegah ID yang sudah ada
 - [ ] **Error Display** - Menampilkan pesan error yang jelas
@@ -171,7 +179,7 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 - [ ] **Submit Validation** - Form tidak bisa disubmit jika ID invalid
 
 ### **UI/UX:**
-- [ ] **Placeholder** - Menampilkan contoh format
+- [ ] **Placeholder** - Menampilkan contoh format EMP-SA-0-0-1
 - [ ] **Error Styling** - Border merah saat error
 - [ ] **Help Text** - Menampilkan format yang benar
 - [ ] **Loading Indicator** - Spinner saat checking duplicate
@@ -181,7 +189,7 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 ## 🚀 **DEPLOYMENT STATUS:**
 
 ### **✅ IMPLEMENTED:**
-- ✅ **Department Update** - Daftar departemen diperbarui (5 departemen)
+- ✅ **Department Update** - Daftar departemen diperbarui (7 departemen)
 - ✅ **Employee ID Format** - Format EMP-SA-x-x-x
 - ✅ **Real-time Validation** - Validasi saat mengetik
 - ✅ **Duplicate Check** - Cek duplikat di Firestore
@@ -220,7 +228,7 @@ EMP-SA-[Departemen]-[Urutan]-[Sub-Urutan]
 
 **RESULT:** Employee ID validation and department update implemented successfully! 🆔
 
-**Department Update:** ✅ Removed Sales and Proyek, 5 departments remaining
+**Department Update:** ✅ Removed Sales and Proyek, 7 departments remaining
 **Employee ID Format:** ✅ EMP-SA-x-x-x format with validation
 **Real-time Validation:** ✅ Duplicate check in Firestore
 **User Experience:** ✅ Clear error messages and loading states
