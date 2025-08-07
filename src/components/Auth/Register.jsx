@@ -43,8 +43,8 @@ function Register() {
     }));
 
     // Validate Employee ID format
-    if (name === 'employeeId') {
-      validateEmployeeId(value);
+    //if (name === 'employeeId') {
+      //validateEmployeeId(value);
     }
   };
 
