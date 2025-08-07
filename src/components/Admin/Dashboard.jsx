@@ -30,16 +30,14 @@ import {
 import { adminPasswordReset } from '../../services/adminPasswordReset';
 import AdminNotificationPanel from './NotificationPanel';
 import DeleteEmployeeModal from './DeleteEmployeeModal';
+import DailyReminderPanel from './DailyReminderPanel';
+import { ADMIN_CONFIG, validateAdminConfig } from '../../config/adminConfig';
 
 function AdminDashboard() {
   const navigate = useNavigate();
 
-  // Admin Configuration - UPDATE THESE WITH YOUR ACTUAL INFO!
-  const ADMIN_CONFIG = {
-    phone: '08118062231', // Replace with actual admin phone
-    email: 'firesand@gmail.com', // Replace with actual admin email
-    name: 'Admin HR' // Admin name for notifications
-  };
+  // Admin Configuration is now imported from adminConfig.js
+  // Update the configuration in src/config/adminConfig.js
 
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -907,6 +905,16 @@ function AdminDashboard() {
     🔔 App Updates
     </button>
     <button
+    onClick={() => setActiveTab('daily-reminders')}
+    className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
+      activeTab === 'daily-reminders'
+      ? 'border-green-500 text-green-600'
+      : 'border-transparent text-gray-500 hover:text-gray-700'
+    }`}
+    >
+    📱 Daily Reminders
+    </button>
+    <button
     onClick={() => setActiveTab('reports')}
     className={`py-3 px-3 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
       activeTab === 'reports'
@@ -1368,6 +1376,11 @@ function AdminDashboard() {
     {/* App Updates Tab */}
     {activeTab === 'notifications' && (
       <AdminNotificationPanel />
+    )}
+
+    {/* Daily Reminders Tab */}
+    {activeTab === 'daily-reminders' && (
+      <DailyReminderPanel />
     )}
 
     {/* Monthly Reports Tab */}

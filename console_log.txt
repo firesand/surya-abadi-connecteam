@@ -1,0 +1,364 @@
+{nik: '1234567890123456', role: 'admin', email: 'admin@suryaabadi.com', isActive: true, registeredAt: _Timestamp, …}
+Dashboard.jsx:113 Fetching pending registrations...
+Dashboard.jsx:125 Pending registrations loaded: 0
+Dashboard.jsx:126 Registration details: []
+Dashboard.jsx:142 Fetching employees...
+Dashboard.jsx:125 Pending registrations loaded: 0
+Dashboard.jsx:126 Registration details: []
+Dashboard.jsx:142 Fetching employees...
+Dashboard.jsx:153 Employees loaded: 15
+Dashboard.jsx:162 Fetching today's attendances...
+Dashboard.jsx:153 Employees loaded: 15
+Dashboard.jsx:162 Fetching today's attendances...
+Dashboard.jsx:174 Today's attendances loaded: 0
+Dashboard.jsx:182 Calculating stats with fetched data...
+Dashboard.jsx:183 Employees data: (15) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Dashboard.jsx:184 Employees count: 15
+Dashboard.jsx:185 Employee details: (15) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Dashboard.jsx:192 Attendances data: []
+Dashboard.jsx:193 Registrations data: []
+Dashboard.jsx:209 Stats calculated: {totalEmployees: 15, activeEmployees: 15, suspendedEmployees: 0, presentToday: 0, pendingApprovals: 0, …}
+Dashboard.jsx:224 Admin dashboard data fetch completed successfully
+Dashboard.jsx:174 Today's attendances loaded: 0
+Dashboard.jsx:182 Calculating stats with fetched data...
+Dashboard.jsx:183 Employees data: (15) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Dashboard.jsx:184 Employees count: 15
+Dashboard.jsx:185 Employee details: (15) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Dashboard.jsx:192 Attendances data: []
+Dashboard.jsx:193 Registrations data: []
+Dashboard.jsx:209 Stats calculated: {totalEmployees: 15, activeEmployees: 15, suspendedEmployees: 0, presentToday: 0, pendingApprovals: 0, …}
+Dashboard.jsx:224 Admin dashboard data fetch completed successfully
+whiteScreenDebug.js:40 🔍 White screen detection: {timestamp: '2025-08-07T16:34:14.742Z', bodyChildren: 4, rootExists: true, rootChildren: 1, rootText: 'Version: 1.0.0Update: NoneChecking: NoCheckForceSA…ts reserved.Developed by Hikmahtiar Studio (2025)', …}
+whiteScreenDebug.js:40 🔍 White screen detection: {timestamp: '2025-08-07T16:34:14.743Z', bodyChildren: 4, rootExists: true, rootChildren: 1, rootText: 'Version: 1.0.0Update: NoneChecking: NoCheckForceSA…ts reserved.Developed by Hikmahtiar Studio (2025)', …}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'all', reminderMethod: 'both', selectedEmployees: 0, employees: 0, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'all', reminderMethod: 'both', selectedEmployees: 0, employees: 0, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'all', reminderMethod: 'both', selectedEmployees: 0, employees: 0, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'all', reminderMethod: 'both', selectedEmployees: 0, employees: 0, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'all', reminderMethod: 'both', selectedEmployees: 0, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'all', reminderMethod: 'both', selectedEmployees: 0, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'both', selectedEmployees: 0, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'both', selectedEmployees: 0, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 0, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 0, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 1, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 1, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 2, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 2, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:60 🔧 handleSendReminders called
+DailyReminderPanel.jsx:61 🔧 Current state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: Array(3), selectedDepartment: '', selectedEmployeeId: '', …}
+DailyReminderPanel.jsx:75 Debug - Reminder Options: {type: 'selected', method: 'whatsapp_only', selectedEmployees: Array(3), department: '', employeeId: '', …}
+DailyReminderPanel.jsx:85 Debug - REMINDER_TYPES: (5) ['all', 'selected', 'single', 'department', 'status']
+DailyReminderPanel.jsx:86 Debug - REMINDER_METHODS: (5) ['whatsapp', 'email', 'both', 'whatsapp_only', 'email_only']
+DailyReminderPanel.jsx:87 Debug - Type check: true
+DailyReminderPanel.jsx:88 Debug - Method check: true
+DailyReminderPanel.jsx:94 Debug - Sanitized values: {type: 'selected', method: 'whatsapp_only'}
+DailyReminderPanel.jsx:100 🔍 About to validate options: {type: 'selected', method: 'whatsapp_only', selectedEmployees: Array(3), department: '', employeeId: ''}
+dailyReminderService.js:424 validateReminderOptions - Input options: {type: 'selected', method: 'whatsapp_only', selectedEmployees: Array(3), department: '', employeeId: ''}
+dailyReminderService.js:425 validateReminderOptions - REMINDER_TYPES: {ALL_EMPLOYEES: 'all', SELECTED_EMPLOYEES: 'selected', SINGLE_EMPLOYEE: 'single', BY_DEPARTMENT: 'department', BY_STATUS: 'status'}
+dailyReminderService.js:426 validateReminderOptions - REMINDER_METHODS: {WHATSAPP: 'whatsapp', EMAIL: 'email', BOTH: 'both', WHATSAPP_ONLY: 'whatsapp_only', EMAIL_ONLY: 'email_only'}
+dailyReminderService.js:433 validateReminderOptions - Valid types: (5) ['all', 'selected', 'single', 'department', 'status']
+dailyReminderService.js:434 validateReminderOptions - Input type: selected
+dailyReminderService.js:435 validateReminderOptions - Type check result: true
+dailyReminderService.js:447 validateReminderOptions - Valid methods: (5) ['whatsapp', 'email', 'both', 'whatsapp_only', 'email_only']
+dailyReminderService.js:448 validateReminderOptions - Input method: whatsapp_only
+dailyReminderService.js:449 validateReminderOptions - Method check result: true
+dailyReminderService.js:468 validateReminderOptions - Final errors: []
+DailyReminderPanel.jsx:116 🔍 Validation result: {isValid: true, errors: Array(0)}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+whatsappService.js:207 Sent 1/3 messages
+dailyReminderService.js:380 Error logging bulk reminder: FirebaseError: Missing or insufficient permissions.
+logBulkReminderSent @ dailyReminderService.js:380
+await in logBulkReminderSent
+sendBulkReminders @ dailyReminderService.js:230
+sendDailyReminders @ dailyReminderService.js:323
+await in sendDailyReminders
+handleSendReminders @ DailyReminderPanel.jsx:135
+executeDispatch @ react-dom_client.js?v=71cd5202:11736
+runWithFiberInDEV @ react-dom_client.js?v=71cd5202:1485
+processDispatchQueue @ react-dom_client.js?v=71cd5202:11772
+(anonymous) @ react-dom_client.js?v=71cd5202:12182
+batchedUpdates$1 @ react-dom_client.js?v=71cd5202:2628
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=71cd5202:11877
+dispatchEvent @ react-dom_client.js?v=71cd5202:14792
+dispatchDiscreteEvent @ react-dom_client.js?v=71cd5202:14773Understand this error
+dailyReminderService.js:372  POST https://firestore.googleapis.com/google.firestore.v1.Firestore/Write/channel?VER=8&database=projects%2Fsuryaabadi-connecteam%2Fdatabases%2F(default)&gsessionid=TyQPzEdK24s0tvl6o2XQM8E9bsm8IbEln0Q19QO2DVA&SID=FC120p8HS0Q_0qMs9zsOJA&RID=68421&TYPE=terminate&zx=ey27fkgmbmbj 400 (Bad Request)
+gc @ firebase_firestore.js?v=8f19f6af:2147
+Y2.close @ firebase_firestore.js?v=8f19f6af:2491
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12686
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12651
+ab @ firebase_firestore.js?v=8f19f6af:950
+F2 @ firebase_firestore.js?v=8f19f6af:920
+Z2.ta @ firebase_firestore.js?v=8f19f6af:2540
+Rb @ firebase_firestore.js?v=8f19f6af:1419
+M2.Y @ firebase_firestore.js?v=8f19f6af:1284
+M2.ca @ firebase_firestore.js?v=8f19f6af:1215
+ab @ firebase_firestore.js?v=8f19f6af:950
+F2 @ firebase_firestore.js?v=8f19f6af:920
+Wc @ firebase_firestore.js?v=8f19f6af:1954
+h.bb @ firebase_firestore.js?v=8f19f6af:1949
+h.Ea @ firebase_firestore.js?v=8f19f6af:1946
+Lc @ firebase_firestore.js?v=8f19f6af:1846
+h.Pa @ firebase_firestore.js?v=8f19f6af:1813
+Promise.then
+Nc @ firebase_firestore.js?v=8f19f6af:1804
+h.Pa @ firebase_firestore.js?v=8f19f6af:1814
+Promise.then
+Nc @ firebase_firestore.js?v=8f19f6af:1804
+h.Sa @ firebase_firestore.js?v=8f19f6af:1800
+Promise.then
+h.send @ firebase_firestore.js?v=8f19f6af:1781
+h.ea @ firebase_firestore.js?v=8f19f6af:1922
+Jb @ firebase_firestore.js?v=8f19f6af:1208
+fd @ firebase_firestore.js?v=8f19f6af:2341
+h.Fa @ firebase_firestore.js?v=8f19f6af:2308
+Da @ firebase_firestore.js?v=8f19f6af:669
+Promise.then
+x2 @ firebase_firestore.js?v=8f19f6af:663
+ec @ firebase_firestore.js?v=8f19f6af:2294
+Rb @ firebase_firestore.js?v=8f19f6af:1416
+M2.Y @ firebase_firestore.js?v=8f19f6af:1284
+M2.ca @ firebase_firestore.js?v=8f19f6af:1215
+ab @ firebase_firestore.js?v=8f19f6af:950
+F2 @ firebase_firestore.js?v=8f19f6af:920
+Wc @ firebase_firestore.js?v=8f19f6af:1954
+h.bb @ firebase_firestore.js?v=8f19f6af:1949
+h.Ea @ firebase_firestore.js?v=8f19f6af:1946
+Lc @ firebase_firestore.js?v=8f19f6af:1846
+h.Pa @ firebase_firestore.js?v=8f19f6af:1813
+Promise.then
+Nc @ firebase_firestore.js?v=8f19f6af:1804
+h.Sa @ firebase_firestore.js?v=8f19f6af:1800
+Promise.then
+h.send @ firebase_firestore.js?v=8f19f6af:1781
+h.ea @ firebase_firestore.js?v=8f19f6af:1922
+Jb @ firebase_firestore.js?v=8f19f6af:1203
+Hb @ firebase_firestore.js?v=8f19f6af:1178
+h.Ga @ firebase_firestore.js?v=8f19f6af:2228
+Da @ firebase_firestore.js?v=8f19f6af:669
+Promise.then
+x2 @ firebase_firestore.js?v=8f19f6af:663
+fc @ firebase_firestore.js?v=8f19f6af:2172
+h.connect @ firebase_firestore.js?v=8f19f6af:2132
+Y2.m @ firebase_firestore.js?v=8f19f6af:2488
+Yo @ firebase_firestore.js?v=8f19f6af:12645
+send @ firebase_firestore.js?v=8f19f6af:12536
+q_ @ firebase_firestore.js?v=8f19f6af:12852
+ra @ firebase_firestore.js?v=8f19f6af:13055
+__PRIVATE_onWriteStreamOpen @ firebase_firestore.js?v=8f19f6af:13407
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12930
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12954
+(anonymous) @ firebase_firestore.js?v=8f19f6af:16040
+(anonymous) @ firebase_firestore.js?v=8f19f6af:16071
+Promise.then
+cc @ firebase_firestore.js?v=8f19f6af:16071
+enqueue @ firebase_firestore.js?v=8f19f6af:16040
+enqueueAndForget @ firebase_firestore.js?v=8f19f6af:16022
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12954
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12930
+__ @ firebase_firestore.js?v=8f19f6af:12542
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12692
+setTimeout
+T_ @ firebase_firestore.js?v=8f19f6af:12691
+j_ @ firebase_firestore.js?v=8f19f6af:13034
+G_ @ firebase_firestore.js?v=8f19f6af:12927
+(anonymous) @ firebase_firestore.js?v=8f19f6af:12917
+Promise.then
+auth @ firebase_firestore.js?v=8f19f6af:12913
+start @ firebase_firestore.js?v=8f19f6af:12812
+start @ firebase_firestore.js?v=8f19f6af:13028
+__PRIVATE_startWriteStream @ firebase_firestore.js?v=8f19f6af:13404
+__PRIVATE_fillWritePipeline @ firebase_firestore.js?v=8f19f6af:13390
+await in __PRIVATE_fillWritePipeline
+__PRIVATE_syncEngineWrite @ firebase_firestore.js?v=8f19f6af:14408
+await in __PRIVATE_syncEngineWrite
+(anonymous) @ firebase_firestore.js?v=8f19f6af:18051
+await in (anonymous)
+(anonymous) @ firebase_firestore.js?v=8f19f6af:16040
+(anonymous) @ firebase_firestore.js?v=8f19f6af:16071
+Promise.then
+cc @ firebase_firestore.js?v=8f19f6af:16071
+enqueue @ firebase_firestore.js?v=8f19f6af:16040
+enqueueAndForget @ firebase_firestore.js?v=8f19f6af:16022
+__PRIVATE_firestoreClientWrite @ firebase_firestore.js?v=8f19f6af:18051
+executeWrite @ firebase_firestore.js?v=8f19f6af:18052
+addDoc @ firebase_firestore.js?v=8f19f6af:17901
+logBulkReminderSent @ dailyReminderService.js:372
+sendBulkReminders @ dailyReminderService.js:230
+sendDailyReminders @ dailyReminderService.js:323
+await in sendDailyReminders
+handleSendReminders @ DailyReminderPanel.jsx:135
+executeDispatch @ react-dom_client.js?v=71cd5202:11736
+runWithFiberInDEV @ react-dom_client.js?v=71cd5202:1485
+processDispatchQueue @ react-dom_client.js?v=71cd5202:11772
+(anonymous) @ react-dom_client.js?v=71cd5202:12182
+batchedUpdates$1 @ react-dom_client.js?v=71cd5202:2628
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=71cd5202:11877
+dispatchEvent @ react-dom_client.js?v=71cd5202:14792
+dispatchDiscreteEvent @ react-dom_client.js?v=71cd5202:14773Understand this error
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+DailyReminderPanel.jsx:14 🚀 DailyReminderPanel component loaded
+DailyReminderPanel.jsx:185 🎨 DailyReminderPanel rendering with state: {reminderType: 'selected', reminderMethod: 'whatsapp_only', selectedEmployees: 3, employees: 16, statistics: {…}}
+whatsappService.js:207 Sent 2/3 messages
+whatsappService.js:207 Sent 3/3 messages
