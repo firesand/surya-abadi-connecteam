@@ -21,7 +21,7 @@ function Register() {
     confirmPassword: '',
     phone: '',
     nik: '',
-    employeeId: '',
+    //employeeId: '',
     department: '',
     position: '',
     address: ''
