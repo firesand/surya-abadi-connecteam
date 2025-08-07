@@ -32,7 +32,7 @@ function Register() {
   const [error, setError] = useState('');
   const [showRecovery, setShowRecovery] = useState(false);
   const [registrationStep, setRegistrationStep] = useState('form'); // 'form', 'processing', 'success', 'error'
-  const [employeeIdError, setEmployeeIdError] = useState('');
+  //const [employeeIdError, setEmployeeIdError] = useState('');
   const [isCheckingEmployeeId, setIsCheckingEmployeeId] = useState(false);
 
   const handleInputChange = (e) => {
