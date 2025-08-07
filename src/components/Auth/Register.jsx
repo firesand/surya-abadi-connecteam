@@ -562,4 +562,16 @@ function Register() {
 
               {/* Instructions */}
               <div className="text-xs text-gray-500 text-center">
-             
+             >
+                  Login di sini
+                </button>
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Register;
