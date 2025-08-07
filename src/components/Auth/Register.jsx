@@ -49,21 +49,21 @@ function Register() {
   };
 
   // Validate Employee ID format and check for duplicates
-  const validateEmployeeId = async (employeeId) => {
-    setEmployeeIdError('');
+  //const validateEmployeeId = async (employeeId) => {
+    //setEmployeeIdError('');
     
     // Check format: EMP-SA-x-x-x where x are single digits
-    const formatRegex = /^EMP-SA-\d-\d-\d$/;
+    //const formatRegex = /^EMP-SA-\d-\d-\d$/;
     
     //if (!employeeId) {
      // setEmployeeIdError('ID Karyawan harus diisi');
       //return false;
-    }
+   // }
     
-    if (!formatRegex.test(employeeId)) {
-      setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)');
-      return false;
-    }
+   // if (!formatRegex.test(employeeId)) {
+    //  setEmployeeIdError('Format ID Karyawan: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)');
+     // return false;
+   // }
     
     // Check for duplicates in Firestore
     setIsCheckingEmployeeId(true);
