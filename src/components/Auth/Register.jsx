@@ -805,36 +805,36 @@ function Register() {
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-900">Data Karyawan</h3>
               
-              <div>
-                <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
-                  ID Karyawan *
-                </label>
-                <div className="relative">
-                  <input
-                    id="employeeId"
-                    name="employeeId"
-                    type="text"
-                    required
-                    placeholder="EMP-SA-0-0-1"
-                    value={formData.employeeId}
-                    onChange={handleInputChange}
-                    className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
-                      employeeIdError ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                  {isCheckingEmployeeId && (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
-                    </div>
-                  )}
-                </div>
-                {employeeIdError && (
-                  <p className="mt-1 text-sm text-red-600">{employeeIdError}</p>
-                )}
-                <p className="mt-1 text-xs text-gray-500">
-                  Format: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)
-                </p>
-              </div>
+           //   <div>
+           //     <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
+              //    ID Karyawan *
+          //     </label>
+            //    <div className="relative">
+             //     <input
+              //      id="employeeId"
+               //     name="employeeId"
+                //    type="text"
+              //      required
+                //    placeholder="EMP-SA-0-0-1"
+                //    value={formData.employeeId}
+                  //  onChange={handleInputChange}
+                  //  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
+             //         employeeIdError ? 'border-red-300' : 'border-gray-300'
+             //       }`}
+             //     />
+             //     {isCheckingEmployeeId && (
+                 //   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  //    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
+         //           </div>
+           //       )}
+           //     </div>
+            //    {employeeIdError && (
+           //       <p className="mt-1 text-sm text-red-600">{employeeIdError}</p>
+            //    )}
+            //    <p className="mt-1 text-xs text-gray-500">
+            //      Format: EMP-SA-x-x-x (contoh: EMP-SA-0-0-1)
+            //    </p>
+            //  </div>
 
               <div>
                 <label htmlFor="department" className="block text-sm font-medium text-gray-700">
