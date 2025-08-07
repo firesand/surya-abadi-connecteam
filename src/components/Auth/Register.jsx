@@ -35,18 +35,18 @@ function Register() {
   //const [employeeIdError, setEmployeeIdError] = useState('');
   //const [isCheckingEmployeeId, setIsCheckingEmployeeId] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  //const handleInputChange = (e) => {
+  //  const { name, value } = e.target;
+   // setFormData(prev => ({
+    //  ...prev,
+    //  [name]: value
+  //  }));
 
     // Validate Employee ID format
     //if (name === 'employeeId') {
       //validateEmployeeId(value);
-    }
-  };
+ //   }
+//  };
 
   // Validate Employee ID format and check for duplicates
   //const validateEmployeeId = async (employeeId) => {
