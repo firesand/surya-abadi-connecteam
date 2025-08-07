@@ -55,9 +55,9 @@ function Register() {
     // Check format: EMP-SA-x-x-x where x are single digits
     const formatRegex = /^EMP-SA-\d-\d-\d$/;
     
-    if (!employeeId) {
-      setEmployeeIdError('ID Karyawan harus diisi');
-      return false;
+    //if (!employeeId) {
+     // setEmployeeIdError('ID Karyawan harus diisi');
+      //return false;
     }
     
     if (!formatRegex.test(employeeId)) {
