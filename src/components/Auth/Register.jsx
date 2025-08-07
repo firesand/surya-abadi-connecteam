@@ -66,26 +66,26 @@ function Register() {
    // }
     
     // Check for duplicates in Firestore
-    setIsCheckingEmployeeId(true);
-    try {
-      const employeesRef = collection(db, 'users');
-      const q = query(employeesRef, where('employeeId', '==', employeeId));
-      const querySnapshot = await getDocs(q);
+    //setIsCheckingEmployeeId(true);
+    //try {
+      //const employeesRef = collection(db, 'users');
+      //const q = query(employeesRef, where('employeeId', '==', employeeId));
+      //const querySnapshot = await getDocs(q);
       
-      if (!querySnapshot.empty) {
-        setEmployeeIdError('ID Karyawan sudah terpakai');
-        return false;
-      }
+    //  if (!querySnapshot.empty) {
+     //   setEmployeeIdError('ID Karyawan sudah terpakai');
+     //   return false;
+     // }
       
-      return true;
-    } catch (error) {
-      console.error('Error checking employee ID:', error);
-      setEmployeeIdError('Error saat memeriksa ID Karyawan');
-      return false;
-    } finally {
-      setIsCheckingEmployeeId(false);
-    }
-  };
+   //   return true;
+   // } catch (error) {
+    //  console.error('Error checking employee ID:', error);
+    //  setEmployeeIdError('Error saat memeriksa ID Karyawan');
+    //  return false;
+    //} finally {
+    //  setIsCheckingEmployeeId(false);
+   // }
+  //};
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
