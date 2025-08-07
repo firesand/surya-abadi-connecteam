@@ -562,4 +562,339 @@ function Register() {
 
               {/* Instructions */}
               <div className="text-xs text-gray-500 text-center">
-             
+                <p>Jika masalah berlanjut, silakan:</p>
+                <p>1. Clear cache browser</p>
+                <p>2. Restart aplikasi</p>
+                <p>3. Hubungi support</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show processing state
+  if (registrationStep === 'processing') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 mx-auto"></div>
+          <h2 className="mt-4 text-xl font-semibold text-gray-800">Memproses Registrasi...</h2>
+          <p className="mt-2 text-gray-600">Mohon tunggu, jangan tutup halaman ini</p>
+
+          {/* Progress indicators */}
+          <div className="mt-6 space-y-2">
+            <div className="flex items-center justify-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              <span className="text-sm text-gray-600">Membuat akun...</span>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              <span className="text-sm text-gray-600">Mengunggah foto...</span>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              <span className="text-sm text-gray-600">Menyimpan data...</span>
+            </div>
+          </div>
+
+          {/* Cancel button */}
+          <button
+            onClick={() => {
+              setRegistrationStep('form');
+              setLoading(false);
+              setIsSubmitting(false);
+            }}
+            className="mt-6 text-red-600 hover:text-red-700 text-sm"
+          >
+            Batalkan
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show success state
+  if (registrationStep === 'success') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-16 w-16 bg-green-500 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl">✅</span>
+          </div>
+          <h2 className="mt-4 text-xl font-semibold text-gray-800">Registrasi Berhasil!</h2>
+          <p className="mt-2 text-gray-600">Akun Anda sedang menunggu persetujuan admin</p>
+          <p className="mt-1 text-sm text-gray-500">Anda akan dialihkan ke halaman utama...</p>
+
+          <div className="mt-6 space-y-3">
+            <button
+              onClick={() => window.location.href = '/'}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Lanjut ke Halaman Utama
+            </button>
+            <button
+              onClick={handleGoToLogin}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Login Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Main registration form
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Registrasi Karyawan
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Silakan isi data diri Anda dengan lengkap
+          </p>
+        </div>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="bg-white shadow-lg rounded-lg p-6 space-y-4">
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">
+                      {error}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Personal Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Data Pribadi</h3>
+
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  Nama Lengkap *
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email *
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  Nomor Telepon *
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="nik" className="block text-sm font-medium text-gray-700">
+                  NIK *
+                </label>
+                <input
+                  id="nik"
+                  name="nik"
+                  type="text"
+                  required
+                  value={formData.nik}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              
+              {/* ID Karyawan field has been removed - no longer required */}
+            </div>
+
+            {/* Job Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Data Pekerjaan</h3>
+
+              <div>
+                <label htmlFor="department" className="block text-sm font-medium text-gray-700">
+                  Departemen *
+                </label>
+                <select
+                  id="department"
+                  name="department"
+                  required
+                  value={formData.department}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                >
+                  <option value="">Pilih Departemen</option>
+                  <option value="Operation">Operation</option>
+                  <option value="Finance">Finance</option>
+                  <option value="HR">HR</option>
+                  <option value="IT">IT</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="position" className="block text-sm font-medium text-gray-700">
+                  Jabatan *
+                </label>
+                <input
+                  id="position"
+                  name="position"
+                  type="text"
+                  required
+                  value={formData.position}
+                  onChange={handleInputChange}
+                  placeholder="Contoh: Manajer Operasi, Staff Admin, dll"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                  Alamat *
+                </label>
+                <textarea
+                  id="address"
+                  name="address"
+                  required
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  rows="3"
+                  placeholder="Alamat lengkap tempat tinggal"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+            </div>
+
+            {/* Photo Upload */}
+            <div>
+              <label htmlFor="photo" className="block text-sm font-medium text-gray-700">
+                Foto Profil (Opsional)
+              </label>
+              <input
+                id="photo"
+                name="photo"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Format: JPG, PNG, GIF. Maksimal 5MB
+              </p>
+            </div>
+
+            {/* Password Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Keamanan Akun</h3>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password *
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Minimal 6 karakter"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+                <p className="mt-1 text-xs text-gray-500">Minimal 6 karakter</p>
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                  Konfirmasi Password *
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Masukkan password yang sama"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading || isSubmitting}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                  loading || isSubmitting
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
+                }`}
+              >
+                {loading || isSubmitting ? 'Memproses...' : 'Daftar'}
+              </button>
+            </div>
+
+            {/* Login Link */}
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Sudah punya akun?{' '}
+                <button
+                  type="button"
+                  onClick={handleGoToLogin}
+                  className="font-medium text-green-600 hover:text-green-500"
+                >
+                  Login di sini
+                </button>
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Register;
