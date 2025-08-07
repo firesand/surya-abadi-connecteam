@@ -118,11 +118,11 @@ function Register() {
     }
 
     // Validate Employee ID
-    const isEmployeeIdValid = await validateEmployeeId(formData.employeeId);
-    if (!isEmployeeIdValid) {
-      setError('ID Karyawan tidak valid atau sudah terpakai');
-      return;
-    }
+    //const isEmployeeIdValid = await validateEmployeeId(formData.employeeId);
+    //if (!isEmployeeIdValid) {
+     // setError('ID Karyawan tidak valid atau sudah terpakai');
+     // return;
+    //}
 
     setError('');
     setLoading(true);
@@ -213,7 +213,7 @@ function Register() {
         email: formData.email,
         phone: formData.phone,
         nik: formData.nik,
-        employeeId: formData.employeeId,
+       // employeeId: formData.employeeId,
         department: formData.department,
         position: formData.position,
         address: formData.address,
