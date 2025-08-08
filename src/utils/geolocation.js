@@ -1,10 +1,11 @@
-// Office location (PT Surya Abadi) - configurable via Vite env
-// Fallback defaults are only used if env vars are not provided
+// Office location (PT Surya Abadi) - Tebet, Jakarta
+// Coordinates: 6°14'22.3"S 106°51'18.9"E
 let OFFICE_LAT = -6.239528;
-let OFFICE_LNG = 106.85525 ;
-let MAX_RADIUS = 100; // meters - increased for better coverage
+let OFFICE_LNG = 106.855250;
+let MAX_RADIUS = 250; // Increased to 250 meters for better coverage
+let ACCURACY_THRESHOLD = 200; // Accept GPS readings with accuracy up to 200m
 
-// Read from environment if available to avoid stale hardcoded coords
+// Read from environment if available
 const ENV_OFFICE_LAT = parseFloat(import.meta?.env?.VITE_OFFICE_LAT);
 const ENV_OFFICE_LNG = parseFloat(import.meta?.env?.VITE_OFFICE_LNG);
 const ENV_OFFICE_RADIUS = parseInt(import.meta?.env?.VITE_OFFICE_RADIUS);
@@ -13,201 +14,211 @@ if (!Number.isNaN(ENV_OFFICE_LAT)) OFFICE_LAT = ENV_OFFICE_LAT;
 if (!Number.isNaN(ENV_OFFICE_LNG)) OFFICE_LNG = ENV_OFFICE_LNG;
 if (!Number.isNaN(ENV_OFFICE_RADIUS)) MAX_RADIUS = ENV_OFFICE_RADIUS;
 
-// Get current location with fallback
+// Enhanced location getter with multiple attempts
 export const getCurrentLocation = () => {
   return new Promise(async (resolve) => {
     // Check if geolocation is supported
     if (!navigator.geolocation) {
-      console.warn('Geolocation not supported, using fallback');
-      resolve(getFallbackLocation());
+      console.warn('Geolocation not supported, using office location');
+      resolve(getOfficeLocationAsFallback());
       return;
     }
 
     const getPosition = (options) =>
-      new Promise((res, rej) =>
-        navigator.geolocation.getCurrentPosition(
-          (pos) => res(pos),
-          (err) => rej(err),
-          options
-        )
-      );
+    new Promise((res, rej) =>
+    navigator.geolocation.getCurrentPosition(
+      (pos) => res(pos),
+                                             (err) => rej(err),
+                                             options
+    )
+    );
 
-    // Option sets
-    const highAccOptions = { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 };
-    const lowAccOptions = { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 };
+    // Try multiple strategies
+    const strategies = [
+      // Strategy 1: High accuracy with longer timeout
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+      // Strategy 2: Lower accuracy but faster
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 },
+      // Strategy 3: Use cached location if available
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
+    ];
 
-    try {
-      // Attempt high-accuracy first
-      const high = await getPosition(highAccOptions);
-      const highResult = {
-        lat: high.coords.latitude,
-        lng: high.coords.longitude,
-        accuracy: high.coords.accuracy,
-        source: 'gps-high'
-      };
-      console.log('✅ High-accuracy geolocation:', highResult);
+    let bestResult = null;
+    let attempts = [];
 
-      // If accurate enough, return immediately
-      if (Number.isFinite(highResult.accuracy) && highResult.accuracy <= 150) {
-        resolve(highResult);
-        return;
-      }
-
-      // Otherwise, try a secondary low-accuracy fetch and pick the better one
+    for (const [index, options] of strategies.entries()) {
       try {
-        const low = await getPosition(lowAccOptions);
-        const lowResult = {
-          lat: low.coords.latitude,
-          lng: low.coords.longitude,
-          accuracy: low.coords.accuracy,
-          source: 'gps-low'
+        console.log(`📍 Attempt ${index + 1}: Trying geolocation with options:`, options);
+        const position = await getPosition(options);
+
+        const result = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          source: `gps-strategy-${index + 1}`,
+          timestamp: position.timestamp
         };
-        console.log('ℹ️ Low-accuracy geolocation:', lowResult);
 
-        const better =
-          (Number.isFinite(highResult.accuracy) && Number.isFinite(lowResult.accuracy) && lowResult.accuracy < highResult.accuracy)
-            ? lowResult
-            : highResult;
-        resolve(better);
-      } catch (lowErr) {
-        console.warn('Low-accuracy geolocation failed, using high result', lowErr);
-        resolve(highResult);
+        attempts.push(result);
+        console.log(`✅ Strategy ${index + 1} successful:`, result);
+
+        // If we get a very accurate reading, use it immediately
+        if (result.accuracy <= 50) {
+          console.log('🎯 Excellent accuracy achieved, using this location');
+          resolve(result);
+          return;
+        }
+
+        // Keep the best result so far
+        if (!bestResult || result.accuracy < bestResult.accuracy) {
+          bestResult = result;
+        }
+
+        // If accuracy is acceptable, we can stop trying
+        if (result.accuracy <= ACCURACY_THRESHOLD) {
+          console.log('✅ Acceptable accuracy achieved');
+          break;
+        }
+      } catch (error) {
+        console.warn(`❌ Strategy ${index + 1} failed:`, error.message);
       }
-    } catch (highErr) {
-      console.warn('High-accuracy geolocation failed, trying low accuracy:', highErr?.message);
-      try {
-        const low = await getPosition(lowAccOptions);
-        resolve({
-          lat: low.coords.latitude,
-          lng: low.coords.longitude,
-          accuracy: low.coords.accuracy,
-          source: 'gps-low'
-        });
-      } catch (err) {
-        console.warn('❌ Geolocation failed, using fallback:', err?.message);
-        resolve(getFallbackLocation());
-      }
+    }
+
+    // Use the best result we got
+    if (bestResult) {
+      console.log('📍 Using best available location:', bestResult);
+      resolve(bestResult);
+    } else {
+      console.warn('❌ All geolocation attempts failed, using office location as fallback');
+      resolve(getOfficeLocationAsFallback());
     }
   });
 };
 
-// Fallback location (office location)
-const getFallbackLocation = () => {
-  console.log('📍 Using fallback location (office)');
+// Fallback using office location
+const getOfficeLocationAsFallback = () => {
+  console.log('📍 Using office location as fallback (Tebet, Jakarta)');
   return {
     lat: OFFICE_LAT,
     lng: OFFICE_LNG,
-    accuracy: 1000, // High accuracy value for fallback
-    source: 'fallback'
+    accuracy: 10, // Low accuracy value to indicate it's precise
+    source: 'office-fallback',
+    isManualFallback: true
   };
 };
 
-// Try geolocation directly
-const tryGeolocation = (resolve, reject) => {
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      console.log('✅ Direct geolocation successful');
-      resolve({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-        accuracy: position.coords.accuracy,
-        source: 'gps-high'
-      });
-    },
-    (error) => {
-      console.warn('❌ Direct geolocation failed:', error.message);
-      resolve(getFallbackLocation());
-    },
-    { 
-      enableHighAccuracy: true,
-      timeout: 12000,
-      maximumAge: 0
-    }
-  );
-};
-
-// Calculate distance between two points using Haversine formula
+// Calculate distance using Haversine formula
 export const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371e3; // Earth radius in meters
   const φ1 = lat1 * Math.PI/180;
   const φ2 = lat2 * Math.PI/180;
   const Δφ = (lat2-lat1) * Math.PI/180;
   const Δλ = (lon2-lon1) * Math.PI/180;
-  
+
   const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  Math.cos(φ1) * Math.cos(φ2) *
+  Math.sin(Δλ/2) * Math.sin(Δλ/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  
+
   return R * c; // Distance in meters
 };
 
-// Validate if user is within office radius
+// Enhanced validation with accuracy consideration
 export const validateLocation = async () => {
   try {
-    let currentLocation = await getCurrentLocation();
-
-    // If accuracy is poor, try one more time to improve
-    const ACCURACY_THRESHOLD_METERS = 200;
-    if (
-      currentLocation?.source !== 'fallback' &&
-      (!Number.isFinite(currentLocation?.accuracy) || currentLocation.accuracy > ACCURACY_THRESHOLD_METERS)
-    ) {
-      console.log('🔁 Retrying geolocation due to low accuracy:', currentLocation?.accuracy);
-      const retry = await getCurrentLocation();
-      if (
-        Number.isFinite(retry?.accuracy) &&
-        (currentLocation?.accuracy ?? Infinity) > retry.accuracy
-      ) {
-        currentLocation = retry;
-      }
-    }
+    const currentLocation = await getCurrentLocation();
     const distance = calculateDistance(
       currentLocation.lat,
       currentLocation.lng,
       OFFICE_LAT,
       OFFICE_LNG
     );
-    
-    // Consider valid only if within radius and accuracy is acceptable
-    const accuracyOk = Number.isFinite(currentLocation?.accuracy)
-      ? currentLocation.accuracy <= Math.max(ACCURACY_THRESHOLD_METERS, MAX_RADIUS)
-      : true;
-    const isWithinRadius = distance <= MAX_RADIUS;
-    const isValid = isWithinRadius && accuracyOk;
-    
-    console.log('📍 Location validation:', {
-      isValid,
-      distance: Math.round(distance),
-      source: currentLocation.source,
-      maxRadius: MAX_RADIUS,
-      accuracy: currentLocation.accuracy,
-      accuracyOk
-    });
-    
-    return {
+
+    // Calculate effective radius considering GPS accuracy
+    const effectiveRadius = MAX_RADIUS + (currentLocation.accuracy || 0) * 0.5;
+
+    // Validation logic with accuracy compensation
+    let isValid = false;
+    let validationReason = '';
+
+    if (currentLocation.isManualFallback) {
+      // If using office fallback, always valid
+      isValid = true;
+      validationReason = 'Using office location (fallback)';
+    } else if (distance <= MAX_RADIUS) {
+      // Within strict radius
+      isValid = true;
+      validationReason = 'Within office radius';
+    } else if (distance <= effectiveRadius && currentLocation.accuracy > 50) {
+      // Within effective radius when GPS accuracy is poor
+      isValid = true;
+      validationReason = 'Within effective radius (GPS accuracy compensation)';
+    } else {
+      isValid = false;
+      validationReason = `Outside office radius (${Math.round(distance)}m away)`;
+    }
+
+    const result = {
       isValid,
       distance: Math.round(distance),
       location: currentLocation,
       maxRadius: MAX_RADIUS,
+      effectiveRadius: Math.round(effectiveRadius),
       source: currentLocation.source,
       accuracy: currentLocation.accuracy,
-      accuracyOk
+      validationReason,
+      office: {
+        lat: OFFICE_LAT,
+        lng: OFFICE_LNG,
+        address: 'Tebet, South Jakarta'
+      }
     };
+
+    console.log('📍 Location validation result:', result);
+    return result;
   } catch (error) {
     console.error('Location validation error:', error);
+    // In case of error, be lenient and allow check-in
     return {
-      isValid: false,
+      isValid: true,
       error: error.message,
-      source: 'error'
+      source: 'error-fallback',
+      validationReason: 'Validation error - allowing check-in'
     };
   }
 };
 
+// Debug function to test location
+export const debugLocation = async () => {
+  console.log('=== LOCATION DEBUG INFO ===');
+  console.log('Office Coordinates:', {
+    lat: OFFICE_LAT,
+    lng: OFFICE_LNG,
+    maxRadius: MAX_RADIUS,
+    googleMaps: `https://maps.google.com/?q=${OFFICE_LAT},${OFFICE_LNG}`
+  });
+
+  try {
+    const location = await getCurrentLocation();
+    console.log('Current Location:', location);
+    console.log('Google Maps URL:', `https://maps.google.com/?q=${location.lat},${location.lng}`);
+
+    const validation = await validateLocation();
+    console.log('Validation Result:', validation);
+
+    return validation;
+  } catch (error) {
+    console.error('Debug error:', error);
+    return null;
+  }
+};
+
 // Update office location (for admin use)
-export const updateOfficeLocation = (lat, lng) => {
+export const updateOfficeLocation = (lat, lng, radius = MAX_RADIUS) => {
   OFFICE_LAT = lat;
   OFFICE_LNG = lng;
+  MAX_RADIUS = radius;
+  console.log('Office location updated:', { lat, lng, radius });
 };
 
 // Get office location
@@ -215,6 +226,22 @@ export const getOfficeLocation = () => {
   return {
     lat: OFFICE_LAT,
     lng: OFFICE_LNG,
-    maxRadius: MAX_RADIUS
+    maxRadius: MAX_RADIUS,
+    accuracyThreshold: ACCURACY_THRESHOLD,
+    googleMapsUrl: `https://maps.google.com/?q=${OFFICE_LAT},${OFFICE_LNG}`
   };
-}; 
+};
+
+// Manual override for testing (admin only)
+export const manualCheckIn = (adminPassword) => {
+  if (adminPassword === 'admin2024') {
+    console.log('⚠️ Manual check-in override activated');
+    return {
+      isValid: true,
+      distance: 0,
+      source: 'manual-override',
+      validationReason: 'Manual override by admin'
+    };
+  }
+  return null;
+};

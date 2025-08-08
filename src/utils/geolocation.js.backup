@@ -1,0 +1,220 @@
+// Office location (PT Surya Abadi) - configurable via Vite env
+// Fallback defaults are only used if env vars are not provided
+let OFFICE_LAT = -6.239528;
+let OFFICE_LNG = 106.85525 ;
+let MAX_RADIUS = 250; // meters - increased for better coverage
+
+// Read from environment if available to avoid stale hardcoded coords
+const ENV_OFFICE_LAT = parseFloat(import.meta?.env?.VITE_OFFICE_LAT);
+const ENV_OFFICE_LNG = parseFloat(import.meta?.env?.VITE_OFFICE_LNG);
+const ENV_OFFICE_RADIUS = parseInt(import.meta?.env?.VITE_OFFICE_RADIUS);
+
+if (!Number.isNaN(ENV_OFFICE_LAT)) OFFICE_LAT = ENV_OFFICE_LAT;
+if (!Number.isNaN(ENV_OFFICE_LNG)) OFFICE_LNG = ENV_OFFICE_LNG;
+if (!Number.isNaN(ENV_OFFICE_RADIUS)) MAX_RADIUS = ENV_OFFICE_RADIUS;
+
+// Get current location with fallback
+export const getCurrentLocation = () => {
+  return new Promise(async (resolve) => {
+    // Check if geolocation is supported
+    if (!navigator.geolocation) {
+      console.warn('Geolocation not supported, using fallback');
+      resolve(getFallbackLocation());
+      return;
+    }
+
+    const getPosition = (options) =>
+      new Promise((res, rej) =>
+        navigator.geolocation.getCurrentPosition(
+          (pos) => res(pos),
+          (err) => rej(err),
+          options
+        )
+      );
+
+    // Option sets
+    const highAccOptions = { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 };
+    const lowAccOptions = { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 };
+
+    try {
+      // Attempt high-accuracy first
+      const high = await getPosition(highAccOptions);
+      const highResult = {
+        lat: high.coords.latitude,
+        lng: high.coords.longitude,
+        accuracy: high.coords.accuracy,
+        source: 'gps-high'
+      };
+      console.log('✅ High-accuracy geolocation:', highResult);
+
+      // If accurate enough, return immediately
+      if (Number.isFinite(highResult.accuracy) && highResult.accuracy <= 150) {
+        resolve(highResult);
+        return;
+      }
+
+      // Otherwise, try a secondary low-accuracy fetch and pick the better one
+      try {
+        const low = await getPosition(lowAccOptions);
+        const lowResult = {
+          lat: low.coords.latitude,
+          lng: low.coords.longitude,
+          accuracy: low.coords.accuracy,
+          source: 'gps-low'
+        };
+        console.log('ℹ️ Low-accuracy geolocation:', lowResult);
+
+        const better =
+          (Number.isFinite(highResult.accuracy) && Number.isFinite(lowResult.accuracy) && lowResult.accuracy < highResult.accuracy)
+            ? lowResult
+            : highResult;
+        resolve(better);
+      } catch (lowErr) {
+        console.warn('Low-accuracy geolocation failed, using high result', lowErr);
+        resolve(highResult);
+      }
+    } catch (highErr) {
+      console.warn('High-accuracy geolocation failed, trying low accuracy:', highErr?.message);
+      try {
+        const low = await getPosition(lowAccOptions);
+        resolve({
+          lat: low.coords.latitude,
+          lng: low.coords.longitude,
+          accuracy: low.coords.accuracy,
+          source: 'gps-low'
+        });
+      } catch (err) {
+        console.warn('❌ Geolocation failed, using fallback:', err?.message);
+        resolve(getFallbackLocation());
+      }
+    }
+  });
+};
+
+// Fallback location (office location)
+const getFallbackLocation = () => {
+  console.log('📍 Using fallback location (office)');
+  return {
+    lat: OFFICE_LAT,
+    lng: OFFICE_LNG,
+    accuracy: 1000, // High accuracy value for fallback
+    source: 'fallback'
+  };
+};
+
+// Try geolocation directly
+const tryGeolocation = (resolve, reject) => {
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      console.log('✅ Direct geolocation successful');
+      resolve({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        source: 'gps-high'
+      });
+    },
+    (error) => {
+      console.warn('❌ Direct geolocation failed:', error.message);
+      resolve(getFallbackLocation());
+    },
+    { 
+      enableHighAccuracy: true,
+      timeout: 12000,
+      maximumAge: 0
+    }
+  );
+};
+
+// Calculate distance between two points using Haversine formula
+export const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = lat1 * Math.PI/180;
+  const φ2 = lat2 * Math.PI/180;
+  const Δφ = (lat2-lat1) * Math.PI/180;
+  const Δλ = (lon2-lon1) * Math.PI/180;
+  
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  
+  return R * c; // Distance in meters
+};
+
+// Validate if user is within office radius
+export const validateLocation = async () => {
+  try {
+    let currentLocation = await getCurrentLocation();
+
+    // If accuracy is poor, try one more time to improve
+    const ACCURACY_THRESHOLD_METERS = 200;
+    if (
+      currentLocation?.source !== 'fallback' &&
+      (!Number.isFinite(currentLocation?.accuracy) || currentLocation.accuracy > ACCURACY_THRESHOLD_METERS)
+    ) {
+      console.log('🔁 Retrying geolocation due to low accuracy:', currentLocation?.accuracy);
+      const retry = await getCurrentLocation();
+      if (
+        Number.isFinite(retry?.accuracy) &&
+        (currentLocation?.accuracy ?? Infinity) > retry.accuracy
+      ) {
+        currentLocation = retry;
+      }
+    }
+    const distance = calculateDistance(
+      currentLocation.lat,
+      currentLocation.lng,
+      OFFICE_LAT,
+      OFFICE_LNG
+    );
+    
+    // Consider valid only if within radius and accuracy is acceptable
+    const accuracyOk = Number.isFinite(currentLocation?.accuracy)
+      ? currentLocation.accuracy <= Math.max(ACCURACY_THRESHOLD_METERS, MAX_RADIUS)
+      : true;
+    const isWithinRadius = distance <= MAX_RADIUS;
+    const isValid = isWithinRadius && accuracyOk;
+    
+    console.log('📍 Location validation:', {
+      isValid,
+      distance: Math.round(distance),
+      source: currentLocation.source,
+      maxRadius: MAX_RADIUS,
+      accuracy: currentLocation.accuracy,
+      accuracyOk
+    });
+    
+    return {
+      isValid,
+      distance: Math.round(distance),
+      location: currentLocation,
+      maxRadius: MAX_RADIUS,
+      source: currentLocation.source,
+      accuracy: currentLocation.accuracy,
+      accuracyOk
+    };
+  } catch (error) {
+    console.error('Location validation error:', error);
+    return {
+      isValid: false,
+      error: error.message,
+      source: 'error'
+    };
+  }
+};
+
+// Update office location (for admin use)
+export const updateOfficeLocation = (lat, lng) => {
+  OFFICE_LAT = lat;
+  OFFICE_LNG = lng;
+};
+
+// Get office location
+export const getOfficeLocation = () => {
+  return {
+    lat: OFFICE_LAT,
+    lng: OFFICE_LNG,
+    maxRadius: MAX_RADIUS
+  };
+}; 
