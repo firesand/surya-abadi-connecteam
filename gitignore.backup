@@ -25,13 +25,3 @@ dist-ssr
 
 # Backup directories
 backup_local_*/
-
-# Environment files - IMPORTANT FOR SECURITY
-.env
-.env.local
-.env.production
-.env.development
-.env.*.local
-
-# Keep example file
-!.env.example
