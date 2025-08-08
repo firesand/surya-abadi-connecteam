@@ -40,7 +40,7 @@ Pagi ${employeeName}! ☀️
 *Reminder Check-in Hari Ini*
 
 ⏰ Jam Kerja: 08:00 - 17:00 WIB
-📍 Lokasi: Dalam radius 50m dari kantor
+📍 Lokasi: Dalam radius 1500m dari kantor
 
 Jangan lupa untuk:
 ✅ Check-in tepat waktu

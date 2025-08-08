@@ -50,7 +50,7 @@ export { storage };
 export const OFFICE_CONFIG = {
   lat: parseFloat(import.meta.env.VITE_OFFICE_LAT) || -6.230000,
   lng: parseFloat(import.meta.env.VITE_OFFICE_LNG) || 106.850000,
-  radius: parseInt(import.meta.env.VITE_OFFICE_RADIUS) || 1500
+  radius: parseInt(import.meta.env.VITE_OFFICE_RADIUS) || 500
 };
 
 export default app;

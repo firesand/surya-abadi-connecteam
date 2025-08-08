@@ -38,12 +38,35 @@ function EmployeeDashboard() {
   // Office radius from centralized geolocation util (env-driven)
   const { maxRadius: OFFICE_RADIUS } = getOfficeLocation();
 
+  // Utility function untuk deteksi browser dan device
+  const detectDevice = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    return {
+      isIOS: /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream,
+      isAndroid: /android/i.test(userAgent),
+      isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent),
+      isSafari: /^((?!chrome|android).)*safari/i.test(userAgent),
+      isChrome: /chrome|chromium|crios/i.test(userAgent),
+      isFirefox: /firefox|fxios/i.test(userAgent)
+    };
+  };
+
   // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Log device info for debugging
+  useEffect(() => {
+    const device = detectDevice();
+    console.log('Device info:', device);
+    console.log('User Agent:', navigator.userAgent);
+    console.log('Platform:', navigator.platform);
+    console.log('Vendor:', navigator.vendor);
   }, []);
 
   // Fetch user data and today's attendance
@@ -157,9 +180,13 @@ function EmployeeDashboard() {
     return true;
   };
 
-  // Initialize camera
+  // Initialize camera with enhanced mobile support
   const startCamera = async (type) => {
     setCheckType(type);
+    setShowCamera(false);
+
+    const device = detectDevice();
+    console.log('Starting camera for device:', device);
 
     // First validate location
     const isLocationValid = await validateLocation();
@@ -168,17 +195,125 @@ function EmployeeDashboard() {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
-        audio: false
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported');
       }
-      setShowCamera(true);
+
+      // Different constraints for different devices
+      let constraints;
+
+      if (device.isIOS) {
+        // iOS specific constraints
+        constraints = {
+          video: {
+            facingMode: 'user'
+          },
+          audio: false
+        };
+      } else if (device.isAndroid) {
+        // Android specific constraints
+        constraints = {
+          video: {
+            facingMode: { ideal: 'user' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        };
+      } else {
+        // Desktop/other
+        constraints = {
+          video: {
+            width: { min: 640, ideal: 1280, max: 1920 },
+            height: { min: 480, ideal: 720, max: 1080 },
+            facingMode: 'user'
+          },
+          audio: false
+        };
+      }
+
+      console.log('Using constraints:', constraints);
+
+      // Try to get camera stream with fallback
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (e) {
+        console.log('Failed with ideal constraints, trying basic...');
+        // Fallback to basic constraints
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+      }
+
+      if (!videoRef.current) {
+        throw new Error('Video element not ready');
+      }
+
+      // Set stream to video element
+      videoRef.current.srcObject = stream;
+
+      // Wait for video to be ready
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Video load timeout'));
+        }, 5000);
+
+        videoRef.current.onloadedmetadata = () => {
+          clearTimeout(timeout);
+          videoRef.current.play()
+          .then(() => {
+            console.log('Video playing successfully');
+            setShowCamera(true);
+            resolve();
+          })
+          .catch(reject);
+        };
+
+        videoRef.current.onerror = (e) => {
+          clearTimeout(timeout);
+          reject(new Error('Video error: ' + e.message));
+        };
+      });
+
     } catch (error) {
-      console.error('Error accessing camera:', error);
-      alert('Unable to access camera. Please check permissions.');
+      console.error('Camera error:', error);
+      handleCameraError(error, type);
+    }
+  };
+
+  // Better error handling for camera
+  const handleCameraError = (error, type) => {
+    let message = 'Tidak dapat mengakses kamera.';
+
+    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+      message = 'Akses kamera ditolak. Silakan izinkan akses kamera di pengaturan browser/aplikasi.';
+    } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+      message = 'Kamera tidak ditemukan pada perangkat ini.';
+    } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+      message = 'Kamera sedang digunakan aplikasi lain. Tutup aplikasi lain dan coba lagi.';
+    } else if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
+      message = 'Kamera tidak mendukung pengaturan yang diminta.';
+    } else if (error.message.includes('https')) {
+      message = 'Kamera hanya dapat diakses melalui koneksi aman (HTTPS).';
+    }
+
+    alert(message + '\n\nAnda dapat melanjutkan check-in tanpa foto.');
+
+    // Offer to continue without photo
+    const confirmWithoutPhoto = window.confirm(
+      'Lanjutkan check-in tanpa foto?'
+    );
+
+    if (confirmWithoutPhoto) {
+      setIsProcessing(true);
+      if (type === 'in') {
+        processCheckIn('').finally(() => setIsProcessing(false));
+      } else {
+        processCheckOut('').finally(() => setIsProcessing(false));
+      }
     }
   };
 
@@ -193,49 +328,153 @@ function EmployeeDashboard() {
     setLocationError('');
   };
 
-  // Capture photo
+  // Enhanced capture photo with better error handling
   const capturePhoto = async () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    if (!videoRef.current || !canvasRef.current) {
+      console.error('Video or canvas reference not available');
+      alert('Camera tidak siap. Silakan coba lagi.');
+      return;
+    }
 
     setIsProcessing(true);
 
     try {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0);
+      // Pastikan video sudah siap
+      if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        console.log('Video not ready, waiting...');
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Convert to blob
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
-
-      // Upload to Firebase Storage
-      const timestamp = Date.now();
-      const fileName = `${auth.currentUser.uid}_${checkType}_${timestamp}.jpg`;
-      const storageRef = ref(storage, `attendances/${auth.currentUser.uid}/${fileName}`);
-
-      await uploadBytes(storageRef, blob);
-      const photoUrl = await getDownloadURL(storageRef);
-
-      // Process check-in or check-out
-      if (checkType === 'in') {
-        await processCheckIn(photoUrl);
-      } else {
-        await processCheckOut(photoUrl);
+        if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+          throw new Error('Video stream not ready');
+        }
       }
 
-      stopCamera();
+      const context = canvas.getContext('2d');
+
+      // Set canvas dimensions sesuai video
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+
+      console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+
+      // Draw video frame to canvas (with mirror effect removed for actual capture)
+      context.save();
+      // If you want to keep the mirror effect in the captured image, uncomment the next two lines:
+      // context.scale(-1, 1);
+      // context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      // Otherwise, use normal drawing:
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      context.restore();
+
+      // Convert canvas to blob dengan fallback
+      let blob;
+
+      // Method 1: Modern browsers
+      if (canvas.toBlob) {
+        blob = await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Blob creation timeout'));
+          }, 5000);
+
+          canvas.toBlob(
+            (blobResult) => {
+              clearTimeout(timeout);
+              if (blobResult) {
+                resolve(blobResult);
+              } else {
+                reject(new Error('Failed to create blob'));
+              }
+            },
+            'image/jpeg',
+            0.8
+          );
+        });
+      }
+      // Method 2: Fallback untuk browser lama
+      else {
+        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+        const response = await fetch(dataURL);
+        blob = await response.blob();
+      }
+
+      if (!blob) {
+        throw new Error('Failed to create image blob');
+      }
+
+      console.log('Blob created successfully, size:', blob.size);
+
+      // Upload to Firebase Storage dengan error handling
+      try {
+        const timestamp = Date.now();
+        const fileName = `${auth.currentUser.uid}_${checkType}_${timestamp}.jpg`;
+        const storageRef = ref(storage, `attendances/${auth.currentUser.uid}/${fileName}`);
+
+        console.log('Uploading photo to Firebase...');
+        const uploadSnapshot = await uploadBytes(storageRef, blob);
+        const photoUrl = await getDownloadURL(uploadSnapshot.ref);
+        console.log('Photo uploaded successfully:', photoUrl);
+
+        // Process check-in or check-out
+        if (checkType === 'in') {
+          await processCheckIn(photoUrl);
+        } else {
+          await processCheckOut(photoUrl);
+        }
+
+        stopCamera();
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError);
+
+        // Jika upload gagal, coba lanjutkan tanpa foto
+        const confirmWithoutPhoto = window.confirm(
+          'Gagal upload foto. Lanjutkan check-in tanpa foto?'
+        );
+
+        if (confirmWithoutPhoto) {
+          if (checkType === 'in') {
+            await processCheckIn(''); // Empty photo URL
+          } else {
+            await processCheckOut('');
+          }
+          stopCamera();
+        }
+      }
     } catch (error) {
       console.error('Error capturing photo:', error);
-      alert('Failed to capture photo. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        videoReady: videoRef.current?.readyState,
+        canvasAvailable: !!canvasRef.current
+      });
+
+      // Berikan opsi untuk melanjutkan tanpa foto
+      const confirmWithoutPhoto = window.confirm(
+        `Gagal mengambil foto: ${error.message}\n\nLanjutkan check-in tanpa foto?`
+      );
+
+      if (confirmWithoutPhoto) {
+        try {
+          if (checkType === 'in') {
+            await processCheckIn('');
+          } else {
+            await processCheckOut('');
+          }
+          stopCamera();
+        } catch (processError) {
+          console.error('Process error:', processError);
+          alert('Gagal memproses attendance. Silakan coba lagi.');
+        }
+      }
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Process check-in
+  // Process check-in with null photo support
   const processCheckIn = async (photoUrl) => {
     try {
       const now = new Date();
@@ -249,7 +488,7 @@ function EmployeeDashboard() {
         checkIn: serverTimestamp(),
         checkInTime: now.toISOString(),
         checkInLocation: location,
-        checkInPhoto: photoUrl,
+        checkInPhoto: photoUrl || null, // Allow null photo
         status: isLate ? 'late' : 'ontime',
         checkOut: null,
         checkOutLocation: null,
@@ -266,18 +505,19 @@ function EmployeeDashboard() {
         checkIn: Timestamp.fromDate(now)
       });
 
-      alert(`Check-in successful! Status: ${isLate ? 'Late' : 'On Time'}`);
+      const photoStatus = photoUrl ? 'dengan foto' : 'tanpa foto';
+      alert(`Check-in berhasil ${photoStatus}!\nStatus: ${isLate ? 'Terlambat' : 'Tepat Waktu'}`);
     } catch (error) {
       console.error('Error processing check-in:', error);
-      alert('Failed to process check-in. Please try again.');
+      alert('Gagal memproses check-in. Silakan coba lagi.');
     }
   };
 
-  // Process check-out
+  // Process check-out with null photo support
   const processCheckOut = async (photoUrl) => {
     try {
       if (!todayAttendance) {
-        alert('No check-in found for today!');
+        alert('Tidak ada check-in untuk hari ini!');
         return;
       }
 
@@ -289,7 +529,7 @@ function EmployeeDashboard() {
         checkOut: serverTimestamp(),
                       checkOutTime: now.toISOString(),
                       checkOutLocation: location,
-                      checkOutPhoto: photoUrl,
+                      checkOutPhoto: photoUrl || null, // Allow null photo
                       workHours: parseFloat(workHours.toFixed(2))
       });
 
@@ -298,14 +538,15 @@ function EmployeeDashboard() {
         ...todayAttendance,
         checkOut: Timestamp.fromDate(now),
                          checkOutLocation: location,
-                         checkOutPhoto: photoUrl,
+                         checkOutPhoto: photoUrl || null,
                          workHours: parseFloat(workHours.toFixed(2))
       });
 
-      alert(`Check-out successful! Work hours: ${workHours.toFixed(2)} hours`);
+      const photoStatus = photoUrl ? 'dengan foto' : 'tanpa foto';
+      alert(`Check-out berhasil ${photoStatus}!\nJam kerja: ${workHours.toFixed(2)} jam`);
     } catch (error) {
       console.error('Error processing check-out:', error);
-      alert('Failed to process check-out. Please try again.');
+      alert('Gagal memproses check-out. Silakan coba lagi.');
     }
   };
 
@@ -352,7 +593,7 @@ function EmployeeDashboard() {
     <p className="text-sm text-gray-600">Employee Dashboard</p>
     </div>
     </div>
-    
+
     {/* Navigation Menu */}
     <div className="flex items-center space-x-4">
     <nav className="hidden md:flex space-x-4">
@@ -387,7 +628,7 @@ function EmployeeDashboard() {
     Payroll Request
     </button>
     </nav>
-    
+
     <button
     onClick={handleLogout}
     className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
@@ -523,9 +764,20 @@ function EmployeeDashboard() {
       ref={videoRef}
       autoPlay
       playsInline
+      muted
+      webkit-playsinline="true"
       className="w-full"
+      style={{
+        maxWidth: '100%',
+        height: 'auto',
+        transform: 'scaleX(-1)' // Mirror effect untuk selfie
+      }}
       />
-      <canvas ref={canvasRef} className="hidden" />
+      <canvas
+      ref={canvasRef}
+      className="hidden"
+      style={{ display: 'none' }}
+      />
       </div>
 
       {location && (
@@ -553,7 +805,7 @@ function EmployeeDashboard() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-        Capture Photo
+        Ambil Foto
         </>
       )}
       </button>
@@ -562,7 +814,30 @@ function EmployeeDashboard() {
       disabled={isProcessing}
       className="px-6 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors disabled:opacity-50"
       >
-      Cancel
+      Batal
+      </button>
+      </div>
+
+      {/* Tambah tombol alternatif untuk mobile */}
+      <div className="mt-3 text-center">
+      <button
+      onClick={() => {
+        stopCamera();
+        const confirmWithoutPhoto = window.confirm(
+          'Lanjutkan check-in tanpa foto?'
+        );
+        if (confirmWithoutPhoto) {
+          setIsProcessing(true);
+          if (checkType === 'in') {
+            processCheckIn('').finally(() => setIsProcessing(false));
+          } else {
+            processCheckOut('').finally(() => setIsProcessing(false));
+          }
+        }
+      }}
+      className="text-sm text-gray-500 underline"
+      >
+      Skip foto (lanjut tanpa foto)
       </button>
       </div>
       </div>

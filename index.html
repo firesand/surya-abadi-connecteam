@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
-    
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#00A651" />
     <meta name="description" content="Sistem Absensi & HR Management PT Surya Abadi" />
@@ -16,9 +16,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="SA Connecteam" />
 
-    <!-- Update viewport untuk better mobile experience -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
+    <!-- Update viewport untuk better mobile experience dan camera support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- Camera & Media Permissions -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta http-equiv="Permissions-Policy" content="camera=(self), geolocation=(self)">
+
     <!-- PWA Icons -->
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
@@ -28,48 +32,70 @@
     <meta property="og:description" content="Sistem Absensi & HR Management PT Surya Abadi" />
     <meta property="og:image" content="/logo512.png" />
     <meta property="og:type" content="website" />
-    
+
     <!-- Preconnect to Firebase -->
     <link rel="preconnect" href="https://firestore.googleapis.com" />
     <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
     <link rel="preconnect" href="https://securetoken.googleapis.com" />
-    
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+
     <title>Surya Abadi Connecteam</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    
+
+    <!-- Camera Permission Check & Fix -->
+    <script>
+      // Check camera availability on load
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        console.log('✅ Camera API supported');
+
+        // Pre-check camera permissions
+        navigator.mediaDevices.enumerateDevices()
+          .then(devices => {
+            const cameras = devices.filter(device => device.kind === 'videoinput');
+            console.log('📷 Available cameras:', cameras.length);
+            if (cameras.length === 0) {
+              console.warn('⚠️ No cameras detected');
+            }
+          })
+          .catch(err => console.error('❌ Error checking devices:', err));
+      } else {
+        console.warn('⚠️ Camera API not supported in this browser');
+      }
+    </script>
+
     <!-- Enhanced White Screen Detection & Fix with Mobile Support -->
     <script>
       (function() {
         let checkCount = 0;
         const maxChecks = 3;
-        
+
         // Detect mobile and production
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isAndroid = /Android/.test(navigator.userAgent);
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const isVercel = window.location.hostname.includes('vercel.app');
-        
+
         console.log('📱 Mobile detected:', isMobile);
         console.log('📱 iOS detected:', isIOS);
         console.log('📱 Android detected:', isAndroid);
         console.log('🌐 Production detected:', isProduction);
         console.log('🌐 Vercel detected:', isVercel);
-        
+
         function checkWhiteScreen() {
           const root = document.getElementById('root');
           const hasContent = root && root.children.length > 0;
-          
+
           if (!hasContent && checkCount < maxChecks) {
             checkCount++;
             console.log('White screen check #' + checkCount);
-            
+
             if (checkCount === maxChecks) {
               console.log('🚨 White screen confirmed, applying mobile-specific fix...');
-              
+
               // Clear all caches
               if ('caches' in window) {
                 caches.keys().then(names => {
@@ -79,7 +105,7 @@
                   }));
                 });
               }
-              
+
               // Clear storage but preserve critical data
               try {
                 const criticalData = {
@@ -97,81 +123,81 @@
               } catch (e) {
                 console.error('Storage clear error:', e);
               }
-              
-                        // AGGRESSIVE Production and mobile-specific navigation
-          if (isProduction) {
-            console.log('🚀 AGGRESSIVE: Using aggressive production navigation...');
-            
-            // Nuclear production navigation methods
-            const nuclearMethods = [
-              () => {
-                console.log('🚀 AGGRESSIVE: Method 1 - Direct replace');
-                window.location.replace('/');
-              },
-              () => {
-                console.log('🚀 AGGRESSIVE: Method 2 - Direct href');
-                window.location.href = '/';
-              },
-              () => {
-                console.log('🚀 AGGRESSIVE: Method 3 - Direct assign');
-                window.location.assign('/');
-              },
-              () => {
-                console.log('🚀 AGGRESSIVE: Method 4 - Clear all and replace');
-                if ('caches' in window) {
-                  caches.keys().then(names => {
-                    names.forEach(name => caches.delete(name));
-                  });
-                }
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.replace('/');
-              },
-              () => {
-                console.log('🚀 AGGRESSIVE: Method 5 - Nuclear reset');
-                if ('caches' in window) {
-                  caches.keys().then(names => {
-                    names.forEach(name => caches.delete(name));
-                  });
-                }
-                localStorage.clear();
-                sessionStorage.clear();
-                if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    for(let registration of registrations) {
-                      registration.unregister();
+
+              // AGGRESSIVE Production and mobile-specific navigation
+              if (isProduction) {
+                console.log('🚀 AGGRESSIVE: Using aggressive production navigation...');
+
+                // Nuclear production navigation methods
+                const nuclearMethods = [
+                  () => {
+                    console.log('🚀 AGGRESSIVE: Method 1 - Direct replace');
+                    window.location.replace('/');
+                  },
+                  () => {
+                    console.log('🚀 AGGRESSIVE: Method 2 - Direct href');
+                    window.location.href = '/';
+                  },
+                  () => {
+                    console.log('🚀 AGGRESSIVE: Method 3 - Direct assign');
+                    window.location.assign('/');
+                  },
+                  () => {
+                    console.log('🚀 AGGRESSIVE: Method 4 - Clear all and replace');
+                    if ('caches' in window) {
+                      caches.keys().then(names => {
+                        names.forEach(name => caches.delete(name));
+                      });
                     }
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.replace('/');
+                  },
+                  () => {
+                    console.log('🚀 AGGRESSIVE: Method 5 - Nuclear reset');
+                    if ('caches' in window) {
+                      caches.keys().then(names => {
+                        names.forEach(name => caches.delete(name));
+                      });
+                    }
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    if ('serviceWorker' in navigator) {
+                      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        for(let registration of registrations) {
+                          registration.unregister();
+                        }
+                      });
+                    }
+                    window.location.reload(true);
+                  }
+                ];
+
+                // Try each nuclear method
+                for (let i = 0; i < nuclearMethods.length; i++) {
+                  try {
+                    console.log(`🚀 AGGRESSIVE: Trying nuclear method ${i + 1}...`);
+                    nuclearMethods[i]();
+                    console.log(`✅ Nuclear method ${i + 1} successful`);
+                    return;
+                  } catch (error) {
+                    console.warn(`❌ Nuclear method ${i + 1} failed:`, error);
+                  }
+                }
+
+                // Last resort - force everything
+                console.log('🚀 AGGRESSIVE: All nuclear methods failed, forcing everything...');
+                if ('caches' in window) {
+                  caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
                   });
                 }
+                localStorage.clear();
+                sessionStorage.clear();
                 window.location.reload(true);
-              }
-            ];
-            
-            // Try each nuclear method
-            for (let i = 0; i < nuclearMethods.length; i++) {
-              try {
-                console.log(`🚀 AGGRESSIVE: Trying nuclear method ${i + 1}...`);
-                nuclearMethods[i]();
-                console.log(`✅ Nuclear method ${i + 1} successful`);
-                return;
-              } catch (error) {
-                console.warn(`❌ Nuclear method ${i + 1} failed:`, error);
-              }
-            }
-            
-            // Last resort - force everything
-            console.log('🚀 AGGRESSIVE: All nuclear methods failed, forcing everything...');
-            if ('caches' in window) {
-              caches.keys().then(names => {
-                names.forEach(name => caches.delete(name));
-              });
-            }
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.reload(true);
-          } else if (isMobile) {
+              } else if (isMobile) {
                 console.log('📱 Using mobile-specific navigation...');
-                
+
                 // Try multiple mobile navigation methods
                 const mobileMethods = [
                   () => window.location.replace('/'),
@@ -186,7 +212,7 @@
                   },
                   () => window.location.reload(true)
                 ];
-                
+
                 // Try each method
                 for (let i = 0; i < mobileMethods.length; i++) {
                   try {
@@ -198,7 +224,7 @@
                     console.warn(`❌ Mobile method ${i + 1} failed:`, error);
                   }
                 }
-                
+
                 // Last resort
                 console.log('📱 All mobile methods failed, forcing reload...');
                 window.location.reload(true);
@@ -215,12 +241,12 @@
             }
           }
         }
-        
+
         // Start checking after 3 seconds
         window.addEventListener('load', () => {
           setTimeout(checkWhiteScreen, 3000);
         });
-        
+
         // Also check if URL has clear parameter
         if (window.location.search.includes('clear=true')) {
           console.log('Clear cache requested via URL');
@@ -234,26 +260,26 @@
           // Remove the clear parameter and reload
           window.location.href = window.location.pathname;
         }
-        
+
         // AGGRESSIVE Auto-fix for registration page
         if (window.location.pathname === '/register') {
           console.log('🚀 AGGRESSIVE: Registration page detected, setting up aggressive auto-fix...');
-          
+
           // Monitor for white screen after registration
           let registrationAttempts = 0;
           const maxAttempts = 3;
-          
+
           function aggressiveRegistrationFix() {
             const root = document.getElementById('root');
             const hasContent = root && root.children.length > 0;
-            
+
             if (!hasContent && registrationAttempts < maxAttempts) {
               registrationAttempts++;
               console.log(`🚀 AGGRESSIVE: Registration white screen detected, attempt ${registrationAttempts}/${maxAttempts}`);
-              
+
               if (registrationAttempts >= maxAttempts) {
                 console.log('🚀 AGGRESSIVE: Max attempts reached, applying nuclear fix...');
-                
+
                 // Nuclear fix for registration
                 if (isProduction) {
                   console.log('🚀 AGGRESSIVE: Applying nuclear production fix...');
@@ -285,16 +311,16 @@
               }
             }
           }
-          
+
           // Start monitoring after 3 seconds (faster than before)
           setTimeout(aggressiveRegistrationFix, 3000);
-          
+
           // Also check after form submission
           window.addEventListener('beforeunload', () => {
             console.log('🚀 AGGRESSIVE: Registration page unloading, checking for white screen...');
             const root = document.getElementById('root');
             const hasContent = root && root.children.length > 0;
-            
+
             if (!hasContent) {
               console.log('🚀 AGGRESSIVE: White screen detected during registration unload, applying nuclear fix...');
               if (isProduction) {
@@ -307,7 +333,7 @@
         }
       })();
     </script>
-    
+
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
@@ -315,7 +341,7 @@
           navigator.serviceWorker.register('/sw.js')
             .then(reg => {
               console.log('Service Worker registered successfully');
-              
+
               // Check for updates
               reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;

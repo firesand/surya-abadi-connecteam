@@ -35,3 +35,4 @@ backup_local_*/
 
 # Keep example file
 !.env.example
+.vercel
