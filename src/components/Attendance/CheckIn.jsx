@@ -15,6 +15,7 @@ const CheckIn = () => {
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [debugMode, setDebugMode] = useState(false);
   
   useEffect(() => {
     // Get current user from auth
@@ -81,7 +82,12 @@ const CheckIn = () => {
       const locationValidation = await validateLocation();
       
       if (!locationValidation.isValid) {
-        setError(`Anda berada ${locationValidation.distance}m dari kantor. Maksimal ${locationValidation.maxRadius}m untuk absensi.`);
+        console.log('❌ Location validation failed:', locationValidation);
+        const errorMsg = `Anda berada ${locationValidation.distance}m dari kantor. ` +
+          `Radius yang diizinkan: ${locationValidation.effectiveRadius || locationValidation.maxRadius}m. ` +
+          `GPS accuracy: ${locationValidation.accuracy}m. ` +
+          `Alasan: ${locationValidation.validationReason}`;
+        setError(errorMsg);
         setLoading(false);
         return;
       }
@@ -122,6 +128,26 @@ const CheckIn = () => {
     } catch (error) {
       console.error('Check in error:', error);
       setError('Check in gagal: ' + error.message);
+    }
+  };
+  
+  const handleTestLocation = async () => {
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      console.log('🔍 Testing location validation...');
+      const { debugLocation } = await import('../../utils/geolocation');
+      const result = await debugLocation();
+      
+      if (result.isValid) {
+        setSuccess(`✅ Lokasi valid! Jarak: ${result.distance}m, Akurasi GPS: ${result.accuracy}m, Radius efektif: ${result.effectiveRadius}m`);
+      } else {
+        setError(`❌ Lokasi tidak valid. Jarak: ${result.distance}m, Radius maksimal: ${result.effectiveRadius || result.maxRadius}m. ${result.validationReason}`);
+      }
+    } catch (error) {
+      setError('Error testing location: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -222,17 +248,28 @@ const CheckIn = () => {
         
         {/* Check in button */}
         {!todayAttendance && (
-          <button
-            onClick={handleCheckIn}
-            disabled={loading}
-            className={`w-full py-4 px-6 rounded-lg font-bold text-white text-lg transition-colors ${
-              loading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-green-600 hover:bg-green-700'
-            }`}
-          >
-            {loading ? 'Memproses...' : '📍 CHECK IN'}
-          </button>
+          <>
+            <button
+              onClick={handleCheckIn}
+              disabled={loading}
+              className={`w-full py-4 px-6 rounded-lg font-bold text-white text-lg transition-colors mb-3 ${
+                loading 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-green-600 hover:bg-green-700'
+              }`}
+            >
+              {loading ? 'Memproses...' : '📍 CHECK IN'}
+            </button>
+            
+            {/* Debug test location button */}
+            <button
+              onClick={handleTestLocation}
+              disabled={loading}
+              className="w-full py-2 px-4 rounded-lg font-medium text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors text-sm"
+            >
+              🔍 Test Lokasi Saya
+            </button>
+          </>
         )}
         
         {/* User info */}
