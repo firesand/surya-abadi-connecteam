@@ -1,7 +1,17 @@
-// Office location (PT Surya Abadi) - Based on Google Maps coordinates
-let OFFICE_LAT = -6.3693;
-let OFFICE_LNG = 106.8289;
-const MAX_RADIUS = 100; // meters - increased for better coverage
+// Office location (PT Surya Abadi) - configurable via Vite env
+// Fallback defaults are only used if env vars are not provided
+let OFFICE_LAT = -6.239528;
+let OFFICE_LNG = 106.85525 ;
+let MAX_RADIUS = 100; // meters - increased for better coverage
+
+// Read from environment if available to avoid stale hardcoded coords
+const ENV_OFFICE_LAT = parseFloat(import.meta?.env?.VITE_OFFICE_LAT);
+const ENV_OFFICE_LNG = parseFloat(import.meta?.env?.VITE_OFFICE_LNG);
+const ENV_OFFICE_RADIUS = parseInt(import.meta?.env?.VITE_OFFICE_RADIUS);
+
+if (!Number.isNaN(ENV_OFFICE_LAT)) OFFICE_LAT = ENV_OFFICE_LAT;
+if (!Number.isNaN(ENV_OFFICE_LNG)) OFFICE_LNG = ENV_OFFICE_LNG;
+if (!Number.isNaN(ENV_OFFICE_RADIUS)) MAX_RADIUS = ENV_OFFICE_RADIUS;
 
 // Get current location with fallback
 export const getCurrentLocation = () => {

@@ -17,6 +17,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { validateLocation as validateLocationUtils, getOfficeLocation } from '../../utils/geolocation';
 
 function EmployeeDashboard() {
   const navigate = useNavigate();
@@ -34,10 +35,8 @@ function EmployeeDashboard() {
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Office location from environment variables
-  const OFFICE_LAT = parseFloat(import.meta.env.VITE_OFFICE_LAT || -6.3693);
-  const OFFICE_LNG = parseFloat(import.meta.env.VITE_OFFICE_LNG || 106.8289);
-  const OFFICE_RADIUS = parseInt(import.meta.env.VITE_OFFICE_RADIUS || 50);
+  // Office radius from centralized geolocation util (env-driven)
+  const { maxRadius: OFFICE_RADIUS } = getOfficeLocation();
 
   // Update current time every second
   useEffect(() => {
@@ -146,74 +145,16 @@ function EmployeeDashboard() {
     fetchData();
   }, [navigate]);
 
-  // Get user location
-  const getCurrentLocation = () => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported by your browser'));
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            accuracy: position.coords.accuracy
-          });
-        },
-        (error) => {
-          reject(error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
-    });
-  };
-
-  // Calculate distance between two coordinates (Haversine formula)
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // Earth's radius in meters
-    const φ1 = lat1 * Math.PI/180;
-    const φ2 = lat2 * Math.PI/180;
-    const Δφ = (lat2-lat1) * Math.PI/180;
-    const Δλ = (lon2-lon1) * Math.PI/180;
-
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-    Math.cos(φ1) * Math.cos(φ2) *
-    Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-    return R * c; // Distance in meters
-  };
-
-  // Validate location
+  // Validate location using centralized util
   const validateLocation = async () => {
-    try {
-      setLocationError('');
-      const currentLocation = await getCurrentLocation();
-      setLocation(currentLocation);
-
-      const distance = calculateDistance(
-        currentLocation.lat,
-        currentLocation.lng,
-        OFFICE_LAT,
-        OFFICE_LNG
-      );
-
-      if (distance > OFFICE_RADIUS) {
-        setLocationError(`You are ${Math.round(distance)}m away from office. Must be within ${OFFICE_RADIUS}m to check ${checkType}.`);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      setLocationError('Unable to get your location. Please enable GPS.');
+    const result = await validateLocationUtils();
+    setLocationError('');
+    if (!result.isValid) {
+      setLocationError(`You are ${result.distance}m away from office. Must be within ${result.maxRadius}m to check ${checkType}.`);
       return false;
     }
+    setLocation(result.location);
+    return true;
   };
 
   // Initialize camera
