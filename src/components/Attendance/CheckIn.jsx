@@ -195,8 +195,14 @@ const CheckIn = () => {
       // Determine status based on time
       const now = new Date();
       const isLate = now.getHours() >= 9; // After 9 AM is late
-      
-      // Save attendance
+
+      // Save attendance (service layer enforces one-per-day, but add client guard)
+      if (todayAttendance) {
+        setError('Anda sudah melakukan check in hari ini!');
+        setLoading(false);
+        return;
+      }
+
       const attendanceData = {
         userId: user.uid,
         userName: userData?.name || user.displayName,

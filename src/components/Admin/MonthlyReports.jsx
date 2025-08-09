@@ -102,15 +102,20 @@ function MonthlyReports() {
         }
       }
 
-      // Process attendance records
+      // Process attendance records (deduplicate by employeeId+date)
+      const seenPerDay = new Set();
+      const hoursCountedPerDay = new Set();
       attendances.forEach(record => {
         const empId = record.userId;
         const date = record.date;
+        const key = `${empId}__${date}`;
 
-        if (employeeAttendance[empId]) {
+        if (!employeeAttendance[empId]) return;
+
+        // Count only first record for a given employee on a given date
+        if (!seenPerDay.has(key)) {
+          seenPerDay.add(key);
           employeeAttendance[empId].presentDays++;
-          employeeAttendance[empId].records.push(record);
-
           if (record.status === 'late') {
             employeeAttendance[empId].lateDays++;
             totalLate++;
@@ -118,21 +123,22 @@ function MonthlyReports() {
             totalOnTime++;
           }
 
-          // Calculate work hours
-          if (record.checkIn && record.checkOut) {
-            const checkIn = record.checkIn.toDate ? record.checkIn.toDate() : new Date(record.checkIn);
-            const checkOut = record.checkOut.toDate ? record.checkOut.toDate() : new Date(record.checkOut);
-            const hours = (checkOut - checkIn) / (1000 * 60 * 60);
-            employeeAttendance[empId].totalWorkHours += hours;
-          }
-
-          // Update daily attendance
           if (dailyAttendance[date]) {
             dailyAttendance[date].present++;
-            if (record.status === 'late') {
-              dailyAttendance[date].late++;
-            }
+            if (record.status === 'late') dailyAttendance[date].late++;
           }
+        }
+
+        // Regardless of deduplication, keep the record list for details/exports
+        employeeAttendance[empId].records.push(record);
+
+        // Accumulate work hours when possible (based on check-in/out), but only once per day
+        if (record.checkIn && record.checkOut && !hoursCountedPerDay.has(key)) {
+          const checkIn = record.checkIn.toDate ? record.checkIn.toDate() : new Date(record.checkIn);
+          const checkOut = record.checkOut.toDate ? record.checkOut.toDate() : new Date(record.checkOut);
+          const hours = (checkOut - checkIn) / (1000 * 60 * 60);
+          employeeAttendance[empId].totalWorkHours += hours;
+          hoursCountedPerDay.add(key);
         }
       });
 

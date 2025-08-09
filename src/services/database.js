@@ -16,6 +16,21 @@ import { db } from './firebase';
 // Attendance functions
 export const addAttendance = async (attendanceData) => {
   try {
+    // Guard: ensure only one attendance per user per date
+    if (!attendanceData?.userId || !attendanceData?.date) {
+      return { success: false, message: 'Missing userId or date' };
+    }
+
+    const existingQuery = query(
+      collection(db, 'attendances'),
+      where('userId', '==', attendanceData.userId),
+      where('date', '==', attendanceData.date)
+    );
+    const existingSnapshot = await getDocs(existingQuery);
+    if (!existingSnapshot.empty) {
+      return { success: false, message: 'Attendance for today already exists' };
+    }
+
     const docRef = await addDoc(collection(db, 'attendances'), {
       ...attendanceData,
       createdAt: serverTimestamp()

@@ -496,6 +496,18 @@ function EmployeeDashboard() {
         workHours: 0
       };
 
+      // Guard: skip if already has attendance today (client-side safeguard)
+      const existingQ = query(
+        collection(db, 'attendances'),
+        where('userId', '==', auth.currentUser.uid),
+        where('date', '==', today)
+      );
+      const existingSnap = await getDocs(existingQ);
+      if (!existingSnap.empty) {
+        alert('Anda sudah check-in hari ini.');
+        return;
+      }
+
       const docRef = await addDoc(collection(db, 'attendances'), attendanceData);
 
       // Update local state
