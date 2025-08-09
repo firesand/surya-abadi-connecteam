@@ -16,7 +16,7 @@ const emailConfig = {
 };
 
 // Create transporter
-const transporter = nodemailer.createTransporter(emailConfig);
+const transporter = nodemailer.createTransport(emailConfig);
 
 // Function: Send email when registration approved
 exports.onRegistrationApproval = functions.firestore
@@ -105,3 +105,79 @@ exports.lateCheckInAlert = functions.firestore
 
     return null;
 });
+
+// Function: Monthly cleanup for attendance photos
+// Runs on the 15th of every month at 02:00 Asia/Jakarta time
+exports.cleanupAttendancePhotos = functions.pubsub
+  .schedule('0 2 15 * *')
+  .timeZone('Asia/Jakarta')
+  .onRun(async () => {
+    const bucket = admin.storage().bucket();
+    const prefix = 'attendances/';
+
+    // Calculate previous month range regardless of 28/30/31 days
+    const now = new Date();
+    const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDayOfPrevMonth = new Date(firstOfThisMonth.getTime() - 1);
+    const firstDayOfPrevMonth = new Date(
+      lastDayOfPrevMonth.getFullYear(),
+      lastDayOfPrevMonth.getMonth(),
+      1
+    );
+
+    console.log('Starting cleanup for attendance photos in range:', {
+      from: firstDayOfPrevMonth.toISOString().slice(0, 10),
+      to: lastDayOfPrevMonth.toISOString().slice(0, 10),
+    });
+
+    try {
+      const [files] = await bucket.getFiles({ prefix });
+      console.log(`Found ${files.length} files under ${prefix}`);
+
+      const filesToDelete = [];
+      const dateRegex = /attendance_[^_]+_(\d{4}-\d{2}-\d{2})_/;
+
+      for (const file of files) {
+        const name = file.name; // e.g., attendances/<userId>/attendance_<uid>_YYYY-MM-DD_<ts>.jpg
+        const match = name.match(dateRegex);
+        if (!match) continue;
+
+        const dateStr = match[1];
+        const fileDate = new Date(`${dateStr}T00:00:00Z`);
+
+        if (fileDate >= firstDayOfPrevMonth && fileDate <= lastDayOfPrevMonth) {
+          filesToDelete.push(file);
+        }
+      }
+
+      console.log(`Deleting ${filesToDelete.length} files from previous month`);
+
+      // Delete in parallel with basic throttling
+      const concurrency = 10;
+      let deleted = 0;
+
+      const chunks = [];
+      for (let i = 0; i < filesToDelete.length; i += concurrency) {
+        chunks.push(filesToDelete.slice(i, i + concurrency));
+      }
+
+      for (const chunk of chunks) {
+        await Promise.all(
+          chunk.map(async (f) => {
+            try {
+              await f.delete();
+              deleted += 1;
+            } catch (err) {
+              console.error('Failed to delete file:', f.name, err.message);
+            }
+          })
+        );
+      }
+
+      console.log(`Cleanup complete. Deleted: ${deleted}`);
+    } catch (error) {
+      console.error('Cleanup attendance photos failed:', error);
+    }
+
+    return null;
+  });
