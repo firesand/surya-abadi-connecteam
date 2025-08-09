@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { doc, deleteDoc, collection, getDocs, query, where, setDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { sendNotification } from '../../services/emailService';
@@ -10,7 +10,7 @@ function DeleteEmployeeModal({ employee, isOpen, onClose, onDeleteSuccess }) {
   const [dataSummary, setDataSummary] = useState(null);
 
   // Load data summary when modal opens
-  const loadDataSummary = async () => {
+  const loadDataSummary = useCallback(async () => {
     if (!employee) return;
 
     try {
@@ -63,14 +63,14 @@ function DeleteEmployeeModal({ employee, isOpen, onClose, onDeleteSuccess }) {
         totalRecords: 0
       });
     }
-  };
+  }, [employee]);
 
   // Initialize data when modal opens
   useEffect(() => {
     if (isOpen && employee) {
       loadDataSummary();
     }
-  }, [isOpen, employee]);
+  }, [isOpen, employee, loadDataSummary]);
 
   const handleDelete = async () => {
     if (!reason.trim()) {
@@ -93,7 +93,7 @@ function DeleteEmployeeModal({ employee, isOpen, onClose, onDeleteSuccess }) {
       try {
         await deleteDoc(doc(db, 'registrationRequests', employee.id));
         console.log('✅ Registration request deleted');
-      } catch (error) {
+      } catch {
         console.log('ℹ️ Registration request not found or already deleted');
       }
 
