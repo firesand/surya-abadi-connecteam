@@ -1,5 +1,5 @@
 // src/config/firebase.js
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
@@ -19,8 +19,8 @@ if (!firebaseConfig.apiKey) {
   console.error('Firebase configuration is missing. Please check your .env.local file');
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (reuse existing app if already initialized)
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // Initialize services
 export const auth = getAuth(app);
