@@ -173,7 +173,7 @@ const CheckIn = () => {
       const locationValidation = await validateLocation();
       
       if (!locationValidation.isValid) {
-        setError(`Anda berada ${locationValidation.distance}m dari kantor. Maksimal ${locationValidation.maxRadius}m untuk absensi.`);
+        setError(`Anda berada ${locationValidation.distance}m dari kantor. Maksimal 250m untuk absensi.`);
         setLoading(false);
         return;
       }

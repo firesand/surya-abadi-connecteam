@@ -173,7 +173,7 @@ function EmployeeDashboard() {
     const result = await validateLocationUtils();
     setLocationError('');
     if (!result.isValid) {
-      setLocationError(`You are ${result.distance}m away from office. Must be within ${result.maxRadius}m to check ${checkType}.`);
+      setLocationError(`You are ${result.distance}m away from office. Must be within 250m to check ${checkType}.`);
       return false;
     }
     setLocation(result.location);
