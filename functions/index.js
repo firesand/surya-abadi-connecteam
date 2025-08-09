@@ -1,5 +1,7 @@
 // functions/index.js
-const functions = require('firebase-functions');
+// Use Firebase Functions v2 APIs
+const { onDocumentUpdated, onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
 
@@ -19,11 +21,9 @@ const emailConfig = {
 const transporter = nodemailer.createTransport(emailConfig);
 
 // Function: Send email when registration approved
-exports.onRegistrationApproval = functions.firestore
-.document('registrationRequests/{requestId}')
-.onUpdate(async (change, context) => {
-    const before = change.before.data();
-    const after = change.after.data();
+exports.onRegistrationApproval = onDocumentUpdated('registrationRequests/{requestId}', async (event) => {
+    const before = event.data.before.data();
+    const after = event.data.after.data();
 
     // Check if status changed to approved
     if (before.status === 'pending' && after.status === 'approved') {
@@ -83,20 +83,15 @@ exports.onRegistrationApproval = functions.firestore
 });
 
 // Function: Daily reminder at 7:30 AM (optional)
-exports.dailyReminder = functions.pubsub
-.schedule('30 7 * * 1-5') // Mon-Fri, 7:30 AM
-.timeZone('Asia/Jakarta')
-.onRun(async (context) => {
+exports.dailyReminder = onSchedule({ schedule: '30 7 * * 1-5', timeZone: 'Asia/Jakarta' }, async () => {
     console.log('Daily reminder would run here');
     // Implementation here if needed
     return null;
 });
 
 // Function: Alert when someone checks in late
-exports.lateCheckInAlert = functions.firestore
-.document('attendances/{attendanceId}')
-.onCreate(async (snap, context) => {
-    const attendance = snap.data();
+exports.lateCheckInAlert = onDocumentCreated('attendances/{attendanceId}', async (event) => {
+    const attendance = event.data?.data();
 
     if (attendance.status === 'late') {
         console.log('Late check-in detected:', attendance.userName);
@@ -108,10 +103,7 @@ exports.lateCheckInAlert = functions.firestore
 
 // Function: Monthly cleanup for attendance photos
 // Runs on the 15th of every month at 02:00 Asia/Jakarta time
-exports.cleanupAttendancePhotos = functions.pubsub
-  .schedule('0 2 15 * *')
-  .timeZone('Asia/Jakarta')
-  .onRun(async () => {
+exports.cleanupAttendancePhotos = onSchedule({ schedule: '0 2 15 * *', timeZone: 'Asia/Jakarta' }, async () => {
     const bucket = admin.storage().bucket();
     const prefix = 'attendances/';
 

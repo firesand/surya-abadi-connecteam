@@ -3,12 +3,12 @@ import {
   collection, 
   doc, 
   getDocs, 
+  getDoc,
   query, 
   where, 
   addDoc, 
   updateDoc,
-  serverTimestamp,
-  Timestamp 
+  serverTimestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { sendWhatsAppDirect, sendBulkWhatsApp } from './whatsappService';
@@ -268,19 +268,19 @@ export const sendDailyReminders = async (options = {}) => {
         employees = await getAllActiveEmployees();
         break;
       
-      case 'selected':
+      case 'selected': {
         if (selectedEmployees.length === 0) {
           throw new Error('No employees selected');
         }
-        // selectedEmployees is an array of employee IDs, we need to get the full employee objects
         const allEmployees = await getAllActiveEmployees();
         employees = allEmployees.filter(emp => selectedEmployees.includes(emp.id));
         if (employees.length === 0) {
           throw new Error('No valid employees found from selected IDs');
         }
         break;
+      }
       
-      case 'single':
+      case 'single': {
         if (!employeeId) {
           throw new Error('Employee ID is required for single reminder');
         }
@@ -290,13 +290,15 @@ export const sendDailyReminders = async (options = {}) => {
         }
         employees = [employee];
         break;
+      }
       
-      case 'department':
+      case 'department': {
         if (!department) {
           throw new Error('Department is required for department reminder');
         }
         employees = await getEmployeesByDepartment(department);
         break;
+      }
       
       default:
         throw new Error('Invalid reminder type');

@@ -4,7 +4,7 @@
 export const ADMIN_CONFIG = {
   // ⚠️ UPDATE INI DENGAN NOMOR ADMIN YANG BENAR
   phone: '08118062231', // Nomor WhatsApp admin (format: 0812xxxxx)
-  email: 'suryaabadi.konsultan@gmail.com', // Email admin
+  contactEmail: 'suryaabadi.konsultan@gmail.com', // Email admin
   name: 'Admin HR', // Nama admin untuk notifikasi
   
   // WhatsApp Configuration
@@ -87,7 +87,7 @@ Silakan hubungi HR untuk informasi lebih lanjut.
 
 📞 Kontak HR:
 • WhatsApp: ${ADMIN_CONFIG.phone}
-• Email: ${ADMIN_CONFIG.email}
+  • Email: ${ADMIN_CONFIG.contactEmail}
 
 Terima kasih,
 *${ADMIN_CONFIG.whatsapp.businessName}*
@@ -154,7 +154,7 @@ Mohon maaf, registrasi Anda belum dapat disetujui.
 Silakan hubungi HR untuk informasi lebih lanjut.
 
 Kontak HR:
-Email: ${ADMIN_CONFIG.email}
+  Email: ${ADMIN_CONFIG.contactEmail}
 WhatsApp: ${ADMIN_CONFIG.phone}
 
 Terima kasih,

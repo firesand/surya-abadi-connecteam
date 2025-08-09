@@ -15,7 +15,7 @@ if (!Number.isNaN(ENV_OFFICE_RADIUS)) MAX_RADIUS = ENV_OFFICE_RADIUS;
 
 // Get current location with fallback
 export const getCurrentLocation = () => {
-  return new Promise(async (resolve) => {
+  return new Promise((resolve) => {
     // Check if geolocation is supported
     if (!navigator.geolocation) {
       console.warn('Geolocation not supported, using fallback');
@@ -38,55 +38,59 @@ export const getCurrentLocation = () => {
 
     try {
       // Attempt high-accuracy first
-      const high = await getPosition(highAccOptions);
-      const highResult = {
-        lat: high.coords.latitude,
-        lng: high.coords.longitude,
-        accuracy: high.coords.accuracy,
-        source: 'gps-high'
-      };
-      console.log('✅ High-accuracy geolocation:', highResult);
-
-      // If accurate enough, return immediately
-      if (Number.isFinite(highResult.accuracy) && highResult.accuracy <= 150) {
-        resolve(highResult);
-        return;
-      }
-
-      // Otherwise, try a secondary low-accuracy fetch and pick the better one
-      try {
-        const low = await getPosition(lowAccOptions);
-        const lowResult = {
-          lat: low.coords.latitude,
-          lng: low.coords.longitude,
-          accuracy: low.coords.accuracy,
-          source: 'gps-low'
+      const high = getPosition(highAccOptions).then((pos) => pos);
+      // Ensure promise chain rather than await in executor
+      Promise.resolve(high).then(async (first) => {
+        const highResult = {
+          lat: first.coords.latitude,
+          lng: first.coords.longitude,
+          accuracy: first.coords.accuracy,
+          source: 'gps-high'
         };
-        console.log('ℹ️ Low-accuracy geolocation:', lowResult);
+        console.log('✅ High-accuracy geolocation:', highResult);
 
-        const better =
-          (Number.isFinite(highResult.accuracy) && Number.isFinite(lowResult.accuracy) && lowResult.accuracy < highResult.accuracy)
-            ? lowResult
-            : highResult;
-        resolve(better);
-      } catch (lowErr) {
-        console.warn('Low-accuracy geolocation failed, using high result', lowErr);
-        resolve(highResult);
-      }
-    } catch (highErr) {
-      console.warn('High-accuracy geolocation failed, trying low accuracy:', highErr?.message);
-      try {
-        const low = await getPosition(lowAccOptions);
-        resolve({
-          lat: low.coords.latitude,
-          lng: low.coords.longitude,
-          accuracy: low.coords.accuracy,
-          source: 'gps-low'
-        });
-      } catch (err) {
-        console.warn('❌ Geolocation failed, using fallback:', err?.message);
-        resolve(getFallbackLocation());
-      }
+        if (Number.isFinite(highResult.accuracy) && highResult.accuracy <= 150) {
+          resolve(highResult);
+          return;
+        }
+
+        try {
+          const low = await getPosition(lowAccOptions);
+          const lowResult = {
+            lat: low.coords.latitude,
+            lng: low.coords.longitude,
+            accuracy: low.coords.accuracy,
+            source: 'gps-low'
+          };
+          console.log('ℹ️ Low-accuracy geolocation:', lowResult);
+
+          const better =
+            (Number.isFinite(highResult.accuracy) && Number.isFinite(lowResult.accuracy) && lowResult.accuracy < highResult.accuracy)
+              ? lowResult
+              : highResult;
+          resolve(better);
+        } catch (lowErr) {
+          console.warn('Low-accuracy geolocation failed, using high result', lowErr);
+          resolve(highResult);
+        }
+      }).catch(async (highErr) => {
+        console.warn('High-accuracy geolocation failed, trying low accuracy:', highErr?.message);
+        try {
+          const low = await getPosition(lowAccOptions);
+          resolve({
+            lat: low.coords.latitude,
+            lng: low.coords.longitude,
+            accuracy: low.coords.accuracy,
+            source: 'gps-low'
+          });
+        } catch (err) {
+          console.warn('❌ Geolocation failed, using fallback:', err?.message);
+          resolve(getFallbackLocation());
+        }
+      });
+    } catch (e) {
+      console.warn('Unexpected error starting geolocation flow:', e);
+      resolve(getFallbackLocation());
     }
   });
 };

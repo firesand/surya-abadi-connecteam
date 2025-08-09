@@ -1,6 +1,6 @@
 // src/App.jsx
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config/firebase';
@@ -157,6 +157,7 @@ function App() {
 
   // Simple redirect based on role
   const RoleBasedRedirect = () => {
+    const navigate = useNavigate();
     console.log('RoleBasedRedirect - User:', user?.email, 'Role:', userData?.role, 'Status:', userData?.accountStatus);
 
     if (!user) {

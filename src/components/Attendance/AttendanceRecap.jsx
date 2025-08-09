@@ -206,11 +206,14 @@ function AttendanceRecap() {
           sum + parseFloat(emp.punctualityRate), 0) / totalEmployees).toFixed(1)
       : 0;
 
+    const startStr = new Date(startDate).toISOString().split('T')[0];
+    const endStr = new Date(endDate).toISOString().split('T')[0];
+
     return {
       month: getMonthName(selectedMonth),
       year: selectedYear,
       department: selectedDepartment === 'all' ? 'All Departments' : selectedDepartment,
-      period: `${startDateStr} - ${endDateStr}`,
+      period: `${startStr} - ${endStr}`,
       workingDays,
       dateList,
       summary: {
