@@ -1,5 +1,6 @@
 // src/components/Employee/Dashboard.jsx
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { auth, db, storage } from '../../config/firebase';
 import {
   collection,
@@ -20,6 +21,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { validateLocation as validateLocationUtils, getOfficeLocation } from '../../utils/geolocation';
 
 function EmployeeDashboard() {
+  const navigate = useNavigate();
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
