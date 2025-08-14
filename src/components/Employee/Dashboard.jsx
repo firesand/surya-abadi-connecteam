@@ -15,12 +15,12 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { signOut } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+
+
 import { validateLocation as validateLocationUtils, getOfficeLocation } from '../../utils/geolocation';
 
 function EmployeeDashboard() {
-  const navigate = useNavigate();
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -569,15 +569,7 @@ function EmployeeDashboard() {
     return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate('/login');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
+
 
   if (loading) {
     return (
@@ -592,64 +584,17 @@ function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 pb-20">
-    {/* Header */}
-    <div className="bg-white shadow-sm border-b border-gray-200">
-    <div className="max-w-7xl mx-auto px-4 py-4">
-    <div className="flex justify-between items-center">
-    <div className="flex items-center space-x-3">
-    <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-    <span className="text-white font-bold">SA</span>
-    </div>
-    <div>
-    <h1 className="text-xl font-bold text-gray-800">Surya Abadi Connecteam</h1>
-    <p className="text-sm text-gray-600">Employee Dashboard</p>
-    </div>
-    </div>
-
-    {/* Navigation Menu */}
-    <div className="flex items-center space-x-4">
-    <nav className="hidden md:flex space-x-4">
-    <button
-    onClick={() => navigate('/employee')}
-    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
-    >
-    Dashboard
-    </button>
-    <button
-    onClick={() => navigate('/employee/profile')}
-    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
-    >
-    Profile
-    </button>
-    <button
-    onClick={() => navigate('/employee/leave-request')}
-    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
-    >
-    Leave Request
-    </button>
-    <button
-    onClick={() => navigate('/employee/location-update')}
-    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
-    >
-    Location Update
-    </button>
-    <button
-    onClick={() => navigate('/employee/payroll-request')}
-    className="px-3 py-2 text-sm text-gray-700 hover:text-green-600 transition-colors"
-    >
-    Payroll Request
-    </button>
-    </nav>
-
-    <button
-    onClick={handleLogout}
-    className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-    >
-    Logout
-    </button>
-    </div>
-    </div>
-    </div>
+    {/* Page Title */}
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold">SA</span>
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-800">Surya Abadi Connecteam</h1>
+          <p className="text-sm text-gray-600">Employee Dashboard</p>
+        </div>
+      </div>
     </div>
 
     <div className="max-w-7xl mx-auto px-4 py-6">

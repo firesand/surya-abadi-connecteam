@@ -15,6 +15,7 @@ import PendingApproval from './components/Auth/PendingApproval';
 import LoadingScreen from './components/Common/LoadingScreen';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import WhiteScreenFallback from './components/Common/WhiteScreenFallback';
+import Header from './components/Common/Header';
 import EmployeeDashboard from './components/Employee/Dashboard';
 import EmployeeProfile from './components/Employee/EmployeeProfile';
 import LeaveRequest from './components/Employee/LeaveRequest';
@@ -152,7 +153,12 @@ function App() {
       return <Navigate to="/employee" replace />;
     }
 
-    return children;
+    return (
+      <>
+        <Header />
+        {children}
+      </>
+    );
   };
 
   // Simple redirect based on role
