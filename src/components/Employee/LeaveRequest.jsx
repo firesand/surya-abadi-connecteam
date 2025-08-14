@@ -1,7 +1,7 @@
 // src/components/Employee/LeaveRequest.jsx
 import { useState, useEffect } from 'react';
 import { auth, db } from '../../config/firebase';
-import { collection, addDoc, query, where, orderBy, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, orderBy, getDocs, getDoc, doc, Timestamp } from 'firebase/firestore';
 import { sendNotification } from '../../services/emailService';
 
 function LeaveRequest() {
@@ -23,10 +23,17 @@ function LeaveRequest() {
         const user = auth.currentUser;
         if (!user) return;
 
-        // Get user data
-        const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
-        if (!userDoc.empty) {
-          setUserData(userDoc.docs[0].data());
+        // Get user data using getDoc instead of query for single document
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User data loaded:', userData);
+          setUserData(userData);
+        } else {
+          console.error('User document not found');
+          return;
         }
 
         // Get user's leave requests
@@ -59,6 +66,12 @@ function LeaveRequest() {
       return;
     }
 
+    // Validate that user data is available
+    if (!userData || !userData.name || !userData.email) {
+      alert('User data not loaded. Please refresh the page and try again.');
+      return;
+    }
+
     const startDate = new Date(formData.startDate);
     const endDate = new Date(formData.endDate);
     
@@ -75,13 +88,16 @@ function LeaveRequest() {
     setSubmitting(true);
     try {
       const user = auth.currentUser;
-      if (!user) return;
+      if (!user) {
+        alert('User not authenticated. Please login again.');
+        return;
+      }
 
-      // Create leave request
+      // Create leave request with validated user data
       const leaveRequest = {
         userId: user.uid,
-        userName: userData?.name,
-        userEmail: userData?.email,
+        userName: userData.name, // Now guaranteed to exist
+        userEmail: userData.email, // Now guaranteed to exist
         leaveType: formData.leaveType,
         startDate: Timestamp.fromDate(startDate),
         endDate: Timestamp.fromDate(endDate),
@@ -91,6 +107,8 @@ function LeaveRequest() {
         requestedAt: Timestamp.now(),
         daysRequested: Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1
       };
+
+      console.log('Submitting leave request:', leaveRequest);
 
       const docRef = await addDoc(collection(db, 'leaveRequests'), leaveRequest);
 
@@ -250,12 +268,12 @@ function LeaveRequest() {
 
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || loading || !userData}
                     className={`w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ${
-                      submitting ? 'opacity-50 cursor-not-allowed' : ''
+                      (submitting || loading || !userData) ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
-                    {submitting ? 'Submitting...' : 'Submit Leave Request'}
+                    {submitting ? 'Submitting...' : loading ? 'Loading...' : !userData ? 'Data Not Ready' : 'Submit Leave Request'}
                   </button>
                 </form>
               </div>
