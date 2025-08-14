@@ -155,7 +155,7 @@ function App() {
 
     return (
       <>
-        <Header />
+        <Header user={user} userData={userData} />
         {children}
       </>
     );

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import { logoutUser } from '../../services/auth';
 
-const Header = () => {
-  const { user } = useAuth();
+const Header = ({ user, userData }) => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -23,7 +21,7 @@ const Header = () => {
     setShowMobileNav(false); // Close mobile nav after navigation
   };
 
-  if (!user) return null;
+  if (!user || !userData) return null;
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -40,7 +38,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            {user.role === 'admin' ? (
+            {userData.role === 'admin' ? (
               <>
                 <button
                   onClick={() => navigate('/admin/dashboard')}
@@ -108,20 +106,20 @@ const Header = () => {
               onClick={() => setShowMenu(!showMenu)}
               className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 focus:outline-none"
             >
-              {user.photoUrl ? (
+              {userData.photoUrl ? (
                 <img
-                  src={user.photoUrl}
-                  alt={user.name}
+                  src={userData.photoUrl}
+                  alt={userData.name}
                   className="w-8 h-8 rounded-full"
                 />
               ) : (
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-blue-600 text-sm font-medium">
-                    {user.name?.charAt(0).toUpperCase()}
+                    {userData.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
               )}
-              <span className="hidden md:block text-sm font-medium">{user.name}</span>
+              <span className="hidden md:block text-sm font-medium">{userData.name}</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -130,9 +128,9 @@ const Header = () => {
             {showMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                 <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                  <div className="font-medium">{user.name}</div>
-                  <div className="text-gray-500">{user.email}</div>
-                  <div className="text-gray-500">{user.role === 'admin' ? 'Administrator' : 'Employee'}</div>
+                  <div className="font-medium">{userData.name}</div>
+                  <div className="text-gray-500">{userData.email}</div>
+                  <div className="text-gray-500">{userData.role === 'admin' ? 'Administrator' : 'Employee'}</div>
                 </div>
                 <button
                   onClick={() => {
@@ -161,7 +159,7 @@ const Header = () => {
         {showMobileNav && (
           <div className="md:hidden border-t border-gray-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {user.role === 'admin' ? (
+              {userData.role === 'admin' ? (
                 <>
                   <button
                     onClick={() => handleNavigation('/admin/dashboard')}
@@ -226,9 +224,9 @@ const Header = () => {
               {/* Mobile User Info */}
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="px-3 py-2">
-                  <div className="text-sm font-medium text-gray-700">{user.name}</div>
-                  <div className="text-xs text-gray-500">{user.email}</div>
-                  <div className="text-xs text-gray-500">{user.role === 'admin' ? 'Administrator' : 'Employee'}</div>
+                  <div className="text-sm font-medium text-gray-700">{userData.name}</div>
+                  <div className="text-xs text-gray-500">{userData.email}</div>
+                  <div className="text-xs text-gray-500">{userData.role === 'admin' ? 'Administrator' : 'Employee'}</div>
                 </div>
                 <div className="mt-3 space-y-1">
                   <button
