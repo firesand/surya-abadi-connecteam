@@ -153,12 +153,7 @@ function App() {
       return <Navigate to="/employee" replace />;
     }
 
-    return (
-      <>
-        <Header user={user} userData={userData} />
-        {children}
-      </>
-    );
+    return children;
   };
 
   // Simple redirect based on role
@@ -255,6 +250,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <EmployeeDashboard />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -267,6 +263,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <EmployeeProfile />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -279,6 +276,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <LeaveRequest />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -291,6 +289,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <LocationUpdate />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -303,6 +302,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <PayrollRequest />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -315,6 +315,7 @@ function App() {
               element={
                 <ProtectedRoute requireAdmin={true}>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <AdminDashboard />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -327,6 +328,7 @@ function App() {
               element={
                 <ProtectedRoute requireAdmin={true}>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <LeaveManagement />
                   </ErrorBoundary>
                 </ProtectedRoute>
@@ -339,6 +341,7 @@ function App() {
               element={
                 <ProtectedRoute requireAdmin={true}>
                   <ErrorBoundary>
+                    <Header user={user} userData={userData} />
                     <PayrollManagement />
                   </ErrorBoundary>
                 </ProtectedRoute>
