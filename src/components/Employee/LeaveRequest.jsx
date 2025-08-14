@@ -114,9 +114,9 @@ function LeaveRequest() {
 
       // Send notification to admin (try multiple admin emails)
       const adminEmails = [
+        'suryaabadi.konsultan@gmail.com', // Primary admin email
         'admin@suryaabadi.com',
-        'hr@suryaabadi.com',
-        'edo.hikmahtiar@gmail.com' // Fallback admin email
+        'hr@suryaabadi.com'
       ];
 
       for (const adminEmail of adminEmails) {
