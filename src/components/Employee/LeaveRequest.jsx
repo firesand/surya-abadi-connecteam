@@ -112,15 +112,25 @@ function LeaveRequest() {
 
       const docRef = await addDoc(collection(db, 'leaveRequests'), leaveRequest);
 
-      // Send notification to admin
-      try {
-        await sendNotification(
-          'admin@suryaabadi.com', // Replace with actual admin email
-          'New Leave Request',
-          `Employee ${userData?.name} has submitted a leave request.\n\nType: ${formData.leaveType}\nStart: ${formData.startDate}\nEnd: ${formData.endDate}\nReason: ${formData.reason}\n\nPlease review and approve/reject.`
-        );
-      } catch (error) {
-        console.log('Failed to send notification email');
+      // Send notification to admin (try multiple admin emails)
+      const adminEmails = [
+        'admin@suryaabadi.com',
+        'hr@suryaabadi.com',
+        'edo.hikmahtiar@gmail.com' // Fallback admin email
+      ];
+
+      for (const adminEmail of adminEmails) {
+        try {
+          await sendNotification(
+            adminEmail,
+            'New Leave Request',
+            `Employee ${userData.name} has submitted a leave request.\n\nType: ${formData.leaveType}\nStart: ${formData.startDate}\nEnd: ${formData.endDate}\nReason: ${formData.reason}\n\nPlease review and approve/reject.`
+          );
+          console.log(`Notification sent to ${adminEmail}`);
+          break; // Stop after first successful notification
+        } catch (error) {
+          console.log(`Failed to send notification to ${adminEmail}:`, error);
+        }
       }
 
       // Reset form

@@ -16,15 +16,25 @@ function LeaveManagement() {
 
   const fetchLeaveRequests = async () => {
     try {
+      console.log('Fetching leave requests...');
       const requestsQuery = query(
         collection(db, 'leaveRequests'),
         orderBy('requestedAt', 'desc')
       );
       const requestsSnapshot = await getDocs(requestsQuery);
-      const requests = requestsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      console.log('Leave requests snapshot:', requestsSnapshot);
+      console.log('Number of leave requests found:', requestsSnapshot.size);
+      
+      const requests = requestsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('Leave request data:', { id: doc.id, ...data });
+        return {
+          id: doc.id,
+          ...data
+        };
+      });
+      
+      console.log('Processed leave requests:', requests);
       setLeaveRequests(requests);
     } catch (error) {
       console.error('Error fetching leave requests:', error);
@@ -173,8 +183,18 @@ function LeaveManagement() {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8">
-            <h1 className="text-2xl font-bold text-white">Leave Management</h1>
-            <p className="text-blue-100">Manage employee leave requests</p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-white">Leave Management</h1>
+                <p className="text-blue-100">Manage employee leave requests</p>
+              </div>
+              <button 
+                onClick={fetchLeaveRequests}
+                className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                🔄 Refresh
+              </button>
+            </div>
           </div>
 
           <div className="p-6">
@@ -313,6 +333,20 @@ function LeaveManagement() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <p className="text-gray-500">No leave requests found</p>
+                  
+                  {/* Debug Information */}
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg text-left max-w-md mx-auto">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Debug Info:</p>
+                    <p className="text-xs text-gray-600">Total requests: {leaveRequests.length}</p>
+                    <p className="text-xs text-gray-600">Filter: {filter}</p>
+                    <p className="text-xs text-gray-600">Loading: {loading.toString()}</p>
+                    <button 
+                      onClick={fetchLeaveRequests}
+                      className="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                    >
+                      🔄 Refresh Data
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
