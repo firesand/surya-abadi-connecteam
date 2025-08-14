@@ -1,6 +1,6 @@
 // src/App.jsx
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './config/firebase';
@@ -158,7 +158,6 @@ function App() {
 
   // Simple redirect based on role
   const RoleBasedRedirect = () => {
-    const navigate = useNavigate();
     console.log('RoleBasedRedirect - User:', user?.email, 'Role:', userData?.role, 'Status:', userData?.accountStatus);
 
     if (!user) {
@@ -189,7 +188,7 @@ function App() {
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Akun Tidak Aktif</h2>
             <p className="text-gray-600 mb-4">Akun Anda telah dinonaktifkan. Silakan hubungi HR untuk informasi lebih lanjut.</p>
             <button 
-              onClick={() => auth.signOut().then(() => navigate('/login'))}
+              onClick={() => auth.signOut().then(() => window.location.href = '/login')}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Kembali ke Login
